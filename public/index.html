@@ -208,6 +208,7 @@
     <div class="row"><input type="text" id="setName" maxlength="30" class="grow"><button class="btn small" id="saveName">OK</button></div>
     <p class="muted" style="font-size:14px;margin:10px 0 6px">Программа: <b id="progName"></b></p>
     <button class="btn small ghost" id="switchProg">Сменить программу</button>
+    <label class="row" style="margin-top:12px;font-weight:700"><input type="checkbox" id="diaryToggle" style="width:20px;height:20px"> Показывать дневник</label>
   </div>
   <div class="card listedit">
     <h3>Мои квесты</h3>
@@ -255,6 +256,7 @@ const KEY = "rovnee:v1";
 // ================= ПРОГРАММЫ =================
 const PROGRAMS = {
   jaw: {
+    version: 1,
     title: "Челюсть, дыхание и осанка", emoji: "😌", short: "Челюсть и осанка",
     desc: "Положение языка, расслабление челюсти, дыхание носом, шея.",
     pain: false,
@@ -314,53 +316,68 @@ const PROGRAMS = {
   },
 
   back: {
-    title: "Спина: мягкое движение (МФС)", emoji: "🐢", short: "Спина (МФС)",
-    desc: "Медленные безопасные упражнения без резких движений, прогулки, тепло, дыхание.",
-    pain: true,
-    intro: "Правило всех упражнений: медленно, без рывков, не задерживая дыхание. Лёгкий дискомфорт допустим (до 3 из 10), острая боль — нет. Если после упражнения боль усилилась и не прошла к следующему дню — уменьши объём вдвое.",
+    version: 2,
+    title: "Спина и шея при МФС", emoji: "🐢", short: "Спина и шея (МФС)",
+    desc: "Мягкие упражнения при миофасциальном синдроме: без резких движений, медленно, с теплом и дыханием. Спина и шея.",
+    pain: true, diary: false,
+    intro: "Все упражнения — под миофасциальный синдром: медленно, без рывков и скручиваний, не задерживая дыхание. Лёгкое натяжение — нормально, боль — нет (не выше 3 из 10). Если после упражнения стало хуже и не прошло к следующему дню — уменьши объём вдвое или пропусти это упражнение. Перед стартом лучше показать список неврологу или врачу ЛФК.",
     quests: [
       {id:"walk", ico:"🚶", title:"Прогулка", xp:15, times:1,
        desc:"10–30 минут в удобном темпе. Начни с того, что комфортно, и добавляй по 2–3 минуты в неделю.",
-       how:"Обычный шаг, руки свободно. Ходьба — одно из самых безопасных и полезных движений при боли в спине: мышцы разогреваются и расслабляются. Если 10 минут много — начни с 5.",
-       video:"ходьба при боли в спине польза"},
+       how:"Обычный шаг, руки свободно, без рывков и бега. При МФС ходьба — одно из самых безопасных движений: мышцы разогреваются и спазм уходит. Если 10 минут много — начни с 5.",
+       video:"ходьба при миофасциальном синдроме спины"},
       {id:"breath", ico:"🌬️", title:"Дыхание животом", xp:10, times:1,
        desc:"5 минут лёжа на спине, колени согнуты.",
-       how:"Одна рука на груди, другая на животе. Медленный вдох носом — поднимается живот, грудь почти неподвижна. Медленный выдох ртом. Это снимает напряжение мышц спины и нервной системы.",
-       video:"диафрагмальное дыхание лёжа"},
+       how:"Одна рука на груди, другая на животе. Медленный вдох носом — поднимается живот, грудь и плечи почти неподвижны. Медленный выдох ртом. При МФС это снимает напряжение мышц спины, шеи и плеч.",
+       video:"диафрагмальное дыхание при миофасциальном болевом синдроме"},
+      {id:"chin", ico:"🦒", title:"Шея: подбородок назад", xp:10, times:1,
+       desc:"8–10 раз медленно, сидя или лёжа. Против «висящей» вперёд головы.",
+       how:"Сядь ровно или ляг на спину. Медленно отведи подбородок назад, как будто делаешь «двойной подбородок», затылок тянется вверх. Задержись 3 секунды, расслабься. Голову не запрокидывать и не наклонять вбок. Движение маленькое.",
+       video:"упражнения для шеи при миофасциальном синдроме подбородок назад"},
+      {id:"neckrel", ico:"🫧", title:"Шея и плечи: расслабление", xp:10, times:1,
+       desc:"Мягкие круги плечами и лёгкое тепло на шею, 3–5 минут.",
+       how:"Медленно поднимай плечи к ушам на вдохе и опускай на выдохе, 8 раз. Потом плавные круги плечами назад. Голову не крутить и не наклонять резко. Тёплое полотенце или грелка на шею и верх спины 10 минут. Так как шея уходит вбок, растяжки в одну сторону — только по назначению врача.",
+       video:"расслабление шеи и трапеций при миофасциальном синдроме мягко"},
       {id:"tilt", ico:"🛏️", title:"Наклоны таза лёжа", xp:10, times:1,
        desc:"10 медленных повторов, лёжа на спине.",
        how:"Лёжа на спине, колени согнуты, стопы на полу. На выдохе мягко прижми поясницу к полу (таз чуть подкручивается), на вдохе вернись. Амплитуда маленькая, без усилия.",
-       video:"наклоны таза лёжа упражнение поясница"},
+       video:"наклоны таза лёжа при миофасциальном синдроме поясницы"},
       {id:"knee", ico:"🦵", title:"Колено к груди", xp:10, times:1,
        desc:"По очереди каждое колено, 20–30 секунд, 2–3 раза.",
        how:"Лёжа на спине, обхвати одно колено руками и мягко подтяни к груди, вторая нога согнута на полу. Держи 20–30 секунд, дыши. Без рывков и боли.",
-       video:"колено к груди растяжка поясницы лёжа"},
+       video:"колено к груди при миофасциальном синдроме поясницы"},
       {id:"cat", ico:"🐈", title:"Кошка–корова", xp:10, times:1,
        desc:"8–10 медленных повторов на четвереньках.",
-       how:"На четвереньках: на выдохе мягко округли спину, на вдохе плавно прогнись. Двигайся в комфортной амплитуде, медленно, как будто под водой.",
-       video:"кошка корова упражнение медленно для спины"},
-      {id:"glute", ico:"🍑", title:"Растяжка ягодиц и бёдер", xp:10, times:1,
+       how:"На четвереньках: на выдохе мягко округли спину, на вдохе плавно прогнись. Небольшая амплитуда, медленно, как будто под водой. Голова продолжает линию спины, не запрокидывать.",
+       video:"кошка корова при миофасциальном синдроме мягко"},
+      {id:"glute", ico:"🍑", title:"Растяжка ягодиц", xp:10, times:1,
        desc:"«Четвёрка» лёжа — по 30 секунд на каждую сторону.",
-       how:"Лёжа на спине, положи щиколотку одной ноги на колено другой (цифра 4) и мягко подтяни нижнюю ногу к себе. Тянет в ягодице — это то, что нужно. Ягодичные и грушевидные мышцы часто участвуют в боли в пояснице.",
-       video:"растяжка грушевидной мышцы лёжа четвёрка"},
+       how:"Лёжа на спине, положи щиколотку одной ноги на колено другой (цифра 4) и мягко подтяни нижнюю ногу к себе. Тянет в ягодице — это то, что нужно. Ягодичные и грушевидные мышцы часто участвуют в миофасциальной боли в пояснице.",
+       video:"растяжка грушевидной мышцы при миофасциальном синдроме"},
       {id:"warm", ico:"♨️", title:"Тепло и мягкий самомассаж", xp:10, times:1,
        desc:"Тёплый душ или грелка 10–15 минут, затем мягко мячиком 2–3 минуты.",
-       how:"Тепло расслабляет напряжённые мышцы. Мячик (теннисный) — между спиной и стеной, лёгкое давление на напряжённые точки по 20–30 секунд. Мягко: если больно сильнее 3 из 10 — давление слишком сильное. Не давить на позвоночник.",
-       video:"самомассаж мячом триггерные точки спина мягко"},
+       how:"Тепло расслабляет спазмированные мышцы. Мячик (теннисный) — между спиной и стеной, лёгкое давление на напряжённые точки по 20–30 секунд. Мягко: если больно сильнее 3 из 10 — давление слишком сильное. Не давить на позвоночник и на шею спереди.",
+       video:"самомассаж мячом триггерные точки при миофасциальном синдроме"},
       {id:"breaks", ico:"⏰", title:"Перерывы в сидении", xp:5, times:3,
        desc:"Встать и пройтись 1–2 минуты каждые 45–60 минут.",
-       how:"Долгое сидение в одной позе усиливает миофасциальную боль. Встань, пройдись, мягко покрути плечами.",
-       video:"разминка за компьютером для спины"},
+       how:"Долгое сидение в одной позе усиливает миофасциальную боль. Встань, пройдись, мягко опусти плечи. Экран — на уровне глаз, чтобы голова не уходила вперёд.",
+       video:"разминка при миофасциальном синдроме сидячая работа"},
     ],
     chapters: [
       {id:"neuro", stage:"Этап 1 · Диагноз", title:"Невролог", xp:100,
-       desc:"Подтвердить МФС и исключить другие причины. Спросить: какие движения можно, каких избегать, нужна ли ЛФК."},
+       desc:"Подтвердить МФС. Рассказать, что голова уходит вперёд и шея — вбок. Спросить, какие движения можно, каких избегать, нужна ли ЛФК."},
+      {id:"scolio", stage:"Этап 1 · Диагноз", title:"Ортопед: проверить сколиоз", xp:100,
+       desc:"Осмотр и, если врач назначит, рентген позвоночника стоя. Узнать, есть ли сколиоз, какой и что с ним делать."},
       {id:"lfk", stage:"Этап 2 · Движение", title:"Врач ЛФК / реабилитолог", xp:150,
-       desc:"Индивидуальная программа упражнений. Показать этот список квестов — пусть поправит."},
+       desc:"Программа упражнений под МФС, шею и (если подтвердится) сколиоз. Показать этот список квестов — пусть поправит."},
       {id:"physio", stage:"Этап 2 · Движение", title:"Курс ЛФК или физиотерапии", xp:120,
        desc:"Пройти курс занятий под присмотром — так безопаснее начать двигаться больше."},
+      {id:"dentist", stage:"Зубы", title:"Стоматолог: осмотр и план", xp:100,
+       desc:"Панорамный снимок и список, что лечить и в каком порядке. Дальше — по одному зубу, без спешки."},
+      {id:"teeth", stage:"Зубы", title:"Зубы: по одному", xp:50, list:true,
+       desc:"Добавляй зубы из плана врача и отмечай каждый вылеченный. +50 XP за каждый зуб."},
       {id:"control", stage:"Этап 3 · Контроль", title:"Повторный приём через 6–8 недель", xp:100,
-       desc:"Показать дневник боли из приложения («Ещё» → «Сводка для врача»), обсудить, что дальше."},
+       desc:"Обсудить с неврологом или врачом ЛФК, что изменилось и что дальше."},
     ],
     redFlags: "Срочно к врачу, если: онемение в паху или промежности, проблемы с мочеиспусканием или стулом, нарастающая слабость в ноге, боль с температурой, боль после травмы или падения, сильная ночная боль, которая не проходит в покое, необъяснимая потеря веса.",
     morning: [
@@ -380,8 +397,9 @@ const BADGES = [
   {id:"day30", e:"🏆", t:"30 активных дней", test:s=>activeDays(s)>=30},
   {id:"full", e:"⭐", t:"Все квесты за день", test:s=>Object.keys(s.days).some(d=>dayComplete(s,d))},
   {id:"log5", e:"📓", t:"5 записей в дневнике", test:s=>Object.values(s.days).filter(d=>d.log).length>=5},
-  {id:"doc1", e:"🩺", t:"Первая глава", test:s=>s.chapters.some(c=>c.done)},
-  {id:"doc3", e:"🗺️", t:"3 главы", test:s=>s.chapters.filter(c=>c.done).length>=3},
+  {id:"doc1", e:"🩺", t:"Первая глава", test:s=>s.chapters.some(chapterDone)},
+  {id:"doc3", e:"🗺️", t:"3 главы", test:s=>s.chapters.filter(chapterDone).length>=3},
+  {id:"tooth", e:"🦷", t:"Первый вылеченный зуб", test:s=>s.chapters.some(c=>(c.items||[]).some(i=>i.done))},
   {id:"week", e:"📅", t:"4 дня за неделю", test:s=>weekActive(s)>=4},
   {id:"back", e:"🤗", t:"Вернулся(ась) после паузы", test:s=>!!s.cameBack},
   {id:"friend", e:"🤝", t:"Первый друг", test:s=>(s.friends||[]).length>=1},
@@ -393,7 +411,20 @@ const BADGES = [
 const todayKey = (d=new Date()) => new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,10);
 const P = () => PROGRAMS[S.program] || PROGRAMS.jaw;
 const fresh = () => ({xp:0, program:null, name:"", quests:[], chapters:[], days:{}, badges:[], friends:[], lastVisit:todayKey(), cameBack:false});
-function chaptersFor(prog){ return PROGRAMS[prog].chapters.map(c=>({...c,done:false,date:"",note:""})); }
+function chaptersFor(prog){ return PROGRAMS[prog].chapters.map(c=>({...c,done:false,date:"",note:"",...(c.list?{items:[]}:{})})); }
+function chapterDone(c){ return c.list ? (c.items||[]).length>0 && c.items.every(i=>i.done) : !!c.done; }
+// Когда программа обновилась: новые упражнения и главы добавляются, тексты обновляются,
+// а свои квесты, отметки и заметки сохраняются.
+function upgradeProgram(s){
+  const prog = PROGRAMS[s.program]; if(!prog) return s;
+  if((s.progVer||1) >= prog.version) return s;
+  const custom = s.quests.filter(q=>!prog.quests.some(d=>d.id===q.id) && String(q.id).startsWith("q"));
+  s.quests = [...structuredClone(prog.quests), ...custom];
+  const old = Object.fromEntries((s.chapters||[]).map(c=>[c.id,c]));
+  s.chapters = prog.chapters.map(c=>{ const o=old[c.id]||{}; return {...c, done:!!o.done, date:o.date||"", note:o.note||"", ...(c.list?{items:o.items||[]}:{})}; });
+  s.progVer = prog.version;
+  return s;
+}
 function load(){
   try{ const s = JSON.parse(localStorage.getItem(KEY)); if(s && s.quests) return migrate(s); }catch(e){}
   return fresh();
@@ -402,11 +433,16 @@ function migrate(s){
   s.days ||= {}; s.badges ||= []; s.friends ||= [];
   if(!s.program && s.quests && s.quests.length) s.program = "jaw";   // старая версия — программа челюсти
   if(s.program && (!s.chapters || !s.chapters.length)) s.chapters = chaptersFor(s.program);
-  return s;
+  return upgradeProgram(s);
 }
 let S = load();
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ toast("Не удалось сохранить 😕"); } scheduleSync(); }
 const day = (k=todayKey()) => (S.days[k] ||= {done:{}, xp:0});
+const diaryOn = () => S.showDiary ?? (P().diary !== false);
+function applyDiaryVisibility(){
+  document.querySelector('nav button[data-tab=log]').style.display = diaryOn() ? "" : "none";
+  if(!diaryOn() && document.querySelector("#tab-log.on")) document.querySelector('nav button[data-tab=today]').click();
+}
 
 // ================= ПОМОЩНИКИ =================
 const $ = s => document.querySelector(s);
@@ -449,7 +485,7 @@ $("#obGo").addEventListener("click",()=>{
   if(!obChoice) return toast("Выбери программу");
   const changed = S.program !== obChoice;
   S.name = name;
-  if(changed){ S.program = obChoice; S.quests = structuredClone(PROGRAMS[obChoice].quests); S.chapters = chaptersFor(obChoice); }
+  if(changed){ S.program = obChoice; S.quests = structuredClone(PROGRAMS[obChoice].quests); S.chapters = chaptersFor(obChoice); S.progVer = PROGRAMS[obChoice].version; S.showDiary = undefined; }
   $("#onboard").classList.remove("show");
   save(); renderAll(); ensureCode();
   toast(`Поехали, ${name}! ✨`);
@@ -565,22 +601,41 @@ function renderChapters(){
   let stage="", html="";
   S.chapters.forEach((c,i)=>{
     if(c.stage!==stage){ stage=c.stage; html+=`<div class="stage">${esc(stage)}</div>`; }
-    html+=`<div class="card chapter ${c.done?"done":""}">
-      <div class="num">${c.done?"✓":i+1}</div>
+    html+=`<div class="card chapter ${chapterDone(c)?"done":""}">
+      <div class="num">${chapterDone(c)?"✓":i+1}</div>
       <div class="grow">
         <h3>${esc(c.title)}</h3>
         <p class="muted" style="font-size:14px;margin:4px 0 8px">${esc(c.desc)}</p>
         <div class="row" style="flex-wrap:wrap;gap:6px">
-          <span class="chip">+${c.xp} XP</span>
-          <input type="date" data-cdate="${esc(c.id)}" value="${esc(c.date)}" style="width:auto;padding:4px 8px;border-width:2px">
+          <span class="chip">+${c.xp} XP${c.list?" за каждый":""}</span>
+          ${c.list?"":`<input type="date" data-cdate="${esc(c.id)}" value="${esc(c.date)}" style="width:auto;padding:4px 8px;border-width:2px">`}
         </div>
         <textarea data-cnote="${esc(c.id)}" placeholder="Что сказал врач, что назначил" style="margin-top:8px;min-height:50px">${esc(c.note)}</textarea>
-        <button class="btn small ${c.done?"ghost":"mint"}" data-cdone="${esc(c.id)}" style="margin-top:8px">${c.done?"Отменить":"Глава пройдена!"}</button>
+        ${c.list ? listHtml(c) : `<button class="btn small ${c.done?"ghost":"mint"}" data-cdone="${esc(c.id)}" style="margin-top:8px">${c.done?"Отменить":"Глава пройдена!"}</button>`}
       </div></div>`;
   });
   $("#chapterList").innerHTML = html;
 }
+function listHtml(c){
+  const items = (c.items||[]).map((it,i)=>`<div class="row" style="border-bottom:2px dashed #e5dccb;padding:6px 0">
+      <button class="tick" style="width:36px;height:36px;font-size:18px;${it.done?"background:var(--mint)":""}" data-item="${esc(c.id)}:${i}">${it.done?"✓":""}</button>
+      <span class="grow" style="${it.done?"text-decoration:line-through;color:var(--muted)":""}">${esc(it.text)}${it.date?` <span class="muted" style="font-size:12px">· ${ddmm(it.date)}</span>`:""}</span>
+      <button class="btn small ghost" data-itemdel="${esc(c.id)}:${i}" aria-label="Удалить">✕</button></div>`).join("");
+  const done = (c.items||[]).filter(i=>i.done).length;
+  return `${c.items?.length?`<div class="chip" style="display:inline-block;margin:8px 0 4px">вылечено ${done} из ${c.items.length}</div>`:""}${items}
+    <div class="row" style="margin-top:8px"><input type="text" data-itemnew="${esc(c.id)}" placeholder="Например: зуб 36 — кариес" class="grow"><button class="btn small mint" data-itemadd="${esc(c.id)}">+</button></div>`;
+}
 $("#chapterList").addEventListener("click",e=>{
+  const it=e.target.closest("[data-item]"), del=e.target.closest("[data-itemdel]"), add=e.target.closest("[data-itemadd]");
+  if(it){ const [cid,i]=it.dataset.item.split(":"); const c=S.chapters.find(x=>x.id===cid), item=c.items[+i];
+    item.done=!item.done;
+    if(item.done){ item.date=todayKey(); addXP(c.xp,`🦷 Ещё один зуб! +${c.xp} XP`); } else { item.date=""; addXP(-c.xp); }
+    checkBadges(); save(); renderChapters(); renderHeader(); return; }
+  if(del){ const [cid,i]=del.dataset.itemdel.split(":"); const c=S.chapters.find(x=>x.id===cid);
+    if(confirm(`Удалить «${c.items[+i].text}»?`)){ if(c.items[+i].done) addXP(-c.xp); c.items.splice(+i,1); save(); renderChapters(); renderHeader(); } return; }
+  if(add){ const c=S.chapters.find(x=>x.id===add.dataset.itemadd); const inp=document.querySelector(`[data-itemnew="${add.dataset.itemadd}"]`);
+    const t=inp.value.trim(); if(!t) return toast("Напиши, какой зуб"); (c.items ||= []).push({text:t.slice(0,60), done:false, date:""});
+    save(); renderChapters(); toast("Добавлено в план"); return; }
   const b=e.target.closest("[data-cdone]"); if(!b) return;
   const c=S.chapters.find(x=>x.id===b.dataset.cdone); c.done=!c.done;
   if(c.done){ if(!c.date) c.date=todayKey(); addXP(c.xp,`🩺 Глава пройдена! +${c.xp} XP`); } else addXP(-c.xp);
@@ -598,7 +653,7 @@ function publicProfile(){
     const done = d ? S.quests.filter(q=>(d.done[q.id]||0)>=q.times).length : 0;
     days[k] = [isActive(d) ? Math.max(done, 1) : 0, S.quests.length]; }
   return { name:S.name, program:S.program, level:levelInfo(S.xp).level, xp:S.xp, activeDays:activeDays(S),
-    badges:S.badges, chaptersDone:S.chapters.filter(c=>c.done).length, chaptersTotal:S.chapters.length, days };
+    badges:S.badges, chaptersDone:S.chapters.filter(chapterDone).length, chaptersTotal:S.chapters.length, days };
 }
 async function ensureCode(){
   if(S.code || !S.program || !navigator.onLine) return;
@@ -694,27 +749,28 @@ function renderProgress(){
   const cols=[]; let max=10;
   for(let i=13;i>=0;i--){ const dt=new Date(Date.now()-i*864e5), k=todayKey(dt), v=(S.days[k]||{}).xp||0; max=Math.max(max,v); cols.push({k,v,dt,today:i===0}); }
   $("#chart").innerHTML = cols.map(c=>`<div class="col" title="${c.k}: ${c.v} XP"><small>${c.v||""}</small><div class="b ${c.today?"today":""}" style="height:${Math.round(c.v/max*85)}%"></div><small>${c.dt.getDate()}</small></div>`).join("");
-  $("#painCard").style.display = P().pain ? "" : "none";
-  if(P().pain){
+  $("#painCard").style.display = (P().pain && diaryOn()) ? "" : "none";
+  if(P().pain && diaryOn()){
     $("#painChart").innerHTML = cols.map(c=>{ const p=((S.days[c.k]||{}).log||{}).pain; const has = p!=null && p>=0;
       return `<div class="col" title="${c.k}: ${has?p+"/10":"нет записи"}"><small>${has?p:""}</small><div class="b" style="height:${has?Math.max(3,p*8.5):0}%;background:${has?(p>=7?"var(--pink)":p>=4?"var(--orange)":"var(--mint)"):"transparent"};${has?"":"border:none"}"></div><small>${c.dt.getDate()}</small></div>`; }).join("");
   }
   $("#stats").innerHTML = [
     `⚡ ${S.xp} XP`, `🗓️ активных дней: ${activeDays(S)}`, `✅ выполнений: ${totalCompletions(S)}`,
-    `📓 записей: ${Object.values(S.days).filter(d=>d.log).length}`, `🩺 глав: ${S.chapters.filter(c=>c.done).length}/${S.chapters.length}`
+    `📓 записей: ${Object.values(S.days).filter(d=>d.log).length}`, `🩺 глав: ${S.chapters.filter(chapterDone).length}/${S.chapters.length}`
   ].map(t=>`<span class="chip">${t}</span>`).join("");
   $("#badges").innerHTML = BADGES.map(b=>`<div class="badge ${S.badges.includes(b.id)?"":"locked"}"><span class="e">${b.e}</span>${b.t}</div>`).join("");
 }
 
 // ================= НАСТРОЙКИ =================
 function renderSettings(){
-  $("#setName").value = S.name||""; $("#progName").textContent = P().title;
+  $("#setName").value = S.name||""; $("#progName").textContent = P().title; $("#diaryToggle").checked = diaryOn();
   $("#questEdit").innerHTML = S.quests.map((q,i)=>`<div class="row">
     <span style="font-size:22px">${esc(q.ico||"✨")}</span>
     <span class="grow"><b>${esc(q.title)}</b><br><span class="muted" style="font-size:13px">${q.times}× в день · ${q.xp} XP</span></span>
     <button class="btn small ghost" data-up="${i}" ${i===0?"disabled":""}>↑</button>
     <button class="btn small pink" data-del="${i}">✕</button></div>`).join("");
 }
+$("#diaryToggle").addEventListener("change",e=>{ S.showDiary = e.target.checked; save(); applyDiaryVisibility(); toast(e.target.checked?"Дневник включён":"Дневник скрыт"); });
 $("#saveName").addEventListener("click",()=>{ const n=$("#setName").value.trim(); if(!n) return; S.name=n; save(); renderHeader(); toast("Имя сохранено"); });
 $("#switchProg").addEventListener("click",()=>{ if(confirm("Сменить программу? Квесты и главы заменятся на другие. XP, значки и дневник останутся.")) showOnboarding(); });
 $("#questEdit").addEventListener("click",e=>{
@@ -741,8 +797,9 @@ $("#summaryBtn").addEventListener("click",()=>{
   out += `Активных дней с упражнениями за 30 дней: ${Object.keys(S.days).filter(k=>k>=since && isActive(S.days[k])).length}\n`;
   out += `\nПо дням:\n` + keys.map(k=>{const l=S.days[k].log;
     return `${ddmm(k)} — ${(l.pain??-1)>=0?"боль "+l.pain+"/10; ":""}сон ${l.sleep||"?"}/5; ${(l.morning||[]).map(labelOf).filter(Boolean).join(", ")||"—"}${l.note?"; "+l.note:""}`;}).join("\n");
-  const done = S.chapters.filter(c=>c.done);
+  const done = S.chapters.filter(c=>c.done && !c.list);
   if(done.length) out += `\n\nПройденные приёмы:\n` + done.map(c=>`${c.title} (${c.date||"—"})${c.note?": "+c.note:""}`).join("\n");
+  S.chapters.filter(c=>c.list && c.items?.length).forEach(c=>{ out += `\n\n${c.title}:\n` + c.items.map(i=>`${i.done?"✓":"·"} ${i.text}${i.date?" ("+ddmm(i.date)+")":""}`).join("\n"); });
   const ta=$("#summaryOut"); ta.style.display="block"; ta.value=out; ta.select();
   navigator.clipboard?.writeText(out).then(()=>toast("Сводка скопирована 📋")).catch(()=>{});
 });
@@ -772,7 +829,7 @@ document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()
 
 function renderAll(){
   if(!S.program) return;
-  renderToday(); $("#logDate").value=todayKey(); loadLog(todayKey()); renderLogHistory(); renderChapters(); renderProgress(); renderSettings(); renderFriendsHead();
+  applyDiaryVisibility(); renderToday(); $("#logDate").value=todayKey(); loadLog(todayKey()); renderLogHistory(); renderChapters(); renderProgress(); renderSettings(); renderFriendsHead();
 }
 function start(){
   if(!S.program || !S.name){ showOnboarding(); return; }
