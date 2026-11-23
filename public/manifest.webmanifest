@@ -1,0 +1,13 @@
+{
+  "name": "Ровнее",
+  "short_name": "Ровнее",
+  "description": "Игровой трекер привычек для челюсти, дыхания и осанки",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFF4DC",
+  "theme_color": "#FFF4DC",
+  "lang": "ru",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

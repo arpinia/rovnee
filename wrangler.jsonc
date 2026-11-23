@@ -1,0 +1,9 @@
+{
+  // Имя должно совпадать с именем воркера в Cloudflare — иначе сборка не пройдёт
+  "name": "rovnee",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./public",
+    "not_found_handling": "single-page-application"
+  }
+}

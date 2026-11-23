@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFF4DC">
+<title>Ровнее — квест для челюсти и осанки</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icon.svg">
+<style>
+  :root{
+    --bg:#FFF4DC; --card:#FFFDF6; --ink:#1E1A16; --muted:#6B6257;
+    --pink:#FF8FAB; --yellow:#FFD23F; --mint:#7BDFB4; --blue:#7CB8FF; --orange:#FF9F5A; --lilac:#C3A6FF;
+    --line:3px solid var(--ink); --shadow:4px 4px 0 var(--ink); --r:16px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Nunito","Trebuchet MS",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+  body{padding:16px 14px calc(96px + env(safe-area-inset-bottom));max-width:560px;margin:0 auto}
+  h1,h2,h3{font-family:"Rubik","Trebuchet MS",system-ui,sans-serif;margin:0}
+  h2{font-size:22px;margin:6px 0 12px}
+  button{font:inherit;color:inherit;cursor:pointer}
+  .card{background:var(--card);border:var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;margin-bottom:14px}
+  .btn{border:var(--line);border-radius:12px;background:var(--yellow);box-shadow:3px 3px 0 var(--ink);padding:9px 14px;font-weight:800;transition:transform .08s,box-shadow .08s}
+  a.btn{color:var(--ink);text-decoration:none;display:inline-block}
+  .btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+  .btn.ghost{background:var(--card)} .btn.mint{background:var(--mint)} .btn.pink{background:var(--pink)} .btn.small{padding:5px 10px;font-size:14px;border-width:2px;box-shadow:2px 2px 0 var(--ink)}
+  .muted{color:var(--muted)} .row{display:flex;gap:10px;align-items:center} .grow{flex:1}
+  /* header */
+  .hero{display:flex;gap:12px;align-items:center}
+  .avatar{width:64px;height:64px;border:var(--line);border-radius:50%;background:var(--pink);display:grid;place-items:center;font-size:34px;box-shadow:var(--shadow);flex:none}
+  .lvl{font-weight:900;font-size:20px}
+  .bar{height:16px;border:var(--line);border-radius:99px;background:#fff;overflow:hidden;margin-top:6px}
+  .bar>i{display:block;height:100%;background:repeating-linear-gradient(45deg,var(--mint) 0 10px,#5fd09f 10px 20px);transition:width .4s}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .chip{border:2px solid var(--ink);border-radius:99px;padding:3px 10px;font-size:13px;font-weight:800;background:#fff}
+  /* quests */
+  .quest{display:flex;gap:12px;align-items:flex-start;padding:12px;border:var(--line);border-radius:14px;margin-bottom:10px;background:#fff;box-shadow:3px 3px 0 var(--ink)}
+  .quest.done{background:#E6FAF0}
+  .quest .ico{font-size:26px;line-height:1;flex:none;width:34px;text-align:center}
+  .quest h3{font-size:16px}
+  .quest p{margin:3px 0 8px;font-size:14px;color:var(--muted)}
+  .tick{flex:none;width:46px;height:46px;border:var(--line);border-radius:12px;background:#fff;font-size:22px;font-weight:900;box-shadow:2px 2px 0 var(--ink)}
+  .quest.done .tick{background:var(--mint)}
+  .counter{font-size:13px;font-weight:800;margin-top:2px;text-align:center}
+  details.how{font-size:14px;margin-top:2px} details.how summary{cursor:pointer;font-weight:800}
+  details.how div{padding:6px 0 2px;color:var(--ink)}
+  /* tabs */
+  nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:var(--line);display:flex;justify-content:center;padding:8px 6px calc(8px + env(safe-area-inset-bottom));z-index:5}
+  nav .inner{display:flex;gap:4px;max-width:560px;width:100%}
+  nav button{flex:1;border:2px solid transparent;background:none;border-radius:12px;padding:6px 2px;font-size:12px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:2px}
+  nav button span{font-size:22px}
+  nav button.on{border-color:var(--ink);background:var(--yellow);box-shadow:2px 2px 0 var(--ink)}
+  .tab{display:none} .tab.on{display:block}
+  /* forms */
+  label.f{display:block;font-weight:800;margin:10px 0 6px}
+  .scale{display:flex;gap:6px}
+  .scale button{flex:1;border:2px solid var(--ink);border-radius:10px;background:#fff;padding:8px 0;font-size:20px}
+  .scale button.on{background:var(--yellow);box-shadow:2px 2px 0 var(--ink)}
+  .toggle{display:flex;gap:8px;flex-wrap:wrap}
+  .toggle button{border:2px solid var(--ink);border-radius:99px;background:#fff;padding:6px 12px;font-weight:700;font-size:14px}
+  .toggle button.on{background:var(--pink)}
+  textarea,input[type=text],input[type=date],input[type=number]{width:100%;border:var(--line);border-radius:12px;padding:10px;font:inherit;background:#fff}
+  textarea{min-height:70px;resize:vertical}
+  /* chapters */
+  .chapter{display:flex;gap:12px;align-items:flex-start}
+  .num{flex:none;width:40px;height:40px;border:var(--line);border-radius:50%;display:grid;place-items:center;font-weight:900;background:var(--blue)}
+  .chapter.done .num{background:var(--mint)}
+  .stage{font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:16px 0 8px}
+  /* chart */
+  .chart{display:flex;align-items:flex-end;gap:5px;height:120px;padding-top:8px}
+  .chart .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+  .chart .b{width:100%;border:2px solid var(--ink);border-bottom:none;border-radius:6px 6px 0 0;background:var(--blue);min-height:2px}
+  .chart .b.today{background:var(--pink)}
+  .chart small{font-size:10px;font-weight:800;color:var(--muted)}
+  .badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+  .badge{border:var(--line);border-radius:14px;padding:10px 6px;text-align:center;background:#fff;font-size:12px;font-weight:800}
+  .badge .e{font-size:30px;display:block}
+  .badge.locked{opacity:.35;filter:grayscale(1)}
+  /* toast */
+  #toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-140%);background:var(--yellow);border:var(--line);border-radius:14px;box-shadow:var(--shadow);padding:10px 16px;font-weight:900;z-index:9;transition:transform .3s;max-width:90vw;text-align:center}
+  #toast.show{transform:translate(-50%,0)}
+  .pop{animation:pop .35s}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.15)}100%{transform:scale(1)}}
+  .note{font-size:13px;background:#FFF0F3;border:2px dashed var(--ink);border-radius:12px;padding:10px;margin-top:10px}
+  .listedit .row{border-bottom:2px dashed #d8cdb8;padding:8px 0}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- СЕГОДНЯ -->
+<section class="tab on" id="tab-today">
+  <div class="card hero">
+    <div class="avatar" id="avatar">🙂</div>
+    <div class="grow">
+      <div class="lvl" id="lvlText">Уровень 1</div>
+      <div class="muted" id="xpText" style="font-size:14px">0 / 100 XP</div>
+      <div class="bar"><i id="xpBar" style="width:0%"></i></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="row"><h2 class="grow" style="margin:0">Квесты на сегодня</h2><span class="chip" id="todayCount">0/0</span></div>
+    <p class="muted" style="margin:6px 0 0;font-size:14px" id="motto">Даже один квест — уже засчитанный день.</p>
+    <div class="chips" id="weekChips"></div>
+  </div>
+  <div id="questList"></div>
+</section>
+
+<!-- ДНЕВНИК -->
+<section class="tab" id="tab-log">
+  <h2>Дневник</h2>
+  <div class="card">
+    <div class="row"><input type="date" id="logDate" class="grow"><button class="btn small ghost" id="logToday">сегодня</button></div>
+    <label class="f">Как спала? 😴</label>
+    <div class="scale" id="sleepScale"></div>
+    <label class="f">Что было утром?</label>
+    <div class="toggle" id="morningToggles"></div>
+    <label class="f">Заметки (что заметила, что помогло)</label>
+    <textarea id="logNote" placeholder="Например: днём ловила себя на сжатых зубах 3 раза"></textarea>
+    <div class="row" style="margin-top:12px"><button class="btn mint grow" id="logSave">Сохранить запись (+10 XP)</button></div>
+  </div>
+  <div class="card">
+    <h3 style="margin-bottom:8px">Последние записи</h3>
+    <div id="logHistory" class="muted" style="font-size:14px"></div>
+    <div class="note">Эти записи пригодятся сомнологу и гнатологу. Перед приёмом зайдите в ⚙ → «Сводка для врача».</div>
+  </div>
+</section>
+
+<!-- ГЛАВЫ -->
+<section class="tab" id="tab-quest">
+  <h2>Главы: врачи</h2>
+  <p class="muted" style="margin-top:-6px">Каждый пройденный приём — большая награда. Порядок рекомендованный, но не строгий.</p>
+  <div id="chapterList"></div>
+</section>
+
+<!-- ПРОГРЕСС -->
+<section class="tab" id="tab-progress">
+  <h2>Прогресс</h2>
+  <div class="card">
+    <h3>XP за 14 дней</h3>
+    <div class="chart" id="chart"></div>
+  </div>
+  <div class="card">
+    <div class="chips" id="stats"></div>
+  </div>
+  <div class="card">
+    <h3 style="margin-bottom:10px">Значки</h3>
+    <div class="badges" id="badges"></div>
+  </div>
+</section>
+
+<!-- НАСТРОЙКИ -->
+<section class="tab" id="tab-settings">
+  <h2>Настройки</h2>
+  <div class="card listedit">
+    <h3>Мои квесты</h3>
+    <div id="questEdit"></div>
+    <label class="f">Новый квест</label>
+    <input type="text" id="newQuestTitle" placeholder="Например: 5 минут ЛФК для шеи">
+    <div class="row" style="margin-top:8px">
+      <input type="number" id="newQuestTimes" min="1" max="10" value="1" style="width:90px">
+      <span class="muted grow" style="font-size:14px">раз в день</span>
+      <button class="btn small" id="addQuest">Добавить</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Сводка для врача</h3>
+    <p class="muted" style="font-size:14px">Сон, утренние симптомы и заметки за последние 30 дней одним текстом — можно скопировать и показать.</p>
+    <button class="btn" id="summaryBtn">Сделать сводку</button>
+    <textarea id="summaryOut" style="margin-top:10px;display:none;min-height:200px" readonly></textarea>
+  </div>
+  <div class="card">
+    <h3>Резервная копия</h3>
+    <p class="muted" style="font-size:14px">Данные хранятся только в этом браузере. Сохраняйте копию иногда — особенно перед сменой телефона.</p>
+    <div class="row" style="flex-wrap:wrap">
+      <button class="btn ghost" id="exportBtn">Скачать копию</button>
+      <label class="btn ghost" style="display:inline-block">Загрузить копию<input type="file" id="importFile" accept="application/json" hidden></label>
+    </div>
+  </div>
+  <div class="card">
+    <button class="btn pink" id="resetBtn">Сбросить всё</button>
+  </div>
+  <p class="muted" style="font-size:12px;text-align:center">Ровнее — личный трекер, не медицинский совет. Все упражнения — по согласованию с врачом.</p>
+</section>
+
+<nav><div class="inner">
+  <button data-tab="today" class="on"><span>⭐</span>Сегодня</button>
+  <button data-tab="log"><span>📓</span>Дневник</button>
+  <button data-tab="quest"><span>🗺️</span>Главы</button>
+  <button data-tab="progress"><span>📈</span>Прогресс</button>
+  <button data-tab="settings"><span>⚙️</span>Ещё</button>
+</div></nav>
+
+<script>
+(() => {
+"use strict";
+const KEY = "rovnee:v1";
+
+const DEFAULT_QUESTS = [
+  {id:"tongue", ico:"👅", title:"Язык у нёба", xp:5, times:3,
+   desc:"Проверь: кончик на бугорке за верхними зубами, весь язык прилегает к нёбу.",
+   how:"Кончик — на бугорке за передними верхними зубами, ровно по центру (на линии между двумя передними зубами). Весь язык мягко прижат к нёбу, без усилия. Губы сомкнуты, зубы не касаются.",
+   video:"правильное положение языка в покое упражнения"},
+  {id:"teeth", ico:"😌", title:"Губы вместе, зубы врозь", xp:5, times:3,
+   desc:"Поймай себя: не сжаты ли зубы? Разомкни и расслабь челюсть.",
+   how:"Зубы в покое не должны касаться — зазор 1–3 мм. Если поймала себя на сжатии, выдохни и расслабь челюсть и плечи.",
+   video:"как расслабить жевательные мышцы бруксизм"},
+  {id:"swallow", ico:"🪞", title:"Глотание у зеркала", xp:10, times:1,
+   desc:"5 глотков воды с раздвинутыми губами: язык не выходит между зубами.",
+   how:"Раздвинь губы пальцами, глотни немного воды. Язык должен упираться в нёбо и не появляться между зубами, не уходить вправо. Повтори 5 раз.",
+   video:"миофункциональная терапия правильное глотание взрослые"},
+  {id:"nose", ico:"👃", title:"Дыхание носом", xp:5, times:3,
+   desc:"Проверь: дышишь носом? Если ртом — переключись.",
+   how:"Губы сомкнуты, вдох и выдох через нос, спокойно. Если нос заложен — промой солевым раствором и запиши в дневник.",
+   video:"носовое дыхание упражнения для взрослых"},
+  {id:"massage", ico:"💆", title:"Массаж жевательных мышц", xp:10, times:1,
+   desc:"2–3 минуты мягко, можно с тёплым полотенцем.",
+   how:"Найди мышцу: сожми зубы — под пальцами у угла челюсти появится бугор. Разожми и мягко массируй круговыми движениями 2–3 минуты. Без боли.",
+   video:"самомассаж жевательных мышц"},
+  {id:"neck", ico:"🦒", title:"Шея и осанка", xp:10, times:1,
+   desc:"Подбородок назад ×10 и мягкая растяжка шеи.",
+   how:"Сидя ровно, отведи подбородок назад (как «двойной подбородок»), задержись на 3 секунды — 10 раз. Потом мягко наклони голову к каждому плечу по 20 секунд. Без боли.",
+   video:"упражнения для шеи осанка подбородок назад"},
+  {id:"evening", ico:"🌙", title:"Спокойный вечер", xp:10, times:1,
+   desc:"Без кофеина после обеда, 20 минут без экранов перед сном.",
+   how:"Кофеин и алкоголь вечером усиливают бруксизм. Перед сном — прогулка, душ, книга или спокойное дыхание.",
+   video:"расслабление перед сном дыхание"},
+];
+
+const DEFAULT_CHAPTERS = [
+  {id:"somno", stage:"Этап 1 · Дыхание", title:"Сомнолог: исследование сна", xp:100,
+   desc:"Респираторная полиграфия (часто можно дома). Узнать, есть ли апноэ, до заказа капы."},
+  {id:"lor", stage:"Этап 1 · Дыхание", title:"ЛОР", xp:100,
+   desc:"Перегородка после ринопластики, раковины, аденоиды, почему дышу ртом. Попросить эндоскопию, взять КЛКТ."},
+  {id:"ortho", stage:"Этап 2 · Челюсти и зубы", title:"Ортодонт", xp:150,
+   desc:"Узкая ли верхняя челюсть, подходит ли MARPE, длина левой и правой ветви, мыщелки, варианты без операции и с ней."},
+  {id:"logo", stage:"Этап 2 · Челюсти и зубы", title:"Логопед / миофункциональный терапевт", xp:100,
+   desc:"Глотание, положение языка, проверка уздечки."},
+  {id:"gnato", stage:"Этап 2 · Челюсти и зубы", title:"Гнатолог — повторно", xp:100,
+   desc:"С результатами сна: какую капу делать, нужен ли ботокс при гипертонусе."},
+  {id:"neuro", stage:"Этап 3 · Тело", title:"Невролог / ортопед → ЛФК", xp:100,
+   desc:"Шея, осанка, наклон головы с детства. Показать и плоскостопие."},
+  {id:"surgeon", stage:"Потом, по желанию", title:"Челюстно-лицевой хирург", xp:80,
+   desc:"Только консультация — узнать все варианты. Ни к чему не обязывает."},
+];
+
+const MORNING = [
+  {id:"jaw", label:"Устала челюсть"},
+  {id:"head", label:"Болела голова"},
+  {id:"dry", label:"Сухость во рту"},
+  {id:"mouth", label:"Дышала ртом"},
+  {id:"snore", label:"Храп (сказали)"},
+  {id:"tired", label:"Не выспалась"},
+  {id:"fine", label:"Всё ок 🙌"},
+];
+
+const BADGES = [
+  {id:"first", e:"🌱", t:"Первый квест", test:s=>totalCompletions(s)>=1},
+  {id:"day3", e:"🔥", t:"3 активных дня", test:s=>activeDays(s)>=3},
+  {id:"day10", e:"💪", t:"10 активных дней", test:s=>activeDays(s)>=10},
+  {id:"day30", e:"🏆", t:"30 активных дней", test:s=>activeDays(s)>=30},
+  {id:"full", e:"⭐", t:"Все квесты за день", test:s=>Object.keys(s.days).some(d=>dayComplete(s,d))},
+  {id:"log5", e:"📓", t:"5 записей в дневнике", test:s=>Object.values(s.days).filter(d=>d.log).length>=5},
+  {id:"doc1", e:"🩺", t:"Первая глава", test:s=>s.chapters.some(c=>c.done)},
+  {id:"doc3", e:"🗺️", t:"3 главы", test:s=>s.chapters.filter(c=>c.done).length>=3},
+  {id:"week", e:"📅", t:"4 дня за неделю", test:s=>weekActive(s)>=4},
+  {id:"back", e:"🤗", t:"Вернулась после паузы", test:s=>!!s.cameBack},
+  {id:"lvl5", e:"👑", t:"Уровень 5", test:s=>levelInfo(s.xp).level>=5},
+];
+
+const MOTTOS = [
+  "Даже один квест — уже засчитанный день.",
+  "Пропуск не обнуляет прогресс. Просто продолжай.",
+  "Маленькие привычки, большие изменения.",
+  "Язык к нёбу, плечи вниз, выдох. 🌿",
+  "Ты делаешь это для себя, не для идеальной серии.",
+];
+
+// ---------- state ----------
+const todayKey = (d=new Date()) => {
+  const z = new Date(d.getTime() - d.getTimezoneOffset()*60000);
+  return z.toISOString().slice(0,10);
+};
+function load(){
+  try{ const s = JSON.parse(localStorage.getItem(KEY)); if(s && s.quests) return migrate(s); }catch(e){}
+  return {xp:0, quests:structuredClone(DEFAULT_QUESTS), chapters:structuredClone(DEFAULT_CHAPTERS).map(c=>({...c,done:false,date:"",note:""})), days:{}, badges:[], lastVisit:todayKey(), cameBack:false};
+}
+function migrate(s){
+  s.days ||= {}; s.badges ||= []; s.chapters ||= DEFAULT_CHAPTERS.map(c=>({...c,done:false,date:"",note:""}));
+  return s;
+}
+let S = load();
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ toast("Не удалось сохранить 😕"); } }
+const day = (k=todayKey()) => (S.days[k] ||= {done:{}, xp:0});
+
+// ---------- helpers ----------
+const $ = s => document.querySelector(s);
+const esc = s => String(s??"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function levelInfo(xp){
+  let level=1, need=100, rest=xp;
+  while(rest>=need){ rest-=need; level++; need=100+ (level-1)*50; }
+  return {level, rest, need};
+}
+function totalCompletions(s){ return Object.values(s.days).reduce((a,d)=>a+Object.values(d.done||{}).reduce((x,y)=>x+y,0),0); }
+function isActive(d){ return d && (Object.values(d.done||{}).some(v=>v>0) || d.log); }
+function activeDays(s){ return Object.values(s.days).filter(isActive).length; }
+function dayComplete(s,k){ const d=s.days[k]; return d && s.quests.length && s.quests.every(q=>(d.done[q.id]||0)>=q.times); }
+function weekActive(s){
+  let n=0; for(let i=0;i<7;i++){ const k=todayKey(new Date(Date.now()-i*864e5)); if(isActive(s.days[k])) n++; } return n;
+}
+const ytUrl = q => "https://www.youtube.com/results?search_query="+encodeURIComponent(q);
+function addXP(n, msg){
+  const before = levelInfo(S.xp).level;
+  S.xp = Math.max(0, S.xp+n);
+  day().xp = Math.max(0,(day().xp||0)+n);
+  const after = levelInfo(S.xp).level;
+  if(after>before){ toast(`🎉 Новый уровень: ${after}!`); $("#avatar").classList.remove("pop"); void $("#avatar").offsetWidth; $("#avatar").classList.add("pop"); }
+  else if(msg) toast(msg);
+}
+let toastT;
+function toast(t){ const el=$("#toast"); el.textContent=t; el.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove("show"),1800); }
+function checkBadges(){
+  BADGES.forEach(b=>{ if(!S.badges.includes(b.id) && b.test(S)){ S.badges.push(b.id); setTimeout(()=>toast(`${b.e} Новый значок: ${b.t}`),900); } });
+}
+
+// ---------- comeback (без наказаний за пропуск) ----------
+(function comeback(){
+  const last = S.lastVisit ? new Date(S.lastVisit) : new Date();
+  const gap = Math.round((new Date(todayKey()) - last)/864e5);
+  if(gap>=3 && totalCompletions(S)>0){ S.cameBack = true; addXP(20); setTimeout(()=>toast("С возвращением! 🤗 +20 XP за то, что вернулась"),400); }
+  S.lastVisit = todayKey(); save();
+})();
+
+// ---------- render: today ----------
+function renderHeader(){
+  const {level,rest,need} = levelInfo(S.xp);
+  $("#lvlText").textContent = `Уровень ${level}`;
+  $("#xpText").textContent = `${rest} / ${need} XP · всего ${S.xp}`;
+  $("#xpBar").style.width = Math.round(rest/need*100)+"%";
+  const faces=["🙂","😊","😄","😎","🤩","👑"]; $("#avatar").textContent = faces[Math.min(faces.length-1, level-1)];
+}
+function renderToday(){
+  renderHeader();
+  const d = day();
+  const doneCount = S.quests.filter(q=>(d.done[q.id]||0)>=q.times).length;
+  $("#todayCount").textContent = `${doneCount}/${S.quests.length}`;
+  $("#motto").textContent = MOTTOS[new Date().getDate()%MOTTOS.length];
+  // week chips
+  const names=["вс","пн","вт","ср","чт","пт","сб"]; let html="";
+  for(let i=6;i>=0;i--){ const dt=new Date(Date.now()-i*864e5); const k=todayKey(dt); const a=isActive(S.days[k]);
+    html+=`<span class="chip" style="background:${a?"var(--mint)":"#fff"}">${names[dt.getDay()]} ${a?"✓":"·"}</span>`; }
+  $("#weekChips").innerHTML = html + `<span class="chip" style="background:var(--yellow)">цель недели: ${Math.min(weekActive(S),4)}/4</span>`;
+  $("#questList").innerHTML = S.quests.map(q=>{
+    const c = d.done[q.id]||0, full = c>=q.times;
+    return `<div class="quest ${full?"done":""}" data-id="${esc(q.id)}">
+      <div class="ico">${esc(q.ico||"✨")}</div>
+      <div class="grow">
+        <h3>${esc(q.title)}</h3>
+        <p>${esc(q.desc||"")}</p>
+        <div class="row" style="flex-wrap:wrap;gap:6px">
+          <span class="chip">+${q.xp} XP${q.times>1?" за раз":""}</span>
+          <a class="btn small ghost" href="${ytUrl(q.video||q.title)}" target="_blank" rel="noopener" style="text-decoration:none">▶ Найти видео</a>
+          ${c>0?`<button class="btn small ghost" data-undo="${esc(q.id)}">↶</button>`:""}
+        </div>
+        ${q.how?`<details class="how"><summary>Как делать</summary><div>${esc(q.how)}</div></details>`:""}
+      </div>
+      <div><button class="tick" data-tick="${esc(q.id)}" aria-label="Отметить">${full?"✓":"+"}</button>
+      ${q.times>1?`<div class="counter">${c}/${q.times}</div>`:""}</div>
+    </div>`;}).join("");
+}
+document.addEventListener("click", e=>{
+  const t = e.target.closest("[data-tick]");
+  if(t){
+    const q = S.quests.find(x=>x.id===t.dataset.tick), d = day();
+    const c = d.done[q.id]||0;
+    if(c>=q.times){ toast("Этот квест на сегодня уже выполнен ✓"); return; }
+    d.done[q.id]=c+1;
+    let gain=q.xp, msg=`+${q.xp} XP`;
+    if(c+1===q.times && q.times>1){ gain+=5; msg+=" (+5 за полный квест)"; }
+    if(dayComplete(S,todayKey()) && !d.fullBonus){ d.fullBonus=true; gain+=25; msg="⭐ Все квесты дня! +25 XP бонус"; }
+    if(weekActive(S)>=4 && !S["wk"+weekId()]){ S["wk"+weekId()]=true; gain+=30; msg="📅 Цель недели выполнена! +30 XP"; }
+    addXP(gain,msg); checkBadges(); save(); renderToday();
+    return;
+  }
+  const u = e.target.closest("[data-undo]");
+  if(u){
+    const q = S.quests.find(x=>x.id===u.dataset.undo), d=day();
+    if((d.done[q.id]||0)>0){ d.done[q.id]--; addXP(-q.xp); if(d.fullBonus && !dayComplete(S,todayKey())){ d.fullBonus=false; addXP(-25);} save(); renderToday(); }
+  }
+});
+function weekId(){ const d=new Date(); const onejan=new Date(d.getFullYear(),0,1); return d.getFullYear()+"-"+Math.ceil(((d-onejan)/864e5+onejan.getDay()+1)/7); }
+
+// ---------- render: log ----------
+let logState = {sleep:0, morning:[]};
+function loadLog(k){
+  const l = (S.days[k]||{}).log || {sleep:0,morning:[],note:""};
+  logState = {sleep:l.sleep||0, morning:[...(l.morning||[])]};
+  $("#logNote").value = l.note||"";
+  drawLogControls();
+}
+function drawLogControls(){
+  $("#sleepScale").innerHTML = ["😫","😕","😐","🙂","😴"].map((e,i)=>`<button data-sleep="${i+1}" class="${logState.sleep===i+1?"on":""}">${e}</button>`).join("");
+  $("#morningToggles").innerHTML = MORNING.map(m=>`<button data-m="${m.id}" class="${logState.morning.includes(m.id)?"on":""}">${m.label}</button>`).join("");
+}
+$("#sleepScale").addEventListener("click",e=>{const b=e.target.closest("[data-sleep]"); if(!b) return; logState.sleep=+b.dataset.sleep; drawLogControls();});
+$("#morningToggles").addEventListener("click",e=>{const b=e.target.closest("[data-m]"); if(!b) return; const id=b.dataset.m;
+  logState.morning = logState.morning.includes(id)? logState.morning.filter(x=>x!==id) : [...logState.morning.filter(x=>id==="fine"?false:x!=="fine"), id];
+  drawLogControls();});
+$("#logDate").addEventListener("change",e=>loadLog(e.target.value||todayKey()));
+$("#logToday").addEventListener("click",()=>{ $("#logDate").value=todayKey(); loadLog(todayKey()); });
+$("#logSave").addEventListener("click",()=>{
+  const k = $("#logDate").value || todayKey(); const d = day(k); const first = !d.log;
+  d.log = {sleep:logState.sleep, morning:logState.morning, note:$("#logNote").value.trim()};
+  if(first){ S.xp+=10; d.xp=(d.xp||0)+10; toast("Запись сохранена · +10 XP"); } else toast("Запись обновлена");
+  checkBadges(); save(); renderLogHistory(); renderHeader();
+});
+function renderLogHistory(){
+  const keys = Object.keys(S.days).filter(k=>S.days[k].log).sort().reverse().slice(0,7);
+  if(!keys.length){ $("#logHistory").textContent="Пока пусто. Первая запись — +10 XP."; return; }
+  $("#logHistory").innerHTML = keys.map(k=>{const l=S.days[k].log;
+    const m=(l.morning||[]).map(id=>MORNING.find(x=>x.id===id)?.label).filter(Boolean).join(", ");
+    return `<div style="padding:6px 0;border-bottom:2px dashed #e5dccb"><b style="color:var(--ink)">${k.split("-").reverse().join(".")}</b> · сон ${l.sleep?["😫","😕","😐","🙂","😴"][l.sleep-1]:"—"}${m?" · "+esc(m):""}${l.note?`<br>${esc(l.note)}`:""}</div>`;}).join("");
+}
+
+// ---------- render: chapters ----------
+function renderChapters(){
+  let stage="", html="";
+  S.chapters.forEach((c,i)=>{
+    if(c.stage!==stage){ stage=c.stage; html+=`<div class="stage">${esc(stage)}</div>`; }
+    html+=`<div class="card chapter ${c.done?"done":""}">
+      <div class="num">${c.done?"✓":i+1}</div>
+      <div class="grow">
+        <h3>${esc(c.title)}</h3>
+        <p class="muted" style="font-size:14px;margin:4px 0 8px">${esc(c.desc)}</p>
+        <div class="row" style="flex-wrap:wrap;gap:6px">
+          <span class="chip">+${c.xp} XP</span>
+          <input type="date" data-cdate="${c.id}" value="${esc(c.date)}" style="width:auto;padding:4px 8px;border-width:2px">
+        </div>
+        <textarea data-cnote="${c.id}" placeholder="Что сказал врач, что назначил" style="margin-top:8px;min-height:50px">${esc(c.note)}</textarea>
+        <button class="btn small ${c.done?"ghost":"mint"}" data-cdone="${c.id}" style="margin-top:8px">${c.done?"Отменить":"Глава пройдена!"}</button>
+      </div></div>`;
+  });
+  $("#chapterList").innerHTML = html;
+}
+$("#chapterList").addEventListener("click",e=>{
+  const b=e.target.closest("[data-cdone]"); if(!b) return;
+  const c=S.chapters.find(x=>x.id===b.dataset.cdone); c.done=!c.done;
+  if(c.done){ if(!c.date) c.date=todayKey(); addXP(c.xp,`🩺 Глава пройдена! +${c.xp} XP`); } else addXP(-c.xp);
+  checkBadges(); save(); renderChapters(); renderHeader();
+});
+$("#chapterList").addEventListener("change",e=>{
+  const d=e.target.dataset; if(d.cdate){ S.chapters.find(x=>x.id===d.cdate).date=e.target.value; save(); }
+});
+$("#chapterList").addEventListener("input",e=>{
+  const d=e.target.dataset; if(d.cnote){ S.chapters.find(x=>x.id===d.cnote).note=e.target.value; save(); }
+});
+
+// ---------- render: progress ----------
+function renderProgress(){
+  const cols=[]; let max=10;
+  for(let i=13;i>=0;i--){ const dt=new Date(Date.now()-i*864e5), k=todayKey(dt), v=(S.days[k]||{}).xp||0; max=Math.max(max,v); cols.push({k,v,dt,today:i===0}); }
+  $("#chart").innerHTML = cols.map(c=>`<div class="col" title="${c.k}: ${c.v} XP"><small>${c.v||""}</small><div class="b ${c.today?"today":""}" style="height:${Math.round(c.v/max*85)}%"></div><small>${c.dt.getDate()}</small></div>`).join("");
+  const done = S.chapters.filter(c=>c.done).length;
+  $("#stats").innerHTML = [
+    `⚡ ${S.xp} XP`, `🗓️ активных дней: ${activeDays(S)}`, `✅ выполнений: ${totalCompletions(S)}`,
+    `📓 записей: ${Object.values(S.days).filter(d=>d.log).length}`, `🩺 глав: ${done}/${S.chapters.length}`
+  ].map(t=>`<span class="chip">${t}</span>`).join("");
+  $("#badges").innerHTML = BADGES.map(b=>`<div class="badge ${S.badges.includes(b.id)?"":"locked"}"><span class="e">${b.e}</span>${b.t}</div>`).join("");
+}
+
+// ---------- settings ----------
+function renderQuestEdit(){
+  $("#questEdit").innerHTML = S.quests.map((q,i)=>`<div class="row">
+    <span style="font-size:22px">${esc(q.ico||"✨")}</span>
+    <span class="grow"><b>${esc(q.title)}</b><br><span class="muted" style="font-size:13px">${q.times}× в день · ${q.xp} XP</span></span>
+    <button class="btn small ghost" data-up="${i}" ${i===0?"disabled":""}>↑</button>
+    <button class="btn small pink" data-del="${i}">✕</button></div>`).join("");
+}
+$("#questEdit").addEventListener("click",e=>{
+  const del=e.target.closest("[data-del]"), up=e.target.closest("[data-up]");
+  if(del){ const q=S.quests[+del.dataset.del]; if(confirm(`Убрать квест «${q.title}»? Прогресс и XP останутся.`)){ S.quests.splice(+del.dataset.del,1); save(); renderQuestEdit(); renderToday(); } }
+  if(up){ const i=+up.dataset.up; [S.quests[i-1],S.quests[i]]=[S.quests[i],S.quests[i-1]]; save(); renderQuestEdit(); renderToday(); }
+});
+$("#addQuest").addEventListener("click",()=>{
+  const t=$("#newQuestTitle").value.trim(); if(!t) return toast("Напиши название квеста");
+  const times=Math.min(10,Math.max(1,+$("#newQuestTimes").value||1));
+  S.quests.push({id:"q"+Date.now(), ico:"✨", title:t, desc:"", xp:times>1?5:10, times, video:t});
+  $("#newQuestTitle").value=""; save(); renderQuestEdit(); renderToday(); toast("Квест добавлен");
+});
+$("#summaryBtn").addEventListener("click",()=>{
+  const since = todayKey(new Date(Date.now()-30*864e5));
+  const keys = Object.keys(S.days).filter(k=>k>=since && S.days[k].log).sort();
+  const cnt = {}; let sleepSum=0, sleepN=0;
+  keys.forEach(k=>{const l=S.days[k].log; (l.morning||[]).forEach(m=>cnt[m]=(cnt[m]||0)+1); if(l.sleep){sleepSum+=l.sleep; sleepN++;}});
+  let out = `Дневник за 30 дней (записей: ${keys.length})\n`;
+  if(sleepN) out += `Средняя оценка сна: ${(sleepSum/sleepN).toFixed(1)} из 5\n`;
+  MORNING.forEach(m=>{ if(cnt[m.id]) out+=`${m.label}: ${cnt[m.id]} раз\n`; });
+  out += `\nПо дням:\n` + keys.map(k=>{const l=S.days[k].log; return `${k.split("-").reverse().join(".")} — сон ${l.sleep||"?"}/5; ${(l.morning||[]).map(id=>MORNING.find(x=>x.id===id)?.label).join(", ")||"—"}${l.note?"; "+l.note:""}`;}).join("\n");
+  const done = S.chapters.filter(c=>c.done);
+  if(done.length) out += `\n\nПройденные приёмы:\n` + done.map(c=>`${c.title} (${c.date||"—"})${c.note?": "+c.note:""}`).join("\n");
+  const ta=$("#summaryOut"); ta.style.display="block"; ta.value=out; ta.select();
+  try{ navigator.clipboard.writeText(out).then(()=>toast("Сводка скопирована 📋")); }catch(e){}
+});
+$("#exportBtn").addEventListener("click",()=>{
+  const blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`rovnee-backup-${todayKey()}.json`; a.click(); URL.revokeObjectURL(a.href);
+});
+$("#importFile").addEventListener("change",async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  try{ const s=JSON.parse(await f.text()); if(!s.quests) throw 0; S=migrate(s); save(); renderAll(); toast("Копия загружена ✓"); }
+  catch(err){ toast("Не похоже на файл копии 😕"); }
+  e.target.value="";
+});
+$("#resetBtn").addEventListener("click",()=>{
+  if(confirm("Точно сбросить весь прогресс, дневник и квесты? Сначала лучше скачать копию.")){ localStorage.removeItem(KEY); S=load(); save(); renderAll(); toast("Всё сброшено"); }
+});
+
+// ---------- tabs ----------
+document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.id==="tab-"+b.dataset.tab));
+  const tab=b.dataset.tab;
+  if(tab==="today") renderToday(); if(tab==="progress") renderProgress(); if(tab==="quest") renderChapters();
+  if(tab==="settings") renderQuestEdit(); if(tab==="log") renderLogHistory();
+  window.scrollTo({top:0});
+}));
+
+function renderAll(){ renderToday(); $("#logDate").value=todayKey(); loadLog(todayKey()); renderLogHistory(); renderChapters(); renderProgress(); renderQuestEdit(); }
+renderAll(); checkBadges(); save();
+
+// новый день, пока вкладка открыта
+let lastDay = todayKey();
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden && todayKey()!==lastDay){ lastDay=todayKey(); S.lastVisit=lastDay; save(); renderAll(); } });
+
+if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(()=>{});
+})();
+</script>
+</body>
+</html>
