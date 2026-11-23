@@ -690,7 +690,7 @@ function renderToday(){
           ${q.how?`<button class="btn small ghost" data-say="${esc(q.id)}">${speakingId===q.id?"⏹ Стоп":"🔊 Послушать"}</button>`:""}
           ${c>0?`<button class="btn small ghost" data-undo="${esc(q.id)}" aria-label="Отменить">↶</button>`:""}
         </div>
-        ${q.how?`<details class="how"><summary>Как делать</summary><div>${esc(q.how)}</div></details>`:""}
+        ${q.how?`<details class="how"><summary>Как делать</summary><div>${illusFor(q)}${esc(q.how)}</div></details>`:""}
       </div>
       <div><button class="tick" data-tick="${esc(q.id)}" aria-label="Отметить">${full?"✓":"+"}</button>
       ${q.times>1?`<div class="counter">${c}/${q.times}</div>`:""}</div>
@@ -718,6 +718,129 @@ document.addEventListener("click", e=>{
   }
 });
 
+
+// ================= АНИМИРОВАННЫЕ СХЕМЫ «КАК ДЕЛАТЬ» =================
+// Простые схемы: человечек, мяч, стена. Анимация — SVG (SMIL) + CSS.
+const IL_STYLE = `<style>
+  .il{width:100%;max-width:340px;display:block;margin:0 auto 8px;background:#fff8ec;border-radius:12px;border:2px solid #e8dcc6}
+  .il .b{stroke:#2b2622;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;fill:none}
+  .il .h{fill:#ffd6b0;stroke:#2b2622;stroke-width:4}
+  .il .ball{fill:#d7f03a;stroke:#6b7a00;stroke-width:2}
+  .il .wall{fill:#cfc6b8}
+  .il .floor{stroke:#cfc6b8;stroke-width:4}
+  .il .t{font:700 11px system-ui,sans-serif;fill:#6b6257}
+  .il .tb{font:800 12px system-ui,sans-serif;fill:#d4202f}
+  .il .arr{stroke:#ff7f11;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+</style>`;
+const ILLUS = {
+  breath: `<svg class="il" viewBox="0 0 220 130">
+    <line class="floor" x1="10" y1="118" x2="190" y2="118"/>
+    <circle class="h" cx="34" cy="104" r="11"/>
+    <path class="b" d="M46 106 L112 108"/>
+    <path class="b" d="M112 108 L138 82 L160 116"/>
+    <path class="b" d="M60 106 L80 94"/>
+    <path d="M70 104 Q88 94 106 104" fill="#ffb3c7" stroke="#2b2622" stroke-width="3">
+      <animate attributeName="d" dur="5s" repeatCount="indefinite" values="M70 104 Q88 100 106 104;M70 104 Q88 82 106 104;M70 104 Q88 82 106 104;M70 104 Q88 100 106 104" keyTimes="0;.4;.5;1"/></path>
+    <text class="tb" x="16" y="24">1. вдох носом — живот вверх<animate attributeName="opacity" dur="5s" repeatCount="indefinite" values="1;1;.25;.25" keyTimes="0;.45;.5;1"/></text>
+    <text class="tb" x="16" y="42">2. выдох ртом, медленно<animate attributeName="opacity" dur="5s" repeatCount="indefinite" values=".25;.25;1;1" keyTimes="0;.45;.5;1"/></text>
+    <text class="t" x="16" y="60">рука на животе, колени согнуты</text></svg>`,
+
+  wallspine: `<svg class="il" viewBox="0 0 200 140">
+    <rect class="wall" x="150" y="6" width="12" height="128"/><line class="floor" x1="10" y1="134" x2="190" y2="134"/>
+    <g><animateTransform attributeName="transform" type="translate" dur="4s" repeatCount="indefinite" values="0 0;0 14;0 0"/>
+      <circle class="h" cx="128" cy="26" r="11"/>
+      <path class="b" d="M131 38 L134 88"/><path class="b" d="M132 48 L118 70 L120 86"/>
+      <circle class="ball" cx="143" cy="58" r="7"/></g>
+    <path class="b"><animate attributeName="d" dur="4s" repeatCount="indefinite" values="M134 88 L134 110 L134 132;M134 102 L118 118 L134 132;M134 88 L134 110 L134 132"/></path>
+    <path class="arr" d="M176 40 L176 80 M170 46 L176 40 L182 46 M170 74 L176 80 L182 74"/>
+    <text class="t" x="10" y="24">мяч — сбоку от</text><text class="t" x="10" y="38">позвоночника,</text><text class="t" x="10" y="52">не на позвонках</text>
+    <text class="tb" x="10" y="80">сгибай колени —</text><text class="tb" x="10" y="94">мяч катится</text></svg>`,
+
+  ql: `<svg class="il" viewBox="0 0 240 140">
+    <line class="floor" x1="10" y1="134" x2="190" y2="134"/>
+    <path class="b" d="M92 90 L86 132 M108 90 L114 132"/>
+    <g style="transform-origin:100px 90px"><animateTransform attributeName="transform" type="rotate" dur="5s" repeatCount="indefinite" values="0 100 90;0 100 90;-6 100 90;-6 100 90;0 100 90" keyTimes="0;.3;.5;.75;1"/>
+      <circle class="h" cx="100" cy="22" r="11"/><path class="b" d="M100 34 L100 90"/>
+      <path class="b" d="M100 44 L80 70 M100 44 L120 70"/>
+      <circle class="ball" cx="112" cy="84" r="7"/>
+      <path d="M100 60 L118 60" stroke="#2b2622" stroke-width="2" stroke-dasharray="3 3"/></g>
+    <text class="t" x="132" y="70">мяч: между</text><text class="t" x="132" y="83">рёбрами и тазом,</text><text class="t" x="132" y="96">под углом 45°</text>
+    <text class="t" x="8" y="24">вид со спины</text>
+    <text class="tb" x="132" y="116">держи 30–60 с,</text><text class="tb" x="132" y="130">потом наклон</text></svg>`,
+
+  glute: `<svg class="il" viewBox="0 0 200 140">
+    <rect class="wall" x="150" y="6" width="12" height="128"/><line class="floor" x1="10" y1="134" x2="190" y2="134"/>
+    <g><animateTransform attributeName="transform" type="translate" dur="4s" repeatCount="indefinite" values="0 0;-3 -6;0 0;3 4;0 0"/>
+      <circle class="h" cx="126" cy="22" r="11"/>
+      <path class="b" d="M128 34 L132 86"/><path class="b" d="M130 44 L116 68 L118 84"/>
+      <path class="b" d="M132 86 L128 110 L132 132"/>
+      <circle class="ball" cx="143" cy="90" r="7"/></g>
+    <text class="t" x="10" y="40">мяч под ягодицу,</text><text class="t" x="10" y="54">между тобой и стеной</text>
+    <text class="tb" x="10" y="86">медленно катай,</text><text class="tb" x="10" y="100">на тугой точке —</text><text class="tb" x="10" y="114">пауза 30–60 с</text></svg>`,
+
+  foot: `<svg class="il" viewBox="0 0 240 140">
+    <line class="floor" x1="10" y1="134" x2="190" y2="134"/>
+    <rect x="40" y="78" width="46" height="8" rx="3" fill="#a8977f"/><path d="M46 86 L46 134 M80 86 L80 134" stroke="#a8977f" stroke-width="5"/>
+    <circle class="h" cx="60" cy="20" r="11"/><path class="b" d="M60 32 L64 76"/><path class="b" d="M62 44 L82 62 L96 66"/>
+    <path class="b" d="M64 76 L112 78"/>
+    <g><animateTransform attributeName="transform" type="translate" dur="3s" repeatCount="indefinite" values="-10 0;10 0;-10 0"/>
+      <path class="b" d="M112 78 L114 114"/><path class="b" d="M106 118 L136 118"/></g>
+    <circle class="ball" cx="122" cy="126" r="7"/>
+    <path class="arr" d="M104 104 L146 104 M110 98 L104 104 L110 110 M140 98 L146 104 L140 110"/>
+    <text class="tb" x="112" y="30">катай от пятки</text><text class="tb" x="112" y="44">к пальцам</text><text class="t" x="112" y="60">давление 3–4 из 10</text></svg>`,
+
+  knees: `<svg class="il" viewBox="0 0 240 140">
+    <text class="t" x="8" y="16">вид сверху: лёжа на спине</text>
+    <circle class="h" cx="100" cy="30" r="11"/>
+    <path class="b" d="M100 42 L100 86"/><path class="b" d="M100 50 L76 76 M100 50 L124 76"/>
+    <g><animateTransform attributeName="transform" type="rotate" dur="6s" repeatCount="indefinite" values="0 100 86;22 100 86;0 100 86;-22 100 86;0 100 86"/>
+      <path class="b" d="M94 86 L92 116 M106 86 L108 116"/>
+      <circle cx="92" cy="118" r="5" fill="#2b2622"/><circle cx="108" cy="118" r="5" fill="#2b2622"/></g>
+    <text class="tb" x="140" y="90">колени</text><text class="tb" x="140" y="104">чуть в сторону</text><text class="t" x="140" y="120">медленно,</text><text class="t" x="140" y="133">без боли</text></svg>`,
+
+  chin: `<svg class="il" viewBox="0 0 240 130">
+    <g opacity=".25"><circle cx="86" cy="50" r="24" fill="none" stroke="#2b2622" stroke-width="3" stroke-dasharray="4 4"/></g>
+    <path class="b" d="M100 74 L106 118 M70 118 L140 118"/>
+    <g><animateTransform attributeName="transform" type="translate" dur="4s" repeatCount="indefinite" values="0 0;12 0;12 0;0 0" keyTimes="0;.35;.65;1"/>
+      <circle class="h" cx="86" cy="50" r="24"/>
+      <path d="M62 50 L56 56 L63 58" fill="#ffd6b0" stroke="#2b2622" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="72" cy="44" r="2.5" fill="#2b2622"/>
+      <path class="b" d="M98 72 L100 76"/></g>
+    <path class="arr" d="M40 92 L74 92 M66 86 L74 92 L66 98" ><animate attributeName="opacity" dur="4s" repeatCount="indefinite" values="1;1;0;0;1" keyTimes="0;.35;.4;.95;1"/></path>
+    <text class="tb" x="124" y="40">подбородок</text><text class="tb" x="124" y="54">назад</text><text class="t" x="124" y="70">голова не</text><text class="t" x="124" y="83">запрокидывается</text></svg>`,
+
+  tongue: `<svg class="il" viewBox="0 0 240 130">
+    <text class="t" x="8" y="16">рот в разрезе, вид сбоку</text>
+    <path d="M40 60 Q60 30 110 32 Q150 34 166 60" fill="none" stroke="#2b2622" stroke-width="4"/>
+    <path d="M40 60 L36 72 L46 70 Z" fill="#fff" stroke="#2b2622" stroke-width="2"/>
+    <path d="M40 96 L36 84 L46 86 Z" fill="#fff" stroke="#2b2622" stroke-width="2"/>
+    <circle cx="52" cy="44" r="3" fill="#d4202f"/>
+    <path fill="#ff8fab" stroke="#2b2622" stroke-width="3"><animate attributeName="d" dur="4s" repeatCount="indefinite" values="M50 92 Q90 74 150 82 L160 100 Q100 108 50 96 Z;M52 46 Q100 34 152 60 L160 100 Q100 108 50 96 Z;M52 46 Q100 34 152 60 L160 100 Q100 108 50 96 Z;M50 92 Q90 74 150 82 L160 100 Q100 108 50 96 Z" keyTimes="0;.35;.75;1"/></path>
+    <text class="tb" x="172" y="44">кончик —</text><text class="tb" x="172" y="58">на бугорок</text><text class="tb" x="172" y="72">за зубами</text><text class="t" x="172" y="104">весь язык</text><text class="t" x="172" y="117">к нёбу</text></svg>`,
+
+  teeth: `<svg class="il" viewBox="0 0 240 130">
+    <path d="M50 40 Q100 20 150 40 L150 58 L50 58 Z" fill="#fff" stroke="#2b2622" stroke-width="3"/>
+    <path d="M70 40 L70 58 M90 34 L90 58 M110 34 L110 58 M130 40 L130 58" stroke="#2b2622" stroke-width="2"/>
+    <g><animateTransform attributeName="transform" type="translate" dur="4s" repeatCount="indefinite" values="0 0;0 6;0 6;0 0" keyTimes="0;.3;.8;1"/>
+      <path d="M52 62 L148 62 L148 78 Q100 96 52 78 Z" fill="#fff" stroke="#2b2622" stroke-width="3"/>
+      <path d="M72 62 L72 82 M92 62 L92 86 M108 62 L108 86 M128 62 L128 82" stroke="#2b2622" stroke-width="2"/></g>
+    <text class="tb" x="40" y="108">губы сомкнуты,</text><text class="tb" x="40" y="124">зубы врозь на 1–3 мм</text></svg>`,
+
+  nose: `<svg class="il" viewBox="0 0 240 130">
+    <path d="M120 14 Q80 18 76 50 L64 70 L76 74 Q74 86 82 90 Q78 100 86 108 Q92 120 120 120 Q164 112 162 66 Q160 16 120 14 Z" fill="#ffd6b0" stroke="#2b2622" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M78 90 L90 90" stroke="#2b2622" stroke-width="3"/>
+    <path class="arr" d="M20 76 L60 72" stroke-dasharray="6 6"><animate attributeName="stroke-dashoffset" dur="1s" repeatCount="indefinite" values="24;0"/></path>
+    <text class="tb" x="170" y="60">дыши</text><text class="tb" x="170" y="74">носом,</text><text class="t" x="170" y="90">губы</text><text class="t" x="170" y="103">сомкнуты</text></svg>`,
+
+  massage: `<svg class="il" viewBox="0 0 200 130">
+    <ellipse cx="100" cy="64" rx="44" ry="54" fill="#ffd6b0" stroke="#2b2622" stroke-width="4"/>
+    <circle cx="84" cy="54" r="3" fill="#2b2622"/><circle cx="116" cy="54" r="3" fill="#2b2622"/><path d="M88 92 Q100 98 112 92" fill="none" stroke="#2b2622" stroke-width="3"/>
+    <g><animateTransform attributeName="transform" type="rotate" dur="2s" repeatCount="indefinite" values="0 66 92;360 66 92"/><circle cx="66" cy="82" r="6" fill="#ff7f11" opacity=".8"/></g>
+    <g><animateTransform attributeName="transform" type="rotate" dur="2s" repeatCount="indefinite" values="0 134 92;-360 134 92"/><circle cx="134" cy="82" r="6" fill="#ff7f11" opacity=".8"/></g>
+    <text class="tb" x="6" y="124">мягкие круги у угла челюсти</text></svg>`,
+};
+ILLUS.neck = ILLUS.chin;
+const illusFor = q => ILLUS[q.id] ? IL_STYLE + ILLUS[q.id] : "";
 
 // ================= «КАК ДЕЛАТЬ» И ОЗВУЧКА =================
 const openHow = new Set();
@@ -900,7 +1023,7 @@ function renderSpine(){
       <span class="ico">${esc(q.ico||"✨")}</span>
       <div class="grow"><b>${esc(q.title)}</b> <span class="muted" style="font-size:12px">${esc(q.mins||"")}</span>
         <div class="row" style="gap:6px;margin-top:6px;flex-wrap:wrap">${howButtons(q)}</div>
-        ${openHow.has(q.id)?`<div class="howbox">${q.desc?`<i>${esc(q.desc)}</i><br>`:""}${nl2br(q.how||"")}
+        ${openHow.has(q.id)?`<div class="howbox">${illusFor(q)}${q.desc?`<i>${esc(q.desc)}</i><br>`:""}${nl2br(q.how||"")}
         ${q.video?`<br><a class="btn small ghost" style="margin-top:8px" href="${ytUrl(q.video)}" target="_blank" rel="noopener">▶ Видео: «${esc(q.video)}»</a>`:""}</div>`:""}
       </div>
       <button class="tick" style="width:42px;height:42px" ${ok?`data-undo="${esc(q.id)}" aria-label="Отменить"`:`data-tick="${esc(q.id)}" aria-label="Готово"`}>${ok?"✓":"+"}</button>
