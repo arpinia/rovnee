@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#FFF4DC">
-<title>Ровнее — квест для челюсти и осанки</title>
+<title>Ровнее — квесты для тела</title>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/icon.svg">
@@ -24,17 +24,18 @@
   .btn{border:var(--line);border-radius:12px;background:var(--yellow);box-shadow:3px 3px 0 var(--ink);padding:9px 14px;font-weight:800;transition:transform .08s,box-shadow .08s}
   a.btn{color:var(--ink);text-decoration:none;display:inline-block}
   .btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
-  .btn.ghost{background:var(--card)} .btn.mint{background:var(--mint)} .btn.pink{background:var(--pink)} .btn.small{padding:5px 10px;font-size:14px;border-width:2px;box-shadow:2px 2px 0 var(--ink)}
+  .btn:disabled{opacity:.4}
+  .btn.ghost{background:var(--card)} .btn.mint{background:var(--mint)} .btn.pink{background:var(--pink)} .btn.blue{background:var(--blue)}
+  .btn.small{padding:5px 10px;font-size:14px;border-width:2px;box-shadow:2px 2px 0 var(--ink)}
   .muted{color:var(--muted)} .row{display:flex;gap:10px;align-items:center} .grow{flex:1}
-  /* header */
   .hero{display:flex;gap:12px;align-items:center}
   .avatar{width:64px;height:64px;border:var(--line);border-radius:50%;background:var(--pink);display:grid;place-items:center;font-size:34px;box-shadow:var(--shadow);flex:none}
+  .avatar.back{background:var(--blue)}
   .lvl{font-weight:900;font-size:20px}
   .bar{height:16px;border:var(--line);border-radius:99px;background:#fff;overflow:hidden;margin-top:6px}
   .bar>i{display:block;height:100%;background:repeating-linear-gradient(45deg,var(--mint) 0 10px,#5fd09f 10px 20px);transition:width .4s}
   .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
   .chip{border:2px solid var(--ink);border-radius:99px;padding:3px 10px;font-size:13px;font-weight:800;background:#fff}
-  /* quests */
   .quest{display:flex;gap:12px;align-items:flex-start;padding:12px;border:var(--line);border-radius:14px;margin-bottom:10px;background:#fff;box-shadow:3px 3px 0 var(--ink)}
   .quest.done{background:#E6FAF0}
   .quest .ico{font-size:26px;line-height:1;flex:none;width:34px;text-align:center}
@@ -45,29 +46,26 @@
   .counter{font-size:13px;font-weight:800;margin-top:2px;text-align:center}
   details.how{font-size:14px;margin-top:2px} details.how summary{cursor:pointer;font-weight:800}
   details.how div{padding:6px 0 2px;color:var(--ink)}
-  /* tabs */
-  nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:var(--line);display:flex;justify-content:center;padding:8px 6px calc(8px + env(safe-area-inset-bottom));z-index:5}
-  nav .inner{display:flex;gap:4px;max-width:560px;width:100%}
-  nav button{flex:1;border:2px solid transparent;background:none;border-radius:12px;padding:6px 2px;font-size:12px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:2px}
-  nav button span{font-size:22px}
+  nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:var(--line);display:flex;justify-content:center;padding:8px 4px calc(8px + env(safe-area-inset-bottom));z-index:5}
+  nav .inner{display:flex;gap:2px;max-width:560px;width:100%}
+  nav button{flex:1;min-width:0;border:2px solid transparent;background:none;border-radius:12px;padding:6px 0;font-size:11px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:2px}
+  nav button span{font-size:21px}
   nav button.on{border-color:var(--ink);background:var(--yellow);box-shadow:2px 2px 0 var(--ink)}
   .tab{display:none} .tab.on{display:block}
-  /* forms */
   label.f{display:block;font-weight:800;margin:10px 0 6px}
   .scale{display:flex;gap:6px}
   .scale button{flex:1;border:2px solid var(--ink);border-radius:10px;background:#fff;padding:8px 0;font-size:20px}
+  .scale.nums button{font-size:15px;font-weight:900;padding:8px 0}
   .scale button.on{background:var(--yellow);box-shadow:2px 2px 0 var(--ink)}
   .toggle{display:flex;gap:8px;flex-wrap:wrap}
   .toggle button{border:2px solid var(--ink);border-radius:99px;background:#fff;padding:6px 12px;font-weight:700;font-size:14px}
   .toggle button.on{background:var(--pink)}
   textarea,input[type=text],input[type=date],input[type=number]{width:100%;border:var(--line);border-radius:12px;padding:10px;font:inherit;background:#fff}
   textarea{min-height:70px;resize:vertical}
-  /* chapters */
   .chapter{display:flex;gap:12px;align-items:flex-start}
   .num{flex:none;width:40px;height:40px;border:var(--line);border-radius:50%;display:grid;place-items:center;font-weight:900;background:var(--blue)}
   .chapter.done .num{background:var(--mint)}
   .stage{font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:16px 0 8px}
-  /* chart */
   .chart{display:flex;align-items:flex-end;gap:5px;height:120px;padding-top:8px}
   .chart .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
   .chart .b{width:100%;border:2px solid var(--ink);border-bottom:none;border-radius:6px 6px 0 0;background:var(--blue);min-height:2px}
@@ -77,18 +75,41 @@
   .badge{border:var(--line);border-radius:14px;padding:10px 6px;text-align:center;background:#fff;font-size:12px;font-weight:800}
   .badge .e{font-size:30px;display:block}
   .badge.locked{opacity:.35;filter:grayscale(1)}
-  /* toast */
-  #toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-140%);background:var(--yellow);border:var(--line);border-radius:14px;box-shadow:var(--shadow);padding:10px 16px;font-weight:900;z-index:9;transition:transform .3s;max-width:90vw;text-align:center}
+  #toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-160%);background:var(--yellow);border:var(--line);border-radius:14px;box-shadow:var(--shadow);padding:10px 16px;font-weight:900;z-index:30;transition:transform .3s;max-width:90vw;text-align:center}
   #toast.show{transform:translate(-50%,0)}
   .pop{animation:pop .35s}
   @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.15)}100%{transform:scale(1)}}
   .note{font-size:13px;background:#FFF0F3;border:2px dashed var(--ink);border-radius:12px;padding:10px;margin-top:10px}
+  .note.warn{background:#FFE9D6}
   .listedit .row{border-bottom:2px dashed #d8cdb8;padding:8px 0}
+  /* onboarding */
+  #onboard{position:fixed;inset:0;background:var(--bg);z-index:20;overflow:auto;padding:24px 16px;display:none}
+  #onboard.show{display:block}
+  #onboard .wrap{max-width:520px;margin:0 auto}
+  .pcard{display:flex;gap:12px;align-items:center;text-align:left;width:100%;border:var(--line);border-radius:16px;background:#fff;padding:14px;margin-bottom:12px;box-shadow:3px 3px 0 var(--ink)}
+  .pcard .e{font-size:34px}
+  .pcard.on{background:var(--yellow)}
+  /* friends */
+  .codebox{font-family:ui-monospace,Menlo,monospace;font-size:28px;font-weight:900;letter-spacing:.18em;background:#fff;border:var(--line);border-radius:12px;padding:8px 14px;text-align:center}
+  .friend .days{display:flex;gap:4px;margin-top:8px}
+  .friend .days i{flex:1;height:26px;border:2px solid var(--ink);border-radius:6px;background:#fff;display:block}
+  .friend .days small{display:block;text-align:center;font-size:10px;font-weight:800;color:var(--muted);margin-top:2px}
 </style>
 </head>
 <body>
 
 <div id="toast"></div>
+
+<!-- ПЕРВЫЙ ЗАПУСК -->
+<div id="onboard"><div class="wrap">
+  <h1 style="font-size:30px">Привет! 👋</h1>
+  <p class="muted">Это «Ровнее» — маленькие ежедневные квесты для тела. Без фанатизма: даже один квест засчитывает день.</p>
+  <label class="f">Как тебя зовут? <span class="muted" style="font-weight:600">(увидят друзья)</span></label>
+  <input type="text" id="obName" maxlength="30" placeholder="Имя">
+  <label class="f">Выбери программу</label>
+  <div id="obPrograms"></div>
+  <button class="btn mint" id="obGo" style="width:100%;margin-top:6px">Начать</button>
+</div></div>
 
 <!-- СЕГОДНЯ -->
 <section class="tab on" id="tab-today">
@@ -102,8 +123,9 @@
   </div>
   <div class="card">
     <div class="row"><h2 class="grow" style="margin:0">Квесты на сегодня</h2><span class="chip" id="todayCount">0/0</span></div>
-    <p class="muted" style="margin:6px 0 0;font-size:14px" id="motto">Даже один квест — уже засчитанный день.</p>
+    <p class="muted" style="margin:6px 0 0;font-size:14px" id="motto"></p>
     <div class="chips" id="weekChips"></div>
+    <div id="programNote"></div>
   </div>
   <div id="questList"></div>
 </section>
@@ -113,18 +135,22 @@
   <h2>Дневник</h2>
   <div class="card">
     <div class="row"><input type="date" id="logDate" class="grow"><button class="btn small ghost" id="logToday">сегодня</button></div>
-    <label class="f">Как спала? 😴</label>
+    <div id="painBlock">
+      <label class="f">Боль сегодня (0 — нет, 10 — сильнейшая)</label>
+      <div class="scale nums" id="painScale"></div>
+    </div>
+    <label class="f">Как спал(а)? 😴</label>
     <div class="scale" id="sleepScale"></div>
-    <label class="f">Что было утром?</label>
+    <label class="f">Что было?</label>
     <div class="toggle" id="morningToggles"></div>
-    <label class="f">Заметки (что заметила, что помогло)</label>
-    <textarea id="logNote" placeholder="Например: днём ловила себя на сжатых зубах 3 раза"></textarea>
+    <label class="f">Заметки (что заметил(а), что помогло)</label>
+    <textarea id="logNote" placeholder=""></textarea>
     <div class="row" style="margin-top:12px"><button class="btn mint grow" id="logSave">Сохранить запись (+10 XP)</button></div>
   </div>
   <div class="card">
     <h3 style="margin-bottom:8px">Последние записи</h3>
     <div id="logHistory" class="muted" style="font-size:14px"></div>
-    <div class="note">Эти записи пригодятся сомнологу и гнатологу. Перед приёмом зайдите в ⚙ → «Сводка для врача».</div>
+    <div class="note">Дневник личный — друзья его не видят. Перед приёмом у врача зайди в «Ещё» → «Сводка для врача».</div>
   </div>
 </section>
 
@@ -132,7 +158,27 @@
 <section class="tab" id="tab-quest">
   <h2>Главы: врачи</h2>
   <p class="muted" style="margin-top:-6px">Каждый пройденный приём — большая награда. Порядок рекомендованный, но не строгий.</p>
+  <div id="redFlags"></div>
   <div id="chapterList"></div>
+</section>
+
+<!-- ДРУЗЬЯ -->
+<section class="tab" id="tab-friends">
+  <h2>Друзья</h2>
+  <div class="card">
+    <h3>Мой код</h3>
+    <p class="muted" style="font-size:14px;margin:4px 0 10px">Отправь его тому, кто будет смотреть твой прогресс. Видно только уровень, XP и выполненные квесты — дневник и заметки нет.</p>
+    <div class="row"><div class="codebox grow" id="myCode">······</div><button class="btn small" id="copyCode">Копировать</button></div>
+    <div class="muted" id="syncState" style="font-size:12px;margin-top:8px"></div>
+  </div>
+  <div class="card">
+    <h3>Добавить друга</h3>
+    <div class="row" style="margin-top:10px">
+      <input type="text" id="friendCode" maxlength="8" placeholder="Код, например K7M2QX" style="text-transform:uppercase" class="grow">
+      <button class="btn small mint" id="addFriend">Добавить</button>
+    </div>
+  </div>
+  <div id="friendList"></div>
 </section>
 
 <!-- ПРОГРЕСС -->
@@ -142,9 +188,11 @@
     <h3>XP за 14 дней</h3>
     <div class="chart" id="chart"></div>
   </div>
-  <div class="card">
-    <div class="chips" id="stats"></div>
+  <div class="card" id="painCard" style="display:none">
+    <h3>Боль за 14 дней</h3>
+    <div class="chart" id="painChart"></div>
   </div>
+  <div class="card"><div class="chips" id="stats"></div></div>
   <div class="card">
     <h3 style="margin-bottom:10px">Значки</h3>
     <div class="badges" id="badges"></div>
@@ -153,12 +201,19 @@
 
 <!-- НАСТРОЙКИ -->
 <section class="tab" id="tab-settings">
-  <h2>Настройки</h2>
+  <h2>Ещё</h2>
+  <div class="card">
+    <h3>Профиль</h3>
+    <label class="f">Имя</label>
+    <div class="row"><input type="text" id="setName" maxlength="30" class="grow"><button class="btn small" id="saveName">OK</button></div>
+    <p class="muted" style="font-size:14px;margin:10px 0 6px">Программа: <b id="progName"></b></p>
+    <button class="btn small ghost" id="switchProg">Сменить программу</button>
+  </div>
   <div class="card listedit">
     <h3>Мои квесты</h3>
     <div id="questEdit"></div>
     <label class="f">Новый квест</label>
-    <input type="text" id="newQuestTitle" placeholder="Например: 5 минут ЛФК для шеи">
+    <input type="text" id="newQuestTitle" placeholder="Например: упражнение от врача ЛФК">
     <div class="row" style="margin-top:8px">
       <input type="number" id="newQuestTimes" min="1" max="10" value="1" style="width:90px">
       <span class="muted grow" style="font-size:14px">раз в день</span>
@@ -167,28 +222,27 @@
   </div>
   <div class="card">
     <h3>Сводка для врача</h3>
-    <p class="muted" style="font-size:14px">Сон, утренние симптомы и заметки за последние 30 дней одним текстом — можно скопировать и показать.</p>
+    <p class="muted" style="font-size:14px">Самочувствие и заметки за последние 30 дней одним текстом — можно скопировать и показать.</p>
     <button class="btn" id="summaryBtn">Сделать сводку</button>
     <textarea id="summaryOut" style="margin-top:10px;display:none;min-height:200px" readonly></textarea>
   </div>
   <div class="card">
     <h3>Резервная копия</h3>
-    <p class="muted" style="font-size:14px">Данные хранятся только в этом браузере. Сохраняйте копию иногда — особенно перед сменой телефона.</p>
+    <p class="muted" style="font-size:14px">Данные хранятся в этом браузере. Сохраняй копию иногда — особенно перед сменой телефона. В копии есть и твой код для друзей.</p>
     <div class="row" style="flex-wrap:wrap">
       <button class="btn ghost" id="exportBtn">Скачать копию</button>
       <label class="btn ghost" style="display:inline-block">Загрузить копию<input type="file" id="importFile" accept="application/json" hidden></label>
     </div>
   </div>
-  <div class="card">
-    <button class="btn pink" id="resetBtn">Сбросить всё</button>
-  </div>
-  <p class="muted" style="font-size:12px;text-align:center">Ровнее — личный трекер, не медицинский совет. Все упражнения — по согласованию с врачом.</p>
+  <div class="card"><button class="btn pink" id="resetBtn">Сбросить всё</button></div>
+  <p class="muted" style="font-size:12px;text-align:center">Ровнее — личный трекер, не медицинский совет. Упражнения — общие рекомендации; лучше согласовать их с врачом.</p>
 </section>
 
 <nav><div class="inner">
   <button data-tab="today" class="on"><span>⭐</span>Сегодня</button>
   <button data-tab="log"><span>📓</span>Дневник</button>
   <button data-tab="quest"><span>🗺️</span>Главы</button>
+  <button data-tab="friends"><span>🤝</span>Друзья</button>
   <button data-tab="progress"><span>📈</span>Прогресс</button>
   <button data-tab="settings"><span>⚙️</span>Ещё</button>
 </div></nav>
@@ -198,63 +252,126 @@
 "use strict";
 const KEY = "rovnee:v1";
 
-const DEFAULT_QUESTS = [
-  {id:"tongue", ico:"👅", title:"Язык у нёба", xp:5, times:3,
-   desc:"Проверь: кончик на бугорке за верхними зубами, весь язык прилегает к нёбу.",
-   how:"Кончик — на бугорке за передними верхними зубами, ровно по центру (на линии между двумя передними зубами). Весь язык мягко прижат к нёбу, без усилия. Губы сомкнуты, зубы не касаются.",
-   video:"правильное положение языка в покое упражнения"},
-  {id:"teeth", ico:"😌", title:"Губы вместе, зубы врозь", xp:5, times:3,
-   desc:"Поймай себя: не сжаты ли зубы? Разомкни и расслабь челюсть.",
-   how:"Зубы в покое не должны касаться — зазор 1–3 мм. Если поймала себя на сжатии, выдохни и расслабь челюсть и плечи.",
-   video:"как расслабить жевательные мышцы бруксизм"},
-  {id:"swallow", ico:"🪞", title:"Глотание у зеркала", xp:10, times:1,
-   desc:"5 глотков воды с раздвинутыми губами: язык не выходит между зубами.",
-   how:"Раздвинь губы пальцами, глотни немного воды. Язык должен упираться в нёбо и не появляться между зубами, не уходить вправо. Повтори 5 раз.",
-   video:"миофункциональная терапия правильное глотание взрослые"},
-  {id:"nose", ico:"👃", title:"Дыхание носом", xp:5, times:3,
-   desc:"Проверь: дышишь носом? Если ртом — переключись.",
-   how:"Губы сомкнуты, вдох и выдох через нос, спокойно. Если нос заложен — промой солевым раствором и запиши в дневник.",
-   video:"носовое дыхание упражнения для взрослых"},
-  {id:"massage", ico:"💆", title:"Массаж жевательных мышц", xp:10, times:1,
-   desc:"2–3 минуты мягко, можно с тёплым полотенцем.",
-   how:"Найди мышцу: сожми зубы — под пальцами у угла челюсти появится бугор. Разожми и мягко массируй круговыми движениями 2–3 минуты. Без боли.",
-   video:"самомассаж жевательных мышц"},
-  {id:"neck", ico:"🦒", title:"Шея и осанка", xp:10, times:1,
-   desc:"Подбородок назад ×10 и мягкая растяжка шеи.",
-   how:"Сидя ровно, отведи подбородок назад (как «двойной подбородок»), задержись на 3 секунды — 10 раз. Потом мягко наклони голову к каждому плечу по 20 секунд. Без боли.",
-   video:"упражнения для шеи осанка подбородок назад"},
-  {id:"evening", ico:"🌙", title:"Спокойный вечер", xp:10, times:1,
-   desc:"Без кофеина после обеда, 20 минут без экранов перед сном.",
-   how:"Кофеин и алкоголь вечером усиливают бруксизм. Перед сном — прогулка, душ, книга или спокойное дыхание.",
-   video:"расслабление перед сном дыхание"},
-];
+// ================= ПРОГРАММЫ =================
+const PROGRAMS = {
+  jaw: {
+    title: "Челюсть, дыхание и осанка", emoji: "😌", short: "Челюсть и осанка",
+    desc: "Положение языка, расслабление челюсти, дыхание носом, шея.",
+    pain: false,
+    quests: [
+      {id:"tongue", ico:"👅", title:"Язык у нёба", xp:5, times:3,
+       desc:"Проверь: кончик на бугорке за верхними зубами, весь язык прилегает к нёбу.",
+       how:"Кончик — на бугорке за передними верхними зубами, ровно по центру (на линии между двумя передними зубами). Весь язык мягко прижат к нёбу, без усилия. Губы сомкнуты, зубы не касаются.",
+       video:"правильное положение языка в покое упражнения"},
+      {id:"teeth", ico:"😌", title:"Губы вместе, зубы врозь", xp:5, times:3,
+       desc:"Поймай себя: не сжаты ли зубы? Разомкни и расслабь челюсть.",
+       how:"Зубы в покое не должны касаться — зазор 1–3 мм. Если поймала себя на сжатии, выдохни и расслабь челюсть и плечи.",
+       video:"как расслабить жевательные мышцы бруксизм"},
+      {id:"swallow", ico:"🪞", title:"Глотание у зеркала", xp:10, times:1,
+       desc:"5 глотков воды с раздвинутыми губами: язык не выходит между зубами.",
+       how:"Раздвинь губы пальцами, глотни немного воды. Язык должен упираться в нёбо и не появляться между зубами, не уходить вправо. Повтори 5 раз.",
+       video:"миофункциональная терапия правильное глотание взрослые"},
+      {id:"nose", ico:"👃", title:"Дыхание носом", xp:5, times:3,
+       desc:"Проверь: дышишь носом? Если ртом — переключись.",
+       how:"Губы сомкнуты, вдох и выдох через нос, спокойно. Если нос заложен — промой солевым раствором и запиши в дневник.",
+       video:"носовое дыхание упражнения для взрослых"},
+      {id:"massage", ico:"💆", title:"Массаж жевательных мышц", xp:10, times:1,
+       desc:"2–3 минуты мягко, можно с тёплым полотенцем.",
+       how:"Найди мышцу: сожми зубы — под пальцами у угла челюсти появится бугор. Разожми и мягко массируй круговыми движениями 2–3 минуты. Без боли.",
+       video:"самомассаж жевательных мышц"},
+      {id:"neck", ico:"🦒", title:"Шея и осанка", xp:10, times:1,
+       desc:"Подбородок назад ×10 и мягкая растяжка шеи.",
+       how:"Сидя ровно, отведи подбородок назад (как «двойной подбородок»), задержись на 3 секунды — 10 раз. Потом мягко наклони голову к каждому плечу по 20 секунд. Без боли.",
+       video:"упражнения для шеи осанка подбородок назад"},
+      {id:"evening", ico:"🌙", title:"Спокойный вечер", xp:10, times:1,
+       desc:"Без кофеина после обеда, 20 минут без экранов перед сном.",
+       how:"Кофеин и алкоголь вечером усиливают бруксизм. Перед сном — прогулка, душ, книга или спокойное дыхание.",
+       video:"расслабление перед сном дыхание"},
+    ],
+    chapters: [
+      {id:"somno", stage:"Этап 1 · Дыхание", title:"Сомнолог: исследование сна", xp:100,
+       desc:"Респираторная полиграфия (часто можно дома). Узнать, есть ли апноэ, до заказа капы."},
+      {id:"lor", stage:"Этап 1 · Дыхание", title:"ЛОР", xp:100,
+       desc:"Перегородка после ринопластики, раковины, аденоиды, почему дышу ртом. Попросить эндоскопию, взять КЛКТ."},
+      {id:"ortho", stage:"Этап 2 · Челюсти и зубы", title:"Ортодонт", xp:150,
+       desc:"Узкая ли верхняя челюсть, подходит ли MARPE, длина левой и правой ветви, мыщелки, варианты без операции и с ней."},
+      {id:"logo", stage:"Этап 2 · Челюсти и зубы", title:"Логопед / миофункциональный терапевт", xp:100,
+       desc:"Глотание, положение языка, проверка уздечки."},
+      {id:"gnato", stage:"Этап 2 · Челюсти и зубы", title:"Гнатолог — повторно", xp:100,
+       desc:"С результатами сна: какую капу делать, нужен ли ботокс при гипертонусе."},
+      {id:"neuro", stage:"Этап 3 · Тело", title:"Невролог / ортопед → ЛФК", xp:100,
+       desc:"Шея, осанка, наклон головы с детства. Показать и плоскостопие."},
+      {id:"surgeon", stage:"Потом, по желанию", title:"Челюстно-лицевой хирург", xp:80,
+       desc:"Только консультация — узнать все варианты. Ни к чему не обязывает."},
+    ],
+    morning: [
+      {id:"jaw", label:"Устала челюсть"}, {id:"head", label:"Болела голова"}, {id:"dry", label:"Сухость во рту"},
+      {id:"mouth", label:"Дышала ртом"}, {id:"snore", label:"Храп (сказали)"}, {id:"tired", label:"Не выспалась"},
+      {id:"fine", label:"Всё ок 🙌"},
+    ],
+    notePlaceholder: "Например: днём ловила себя на сжатых зубах 3 раза",
+    mottos: ["Даже один квест — уже засчитанный день.","Пропуск не обнуляет прогресс. Просто продолжай.","Маленькие привычки, большие изменения.","Язык к нёбу, плечи вниз, выдох. 🌿","Ты делаешь это для себя, не для идеальной серии."],
+  },
 
-const DEFAULT_CHAPTERS = [
-  {id:"somno", stage:"Этап 1 · Дыхание", title:"Сомнолог: исследование сна", xp:100,
-   desc:"Респираторная полиграфия (часто можно дома). Узнать, есть ли апноэ, до заказа капы."},
-  {id:"lor", stage:"Этап 1 · Дыхание", title:"ЛОР", xp:100,
-   desc:"Перегородка после ринопластики, раковины, аденоиды, почему дышу ртом. Попросить эндоскопию, взять КЛКТ."},
-  {id:"ortho", stage:"Этап 2 · Челюсти и зубы", title:"Ортодонт", xp:150,
-   desc:"Узкая ли верхняя челюсть, подходит ли MARPE, длина левой и правой ветви, мыщелки, варианты без операции и с ней."},
-  {id:"logo", stage:"Этап 2 · Челюсти и зубы", title:"Логопед / миофункциональный терапевт", xp:100,
-   desc:"Глотание, положение языка, проверка уздечки."},
-  {id:"gnato", stage:"Этап 2 · Челюсти и зубы", title:"Гнатолог — повторно", xp:100,
-   desc:"С результатами сна: какую капу делать, нужен ли ботокс при гипертонусе."},
-  {id:"neuro", stage:"Этап 3 · Тело", title:"Невролог / ортопед → ЛФК", xp:100,
-   desc:"Шея, осанка, наклон головы с детства. Показать и плоскостопие."},
-  {id:"surgeon", stage:"Потом, по желанию", title:"Челюстно-лицевой хирург", xp:80,
-   desc:"Только консультация — узнать все варианты. Ни к чему не обязывает."},
-];
-
-const MORNING = [
-  {id:"jaw", label:"Устала челюсть"},
-  {id:"head", label:"Болела голова"},
-  {id:"dry", label:"Сухость во рту"},
-  {id:"mouth", label:"Дышала ртом"},
-  {id:"snore", label:"Храп (сказали)"},
-  {id:"tired", label:"Не выспалась"},
-  {id:"fine", label:"Всё ок 🙌"},
-];
+  back: {
+    title: "Спина: мягкое движение (МФС)", emoji: "🐢", short: "Спина (МФС)",
+    desc: "Медленные безопасные упражнения без резких движений, прогулки, тепло, дыхание.",
+    pain: true,
+    intro: "Правило всех упражнений: медленно, без рывков, не задерживая дыхание. Лёгкий дискомфорт допустим (до 3 из 10), острая боль — нет. Если после упражнения боль усилилась и не прошла к следующему дню — уменьши объём вдвое.",
+    quests: [
+      {id:"walk", ico:"🚶", title:"Прогулка", xp:15, times:1,
+       desc:"10–30 минут в удобном темпе. Начни с того, что комфортно, и добавляй по 2–3 минуты в неделю.",
+       how:"Обычный шаг, руки свободно. Ходьба — одно из самых безопасных и полезных движений при боли в спине: мышцы разогреваются и расслабляются. Если 10 минут много — начни с 5.",
+       video:"ходьба при боли в спине польза"},
+      {id:"breath", ico:"🌬️", title:"Дыхание животом", xp:10, times:1,
+       desc:"5 минут лёжа на спине, колени согнуты.",
+       how:"Одна рука на груди, другая на животе. Медленный вдох носом — поднимается живот, грудь почти неподвижна. Медленный выдох ртом. Это снимает напряжение мышц спины и нервной системы.",
+       video:"диафрагмальное дыхание лёжа"},
+      {id:"tilt", ico:"🛏️", title:"Наклоны таза лёжа", xp:10, times:1,
+       desc:"10 медленных повторов, лёжа на спине.",
+       how:"Лёжа на спине, колени согнуты, стопы на полу. На выдохе мягко прижми поясницу к полу (таз чуть подкручивается), на вдохе вернись. Амплитуда маленькая, без усилия.",
+       video:"наклоны таза лёжа упражнение поясница"},
+      {id:"knee", ico:"🦵", title:"Колено к груди", xp:10, times:1,
+       desc:"По очереди каждое колено, 20–30 секунд, 2–3 раза.",
+       how:"Лёжа на спине, обхвати одно колено руками и мягко подтяни к груди, вторая нога согнута на полу. Держи 20–30 секунд, дыши. Без рывков и боли.",
+       video:"колено к груди растяжка поясницы лёжа"},
+      {id:"cat", ico:"🐈", title:"Кошка–корова", xp:10, times:1,
+       desc:"8–10 медленных повторов на четвереньках.",
+       how:"На четвереньках: на выдохе мягко округли спину, на вдохе плавно прогнись. Двигайся в комфортной амплитуде, медленно, как будто под водой.",
+       video:"кошка корова упражнение медленно для спины"},
+      {id:"glute", ico:"🍑", title:"Растяжка ягодиц и бёдер", xp:10, times:1,
+       desc:"«Четвёрка» лёжа — по 30 секунд на каждую сторону.",
+       how:"Лёжа на спине, положи щиколотку одной ноги на колено другой (цифра 4) и мягко подтяни нижнюю ногу к себе. Тянет в ягодице — это то, что нужно. Ягодичные и грушевидные мышцы часто участвуют в боли в пояснице.",
+       video:"растяжка грушевидной мышцы лёжа четвёрка"},
+      {id:"warm", ico:"♨️", title:"Тепло и мягкий самомассаж", xp:10, times:1,
+       desc:"Тёплый душ или грелка 10–15 минут, затем мягко мячиком 2–3 минуты.",
+       how:"Тепло расслабляет напряжённые мышцы. Мячик (теннисный) — между спиной и стеной, лёгкое давление на напряжённые точки по 20–30 секунд. Мягко: если больно сильнее 3 из 10 — давление слишком сильное. Не давить на позвоночник.",
+       video:"самомассаж мячом триггерные точки спина мягко"},
+      {id:"breaks", ico:"⏰", title:"Перерывы в сидении", xp:5, times:3,
+       desc:"Встать и пройтись 1–2 минуты каждые 45–60 минут.",
+       how:"Долгое сидение в одной позе усиливает миофасциальную боль. Встань, пройдись, мягко покрути плечами.",
+       video:"разминка за компьютером для спины"},
+    ],
+    chapters: [
+      {id:"neuro", stage:"Этап 1 · Диагноз", title:"Невролог", xp:100,
+       desc:"Подтвердить МФС и исключить другие причины. Спросить: какие движения можно, каких избегать, нужна ли ЛФК."},
+      {id:"lfk", stage:"Этап 2 · Движение", title:"Врач ЛФК / реабилитолог", xp:150,
+       desc:"Индивидуальная программа упражнений. Показать этот список квестов — пусть поправит."},
+      {id:"physio", stage:"Этап 2 · Движение", title:"Курс ЛФК или физиотерапии", xp:120,
+       desc:"Пройти курс занятий под присмотром — так безопаснее начать двигаться больше."},
+      {id:"control", stage:"Этап 3 · Контроль", title:"Повторный приём через 6–8 недель", xp:100,
+       desc:"Показать дневник боли из приложения («Ещё» → «Сводка для врача»), обсудить, что дальше."},
+    ],
+    redFlags: "Срочно к врачу, если: онемение в паху или промежности, проблемы с мочеиспусканием или стулом, нарастающая слабость в ноге, боль с температурой, боль после травмы или падения, сильная ночная боль, которая не проходит в покое, необъяснимая потеря веса.",
+    morning: [
+      {id:"stiff", label:"Скованность утром"}, {id:"night", label:"Боль ночью"}, {id:"sit", label:"Болело после сидения"},
+      {id:"better", label:"После упражнений легче"}, {id:"worse", label:"После упражнений хуже"}, {id:"numb", label:"Онемение/покалывание"},
+      {id:"fine", label:"Всё ок 🙌"},
+    ],
+    notePlaceholder: "Например: после прогулки 20 минут спина отпустила",
+    mottos: ["Медленно — тоже движение. 🐢","Даже один квест — уже засчитанный день.","Мышцы любят тепло и спокойный ритм.","Пропуск не обнуляет прогресс. Просто продолжай.","Сегодня чуть больше, чем ничего — уже победа."],
+  },
+};
 
 const BADGES = [
   {id:"first", e:"🌱", t:"Первый квест", test:s=>totalCompletions(s)>=1},
@@ -266,103 +383,117 @@ const BADGES = [
   {id:"doc1", e:"🩺", t:"Первая глава", test:s=>s.chapters.some(c=>c.done)},
   {id:"doc3", e:"🗺️", t:"3 главы", test:s=>s.chapters.filter(c=>c.done).length>=3},
   {id:"week", e:"📅", t:"4 дня за неделю", test:s=>weekActive(s)>=4},
-  {id:"back", e:"🤗", t:"Вернулась после паузы", test:s=>!!s.cameBack},
+  {id:"back", e:"🤗", t:"Вернулся(ась) после паузы", test:s=>!!s.cameBack},
+  {id:"friend", e:"🤝", t:"Первый друг", test:s=>(s.friends||[]).length>=1},
+  {id:"cheer", e:"💛", t:"Подбодрили", test:s=>(s.cheersSeen||0)>=1},
   {id:"lvl5", e:"👑", t:"Уровень 5", test:s=>levelInfo(s.xp).level>=5},
 ];
 
-const MOTTOS = [
-  "Даже один квест — уже засчитанный день.",
-  "Пропуск не обнуляет прогресс. Просто продолжай.",
-  "Маленькие привычки, большие изменения.",
-  "Язык к нёбу, плечи вниз, выдох. 🌿",
-  "Ты делаешь это для себя, не для идеальной серии.",
-];
-
-// ---------- state ----------
-const todayKey = (d=new Date()) => {
-  const z = new Date(d.getTime() - d.getTimezoneOffset()*60000);
-  return z.toISOString().slice(0,10);
-};
+// ================= СОСТОЯНИЕ =================
+const todayKey = (d=new Date()) => new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+const P = () => PROGRAMS[S.program] || PROGRAMS.jaw;
+const fresh = () => ({xp:0, program:null, name:"", quests:[], chapters:[], days:{}, badges:[], friends:[], lastVisit:todayKey(), cameBack:false});
+function chaptersFor(prog){ return PROGRAMS[prog].chapters.map(c=>({...c,done:false,date:"",note:""})); }
 function load(){
   try{ const s = JSON.parse(localStorage.getItem(KEY)); if(s && s.quests) return migrate(s); }catch(e){}
-  return {xp:0, quests:structuredClone(DEFAULT_QUESTS), chapters:structuredClone(DEFAULT_CHAPTERS).map(c=>({...c,done:false,date:"",note:""})), days:{}, badges:[], lastVisit:todayKey(), cameBack:false};
+  return fresh();
 }
 function migrate(s){
-  s.days ||= {}; s.badges ||= []; s.chapters ||= DEFAULT_CHAPTERS.map(c=>({...c,done:false,date:"",note:""}));
+  s.days ||= {}; s.badges ||= []; s.friends ||= [];
+  if(!s.program && s.quests && s.quests.length) s.program = "jaw";   // старая версия — программа челюсти
+  if(s.program && (!s.chapters || !s.chapters.length)) s.chapters = chaptersFor(s.program);
   return s;
 }
 let S = load();
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ toast("Не удалось сохранить 😕"); } }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ toast("Не удалось сохранить 😕"); } scheduleSync(); }
 const day = (k=todayKey()) => (S.days[k] ||= {done:{}, xp:0});
 
-// ---------- helpers ----------
+// ================= ПОМОЩНИКИ =================
 const $ = s => document.querySelector(s);
 const esc = s => String(s??"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-function levelInfo(xp){
-  let level=1, need=100, rest=xp;
-  while(rest>=need){ rest-=need; level++; need=100+ (level-1)*50; }
-  return {level, rest, need};
-}
+function levelInfo(xp){ let level=1, need=100, rest=xp; while(rest>=need){ rest-=need; level++; need=100+(level-1)*50; } return {level, rest, need}; }
 function totalCompletions(s){ return Object.values(s.days).reduce((a,d)=>a+Object.values(d.done||{}).reduce((x,y)=>x+y,0),0); }
-function isActive(d){ return d && (Object.values(d.done||{}).some(v=>v>0) || d.log); }
+function isActive(d){ return !!(d && (Object.values(d.done||{}).some(v=>v>0) || d.log)); }
 function activeDays(s){ return Object.values(s.days).filter(isActive).length; }
-function dayComplete(s,k){ const d=s.days[k]; return d && s.quests.length && s.quests.every(q=>(d.done[q.id]||0)>=q.times); }
-function weekActive(s){
-  let n=0; for(let i=0;i<7;i++){ const k=todayKey(new Date(Date.now()-i*864e5)); if(isActive(s.days[k])) n++; } return n;
-}
+function dayComplete(s,k){ const d=s.days[k]; return !!(d && s.quests.length && s.quests.every(q=>(d.done[q.id]||0)>=q.times)); }
+function weekActive(s){ let n=0; for(let i=0;i<7;i++){ if(isActive(s.days[todayKey(new Date(Date.now()-i*864e5))])) n++; } return n; }
+function weekId(){ const d=new Date(), j=new Date(d.getFullYear(),0,1); return d.getFullYear()+"-"+Math.ceil(((d-j)/864e5+j.getDay()+1)/7); }
 const ytUrl = q => "https://www.youtube.com/results?search_query="+encodeURIComponent(q);
+const ddmm = k => k.split("-").reverse().join(".");
 function addXP(n, msg){
   const before = levelInfo(S.xp).level;
   S.xp = Math.max(0, S.xp+n);
   day().xp = Math.max(0,(day().xp||0)+n);
   const after = levelInfo(S.xp).level;
-  if(after>before){ toast(`🎉 Новый уровень: ${after}!`); $("#avatar").classList.remove("pop"); void $("#avatar").offsetWidth; $("#avatar").classList.add("pop"); }
+  if(after>before){ toast(`🎉 Новый уровень: ${after}!`); const a=$("#avatar"); a.classList.remove("pop"); void a.offsetWidth; a.classList.add("pop"); }
   else if(msg) toast(msg);
 }
 let toastT;
-function toast(t){ const el=$("#toast"); el.textContent=t; el.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove("show"),1800); }
-function checkBadges(){
-  BADGES.forEach(b=>{ if(!S.badges.includes(b.id) && b.test(S)){ S.badges.push(b.id); setTimeout(()=>toast(`${b.e} Новый значок: ${b.t}`),900); } });
-}
+function toast(t){ const el=$("#toast"); el.textContent=t; el.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove("show"),2000); }
+function checkBadges(){ BADGES.forEach(b=>{ if(!S.badges.includes(b.id) && b.test(S)){ S.badges.push(b.id); setTimeout(()=>toast(`${b.e} Новый значок: ${b.t}`),900); } }); }
 
-// ---------- comeback (без наказаний за пропуск) ----------
-(function comeback(){
+// ================= ПЕРВЫЙ ЗАПУСК =================
+let obChoice = null;
+function showOnboarding(){
+  obChoice = S.program || null;
+  $("#obName").value = S.name || "";
+  $("#obPrograms").innerHTML = Object.entries(PROGRAMS).map(([k,p])=>
+    `<button class="pcard ${obChoice===k?"on":""}" data-prog="${k}"><span class="e">${p.emoji}</span><span><b>${esc(p.title)}</b><br><span class="muted" style="font-size:14px">${esc(p.desc)}</span></span></button>`).join("");
+  $("#onboard").classList.add("show");
+}
+$("#obPrograms").addEventListener("click",e=>{ const b=e.target.closest("[data-prog]"); if(!b) return; obChoice=b.dataset.prog;
+  document.querySelectorAll("#obPrograms .pcard").forEach(x=>x.classList.toggle("on",x===b)); });
+$("#obGo").addEventListener("click",()=>{
+  const name=$("#obName").value.trim();
+  if(!name) return toast("Напиши имя 🙂");
+  if(!obChoice) return toast("Выбери программу");
+  const changed = S.program !== obChoice;
+  S.name = name;
+  if(changed){ S.program = obChoice; S.quests = structuredClone(PROGRAMS[obChoice].quests); S.chapters = chaptersFor(obChoice); }
+  $("#onboard").classList.remove("show");
+  save(); renderAll(); ensureCode();
+  toast(`Поехали, ${name}! ✨`);
+});
+
+// ================= ВОЗВРАЩЕНИЕ (без наказаний) =================
+function comeback(){
   const last = S.lastVisit ? new Date(S.lastVisit) : new Date();
   const gap = Math.round((new Date(todayKey()) - last)/864e5);
-  if(gap>=3 && totalCompletions(S)>0){ S.cameBack = true; addXP(20); setTimeout(()=>toast("С возвращением! 🤗 +20 XP за то, что вернулась"),400); }
-  S.lastVisit = todayKey(); save();
-})();
+  if(gap>=3 && totalCompletions(S)>0){ S.cameBack = true; addXP(20); setTimeout(()=>toast("С возвращением! 🤗 +20 XP за то, что вернулся(ась)"),400); }
+  S.lastVisit = todayKey();
+}
 
-// ---------- render: today ----------
+// ================= СЕГОДНЯ =================
 function renderHeader(){
   const {level,rest,need} = levelInfo(S.xp);
-  $("#lvlText").textContent = `Уровень ${level}`;
+  $("#lvlText").textContent = `${S.name?S.name+" · ":""}Уровень ${level}`;
   $("#xpText").textContent = `${rest} / ${need} XP · всего ${S.xp}`;
   $("#xpBar").style.width = Math.round(rest/need*100)+"%";
-  const faces=["🙂","😊","😄","😎","🤩","👑"]; $("#avatar").textContent = faces[Math.min(faces.length-1, level-1)];
+  const faces = S.program==="back" ? ["🐢","🐢","🐻","🦁","🦅","👑"] : ["🙂","😊","😄","😎","🤩","👑"];
+  const a=$("#avatar"); a.textContent = faces[Math.min(faces.length-1, level-1)]; a.classList.toggle("back", S.program==="back");
 }
 function renderToday(){
+  if(!S.program) return;
   renderHeader();
   const d = day();
-  const doneCount = S.quests.filter(q=>(d.done[q.id]||0)>=q.times).length;
-  $("#todayCount").textContent = `${doneCount}/${S.quests.length}`;
-  $("#motto").textContent = MOTTOS[new Date().getDate()%MOTTOS.length];
-  // week chips
+  $("#todayCount").textContent = `${S.quests.filter(q=>(d.done[q.id]||0)>=q.times).length}/${S.quests.length}`;
+  const m = P().mottos; $("#motto").textContent = m[new Date().getDate()%m.length];
   const names=["вс","пн","вт","ср","чт","пт","сб"]; let html="";
-  for(let i=6;i>=0;i--){ const dt=new Date(Date.now()-i*864e5); const k=todayKey(dt); const a=isActive(S.days[k]);
+  for(let i=6;i>=0;i--){ const dt=new Date(Date.now()-i*864e5); const a=isActive(S.days[todayKey(dt)]);
     html+=`<span class="chip" style="background:${a?"var(--mint)":"#fff"}">${names[dt.getDay()]} ${a?"✓":"·"}</span>`; }
   $("#weekChips").innerHTML = html + `<span class="chip" style="background:var(--yellow)">цель недели: ${Math.min(weekActive(S),4)}/4</span>`;
+  $("#programNote").innerHTML = P().intro ? `<div class="note warn">${esc(P().intro)}</div>` : "";
   $("#questList").innerHTML = S.quests.map(q=>{
     const c = d.done[q.id]||0, full = c>=q.times;
-    return `<div class="quest ${full?"done":""}" data-id="${esc(q.id)}">
+    return `<div class="quest ${full?"done":""}">
       <div class="ico">${esc(q.ico||"✨")}</div>
       <div class="grow">
         <h3>${esc(q.title)}</h3>
         <p>${esc(q.desc||"")}</p>
         <div class="row" style="flex-wrap:wrap;gap:6px">
           <span class="chip">+${q.xp} XP${q.times>1?" за раз":""}</span>
-          <a class="btn small ghost" href="${ytUrl(q.video||q.title)}" target="_blank" rel="noopener" style="text-decoration:none">▶ Найти видео</a>
-          ${c>0?`<button class="btn small ghost" data-undo="${esc(q.id)}">↶</button>`:""}
+          <a class="btn small ghost" href="${ytUrl(q.video||q.title)}" target="_blank" rel="noopener">▶ Найти видео</a>
+          ${c>0?`<button class="btn small ghost" data-undo="${esc(q.id)}" aria-label="Отменить">↶</button>`:""}
         </div>
         ${q.how?`<details class="how"><summary>Как делать</summary><div>${esc(q.how)}</div></details>`:""}
       </div>
@@ -373,16 +504,14 @@ function renderToday(){
 document.addEventListener("click", e=>{
   const t = e.target.closest("[data-tick]");
   if(t){
-    const q = S.quests.find(x=>x.id===t.dataset.tick), d = day();
-    const c = d.done[q.id]||0;
+    const q = S.quests.find(x=>x.id===t.dataset.tick), d = day(), c = d.done[q.id]||0;
     if(c>=q.times){ toast("Этот квест на сегодня уже выполнен ✓"); return; }
     d.done[q.id]=c+1;
     let gain=q.xp, msg=`+${q.xp} XP`;
     if(c+1===q.times && q.times>1){ gain+=5; msg+=" (+5 за полный квест)"; }
     if(dayComplete(S,todayKey()) && !d.fullBonus){ d.fullBonus=true; gain+=25; msg="⭐ Все квесты дня! +25 XP бонус"; }
     if(weekActive(S)>=4 && !S["wk"+weekId()]){ S["wk"+weekId()]=true; gain+=30; msg="📅 Цель недели выполнена! +30 XP"; }
-    addXP(gain,msg); checkBadges(); save(); renderToday();
-    return;
+    addXP(gain,msg); checkBadges(); save(); renderToday(); return;
   }
   const u = e.target.closest("[data-undo]");
   if(u){
@@ -390,42 +519,49 @@ document.addEventListener("click", e=>{
     if((d.done[q.id]||0)>0){ d.done[q.id]--; addXP(-q.xp); if(d.fullBonus && !dayComplete(S,todayKey())){ d.fullBonus=false; addXP(-25);} save(); renderToday(); }
   }
 });
-function weekId(){ const d=new Date(); const onejan=new Date(d.getFullYear(),0,1); return d.getFullYear()+"-"+Math.ceil(((d-onejan)/864e5+onejan.getDay()+1)/7); }
 
-// ---------- render: log ----------
-let logState = {sleep:0, morning:[]};
+// ================= ДНЕВНИК =================
+let logState = {sleep:0, pain:-1, morning:[]};
 function loadLog(k){
-  const l = (S.days[k]||{}).log || {sleep:0,morning:[],note:""};
-  logState = {sleep:l.sleep||0, morning:[...(l.morning||[])]};
+  const l = (S.days[k]||{}).log || {};
+  logState = {sleep:l.sleep||0, pain:(l.pain??-1), morning:[...(l.morning||[])]};
   $("#logNote").value = l.note||"";
+  $("#logNote").placeholder = P().notePlaceholder;
   drawLogControls();
 }
 function drawLogControls(){
+  $("#painBlock").style.display = P().pain ? "" : "none";
+  $("#painScale").innerHTML = [...Array(11).keys()].map(i=>`<button data-pain="${i}" class="${logState.pain===i?"on":""}">${i}</button>`).join("");
   $("#sleepScale").innerHTML = ["😫","😕","😐","🙂","😴"].map((e,i)=>`<button data-sleep="${i+1}" class="${logState.sleep===i+1?"on":""}">${e}</button>`).join("");
-  $("#morningToggles").innerHTML = MORNING.map(m=>`<button data-m="${m.id}" class="${logState.morning.includes(m.id)?"on":""}">${m.label}</button>`).join("");
+  $("#morningToggles").innerHTML = P().morning.map(m=>`<button data-m="${m.id}" class="${logState.morning.includes(m.id)?"on":""}">${m.label}</button>`).join("");
 }
+$("#painScale").addEventListener("click",e=>{const b=e.target.closest("[data-pain]"); if(!b) return; logState.pain=+b.dataset.pain; drawLogControls();});
 $("#sleepScale").addEventListener("click",e=>{const b=e.target.closest("[data-sleep]"); if(!b) return; logState.sleep=+b.dataset.sleep; drawLogControls();});
 $("#morningToggles").addEventListener("click",e=>{const b=e.target.closest("[data-m]"); if(!b) return; const id=b.dataset.m;
-  logState.morning = logState.morning.includes(id)? logState.morning.filter(x=>x!==id) : [...logState.morning.filter(x=>id==="fine"?false:x!=="fine"), id];
+  logState.morning = logState.morning.includes(id) ? logState.morning.filter(x=>x!==id) : [...logState.morning.filter(x=>id==="fine"?false:x!=="fine"), id];
   drawLogControls();});
 $("#logDate").addEventListener("change",e=>loadLog(e.target.value||todayKey()));
 $("#logToday").addEventListener("click",()=>{ $("#logDate").value=todayKey(); loadLog(todayKey()); });
 $("#logSave").addEventListener("click",()=>{
-  const k = $("#logDate").value || todayKey(); const d = day(k); const first = !d.log;
-  d.log = {sleep:logState.sleep, morning:logState.morning, note:$("#logNote").value.trim()};
+  const k = $("#logDate").value || todayKey(), d = day(k), first = !d.log;
+  d.log = {sleep:logState.sleep, pain:logState.pain, morning:logState.morning, note:$("#logNote").value.trim()};
   if(first){ S.xp+=10; d.xp=(d.xp||0)+10; toast("Запись сохранена · +10 XP"); } else toast("Запись обновлена");
+  if(logState.morning.includes("numb") && P().redFlags) setTimeout(()=>toast("Онемение стоит обсудить с врачом 🩺"),2100);
   checkBadges(); save(); renderLogHistory(); renderHeader();
 });
+const labelOf = id => (P().morning.find(x=>x.id===id)||{}).label;
 function renderLogHistory(){
   const keys = Object.keys(S.days).filter(k=>S.days[k].log).sort().reverse().slice(0,7);
   if(!keys.length){ $("#logHistory").textContent="Пока пусто. Первая запись — +10 XP."; return; }
   $("#logHistory").innerHTML = keys.map(k=>{const l=S.days[k].log;
-    const m=(l.morning||[]).map(id=>MORNING.find(x=>x.id===id)?.label).filter(Boolean).join(", ");
-    return `<div style="padding:6px 0;border-bottom:2px dashed #e5dccb"><b style="color:var(--ink)">${k.split("-").reverse().join(".")}</b> · сон ${l.sleep?["😫","😕","😐","🙂","😴"][l.sleep-1]:"—"}${m?" · "+esc(m):""}${l.note?`<br>${esc(l.note)}`:""}</div>`;}).join("");
+    const m=(l.morning||[]).map(labelOf).filter(Boolean).join(", ");
+    const pain = (l.pain??-1)>=0 ? ` · боль ${l.pain}/10` : "";
+    return `<div style="padding:6px 0;border-bottom:2px dashed #e5dccb"><b style="color:var(--ink)">${ddmm(k)}</b>${pain} · сон ${l.sleep?["😫","😕","😐","🙂","😴"][l.sleep-1]:"—"}${m?" · "+esc(m):""}${l.note?`<br>${esc(l.note)}`:""}</div>`;}).join("");
 }
 
-// ---------- render: chapters ----------
+// ================= ГЛАВЫ =================
 function renderChapters(){
+  $("#redFlags").innerHTML = P().redFlags ? `<div class="note warn" style="margin-bottom:14px"><b>⚠️ Важно.</b> ${esc(P().redFlags)}</div>` : "";
   let stage="", html="";
   S.chapters.forEach((c,i)=>{
     if(c.stage!==stage){ stage=c.stage; html+=`<div class="stage">${esc(stage)}</div>`; }
@@ -436,10 +572,10 @@ function renderChapters(){
         <p class="muted" style="font-size:14px;margin:4px 0 8px">${esc(c.desc)}</p>
         <div class="row" style="flex-wrap:wrap;gap:6px">
           <span class="chip">+${c.xp} XP</span>
-          <input type="date" data-cdate="${c.id}" value="${esc(c.date)}" style="width:auto;padding:4px 8px;border-width:2px">
+          <input type="date" data-cdate="${esc(c.id)}" value="${esc(c.date)}" style="width:auto;padding:4px 8px;border-width:2px">
         </div>
-        <textarea data-cnote="${c.id}" placeholder="Что сказал врач, что назначил" style="margin-top:8px;min-height:50px">${esc(c.note)}</textarea>
-        <button class="btn small ${c.done?"ghost":"mint"}" data-cdone="${c.id}" style="margin-top:8px">${c.done?"Отменить":"Глава пройдена!"}</button>
+        <textarea data-cnote="${esc(c.id)}" placeholder="Что сказал врач, что назначил" style="margin-top:8px;min-height:50px">${esc(c.note)}</textarea>
+        <button class="btn small ${c.done?"ghost":"mint"}" data-cdone="${esc(c.id)}" style="margin-top:8px">${c.done?"Отменить":"Глава пройдена!"}</button>
       </div></div>`;
   });
   $("#chapterList").innerHTML = html;
@@ -450,58 +586,165 @@ $("#chapterList").addEventListener("click",e=>{
   if(c.done){ if(!c.date) c.date=todayKey(); addXP(c.xp,`🩺 Глава пройдена! +${c.xp} XP`); } else addXP(-c.xp);
   checkBadges(); save(); renderChapters(); renderHeader();
 });
-$("#chapterList").addEventListener("change",e=>{
-  const d=e.target.dataset; if(d.cdate){ S.chapters.find(x=>x.id===d.cdate).date=e.target.value; save(); }
+$("#chapterList").addEventListener("change",e=>{ const d=e.target.dataset; if(d.cdate){ S.chapters.find(x=>x.id===d.cdate).date=e.target.value; save(); } });
+$("#chapterList").addEventListener("input",e=>{ const d=e.target.dataset; if(d.cnote){ S.chapters.find(x=>x.id===d.cnote).note=e.target.value; save(); } });
+
+// ================= ДРУЗЬЯ / СИНХРОНИЗАЦИЯ =================
+const API = "/api";
+function publicProfile(){
+  const days = {};
+  for(let i=20;i>=0;i--){ const k=todayKey(new Date(Date.now()-i*864e5)), d=S.days[k];
+    // сколько квестов выполнено полностью; если день активный, но полностью ни одного — считаем 1, чтобы день был виден
+    const done = d ? S.quests.filter(q=>(d.done[q.id]||0)>=q.times).length : 0;
+    days[k] = [isActive(d) ? Math.max(done, 1) : 0, S.quests.length]; }
+  return { name:S.name, program:S.program, level:levelInfo(S.xp).level, xp:S.xp, activeDays:activeDays(S),
+    badges:S.badges, chaptersDone:S.chapters.filter(c=>c.done).length, chaptersTotal:S.chapters.length, days };
+}
+async function ensureCode(){
+  if(S.code || !S.program || !navigator.onLine) return;
+  try{
+    const r = await fetch(API+"/register",{method:"POST"});
+    if(!r.ok) throw 0;
+    const j = await r.json(); S.code=j.code; S.token=j.token; localStorage.setItem(KEY, JSON.stringify(S));
+    renderFriendsHead(); pushProfile();
+  }catch(e){ $("#syncState").textContent = "Не получилось получить код — проверь интернет, попробую позже."; }
+}
+let syncT;
+function scheduleSync(){ clearTimeout(syncT); syncT = setTimeout(pushProfile, 2500); }
+async function pushProfile(){
+  if(!S.code || !S.token || !navigator.onLine) return;
+  try{
+    const r = await fetch(`${API}/profile/${S.code}`,{method:"PUT",headers:{"content-type":"application/json","authorization":"Bearer "+S.token},body:JSON.stringify(publicProfile())});
+    $("#syncState").textContent = r.ok ? "Прогресс обновлён для друзей ✓" : "Не удалось обновить прогресс для друзей.";
+  }catch(e){ $("#syncState").textContent = "Нет связи — прогресс для друзей обновится позже."; }
+}
+async function checkCheers(){
+  if(!S.code) return;
+  try{
+    const r = await fetch(`${API}/profile/${S.code}`); if(!r.ok) return;
+    const j = await r.json(); const n = j.cheers?.count||0, seen = S.cheersSeen||0;
+    if(n>seen){ const who = (j.cheers.recent||[]).slice(0, n-seen).map(x=>x.from);
+      S.cheersSeen = n; localStorage.setItem(KEY, JSON.stringify(S));
+      setTimeout(()=>toast(`💛 Тебя подбодрил(а): ${[...new Set(who)].join(", ")}`),1200); checkBadges(); }
+  }catch(e){}
+}
+function renderFriendsHead(){
+  $("#myCode").textContent = S.code || "······";
+  if(!S.code) $("#syncState").textContent = navigator.onLine ? "Получаю код…" : "Нужен интернет, чтобы получить код.";
+}
+$("#copyCode").addEventListener("click",()=>{ if(!S.code) return; navigator.clipboard?.writeText(S.code).then(()=>toast("Код скопирован 📋")).catch(()=>toast(S.code)); });
+$("#addFriend").addEventListener("click", async ()=>{
+  const code = $("#friendCode").value.toUpperCase().replace(/[^A-Z0-9]/g,"");
+  if(code.length<4) return toast("Введи код друга");
+  if(code===S.code) return toast("Это твой собственный код 🙂");
+  if(S.friends.includes(code)) return toast("Этот друг уже добавлен");
+  try{
+    const r = await fetch(`${API}/profile/${code}`);
+    if(r.status===404) return toast("Такого кода нет (или друг ещё не открыл приложение)");
+    if(!r.ok) throw 0;
+    const j = await r.json();
+    S.friends.push(code); $("#friendCode").value=""; checkBadges(); save();
+    toast(`Добавлен(а): ${j.name} 🤝`); renderFriends();
+  }catch(e){ toast("Нет связи, попробуй ещё раз"); }
 });
-$("#chapterList").addEventListener("input",e=>{
-  const d=e.target.dataset; if(d.cnote){ S.chapters.find(x=>x.id===d.cnote).note=e.target.value; save(); }
+async function renderFriends(){
+  renderFriendsHead();
+  const box = $("#friendList");
+  if(!S.friends.length){ box.innerHTML = `<p class="muted" style="text-align:center">Пока никого. Обменяйтесь кодами — и будете видеть прогресс друг друга.</p>`; return; }
+  box.innerHTML = S.friends.map(c=>`<div class="card friend" id="fr-${c}"><span class="muted">Загружаю ${c}…</span></div>`).join("");
+  for(const code of S.friends){
+    const el = document.getElementById("fr-"+code);
+    try{
+      const r = await fetch(`${API}/profile/${code}`); if(!r.ok) throw 0;
+      const f = await r.json();
+      const prog = PROGRAMS[f.program] || PROGRAMS.jaw;
+      const names=["вс","пн","вт","ср","чт","пт","сб"]; let days="";
+      for(let i=6;i>=0;i--){ const dt=new Date(Date.now()-i*864e5), k=todayKey(dt), v=(f.days||{})[k]||[0,0];
+        const frac = v[1] ? v[0]/v[1] : 0;
+        const bg = v[0]===0 ? "#fff" : frac>=1 ? "var(--mint)" : frac>=.5 ? "#B5EDD2" : "#E2F7EC";
+        days+=`<div style="flex:1"><i style="background:${bg}" title="${ddmm(k)}: ${v[0]}/${v[1]}"></i><small>${names[dt.getDay()]}</small></div>`; }
+      const ago = f.updatedAt ? Math.round((Date.now()-f.updatedAt)/864e5) : null;
+      el.innerHTML = `<div class="row">
+          <div class="avatar ${f.program==="back"?"back":""}" style="width:48px;height:48px;font-size:24px;box-shadow:2px 2px 0 var(--ink)">${prog.emoji}</div>
+          <div class="grow"><b style="font-size:18px">${esc(f.name)}</b><br><span class="muted" style="font-size:13px">${esc(prog.short)} · ур. ${f.level} · ${f.xp} XP</span></div>
+          <button class="btn small pink" data-cheer="${code}">💛</button>
+        </div>
+        <div class="days">${days}</div>
+        <div class="chips">
+          <span class="chip">🗓️ активных дней: ${f.activeDays}</span>
+          <span class="chip">🩺 глав: ${f.chaptersDone}/${f.chaptersTotal}</span>
+          <span class="chip">🏅 значков: ${(f.badges||[]).length}</span>
+          ${ago!==null?`<span class="chip">${ago===0?"заходил(а) сегодня":ago===1?"вчера":ago+" дн. назад"}</span>`:""}
+        </div>
+        <div style="text-align:right;margin-top:8px"><button class="btn small ghost" data-unfriend="${code}">Убрать</button></div>`;
+    }catch(e){ el.innerHTML = `<span class="muted">${code}: не удалось загрузить.</span> <button class="btn small ghost" data-unfriend="${code}">Убрать</button>`; }
+  }
+}
+$("#friendList").addEventListener("click", async e=>{
+  const ch = e.target.closest("[data-cheer]"), un = e.target.closest("[data-unfriend]");
+  if(ch){ ch.disabled=true;
+    try{ const r = await fetch(`${API}/cheer/${ch.dataset.cheer}`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({from:S.name})});
+      toast(r.ok ? "Отправлено 💛" : "Не получилось"); }catch(err){ toast("Нет связи"); }
+    setTimeout(()=>ch.disabled=false, 4000); }
+  if(un && confirm("Убрать друга из списка?")){ S.friends = S.friends.filter(c=>c!==un.dataset.unfriend); save(); renderFriends(); }
 });
 
-// ---------- render: progress ----------
+// ================= ПРОГРЕСС =================
 function renderProgress(){
   const cols=[]; let max=10;
   for(let i=13;i>=0;i--){ const dt=new Date(Date.now()-i*864e5), k=todayKey(dt), v=(S.days[k]||{}).xp||0; max=Math.max(max,v); cols.push({k,v,dt,today:i===0}); }
   $("#chart").innerHTML = cols.map(c=>`<div class="col" title="${c.k}: ${c.v} XP"><small>${c.v||""}</small><div class="b ${c.today?"today":""}" style="height:${Math.round(c.v/max*85)}%"></div><small>${c.dt.getDate()}</small></div>`).join("");
-  const done = S.chapters.filter(c=>c.done).length;
+  $("#painCard").style.display = P().pain ? "" : "none";
+  if(P().pain){
+    $("#painChart").innerHTML = cols.map(c=>{ const p=((S.days[c.k]||{}).log||{}).pain; const has = p!=null && p>=0;
+      return `<div class="col" title="${c.k}: ${has?p+"/10":"нет записи"}"><small>${has?p:""}</small><div class="b" style="height:${has?Math.max(3,p*8.5):0}%;background:${has?(p>=7?"var(--pink)":p>=4?"var(--orange)":"var(--mint)"):"transparent"};${has?"":"border:none"}"></div><small>${c.dt.getDate()}</small></div>`; }).join("");
+  }
   $("#stats").innerHTML = [
     `⚡ ${S.xp} XP`, `🗓️ активных дней: ${activeDays(S)}`, `✅ выполнений: ${totalCompletions(S)}`,
-    `📓 записей: ${Object.values(S.days).filter(d=>d.log).length}`, `🩺 глав: ${done}/${S.chapters.length}`
+    `📓 записей: ${Object.values(S.days).filter(d=>d.log).length}`, `🩺 глав: ${S.chapters.filter(c=>c.done).length}/${S.chapters.length}`
   ].map(t=>`<span class="chip">${t}</span>`).join("");
   $("#badges").innerHTML = BADGES.map(b=>`<div class="badge ${S.badges.includes(b.id)?"":"locked"}"><span class="e">${b.e}</span>${b.t}</div>`).join("");
 }
 
-// ---------- settings ----------
-function renderQuestEdit(){
+// ================= НАСТРОЙКИ =================
+function renderSettings(){
+  $("#setName").value = S.name||""; $("#progName").textContent = P().title;
   $("#questEdit").innerHTML = S.quests.map((q,i)=>`<div class="row">
     <span style="font-size:22px">${esc(q.ico||"✨")}</span>
     <span class="grow"><b>${esc(q.title)}</b><br><span class="muted" style="font-size:13px">${q.times}× в день · ${q.xp} XP</span></span>
     <button class="btn small ghost" data-up="${i}" ${i===0?"disabled":""}>↑</button>
     <button class="btn small pink" data-del="${i}">✕</button></div>`).join("");
 }
+$("#saveName").addEventListener("click",()=>{ const n=$("#setName").value.trim(); if(!n) return; S.name=n; save(); renderHeader(); toast("Имя сохранено"); });
+$("#switchProg").addEventListener("click",()=>{ if(confirm("Сменить программу? Квесты и главы заменятся на другие. XP, значки и дневник останутся.")) showOnboarding(); });
 $("#questEdit").addEventListener("click",e=>{
   const del=e.target.closest("[data-del]"), up=e.target.closest("[data-up]");
-  if(del){ const q=S.quests[+del.dataset.del]; if(confirm(`Убрать квест «${q.title}»? Прогресс и XP останутся.`)){ S.quests.splice(+del.dataset.del,1); save(); renderQuestEdit(); renderToday(); } }
-  if(up){ const i=+up.dataset.up; [S.quests[i-1],S.quests[i]]=[S.quests[i],S.quests[i-1]]; save(); renderQuestEdit(); renderToday(); }
+  if(del){ const q=S.quests[+del.dataset.del]; if(confirm(`Убрать квест «${q.title}»? Прогресс и XP останутся.`)){ S.quests.splice(+del.dataset.del,1); save(); renderSettings(); renderToday(); } }
+  if(up){ const i=+up.dataset.up; [S.quests[i-1],S.quests[i]]=[S.quests[i],S.quests[i-1]]; save(); renderSettings(); renderToday(); }
 });
 $("#addQuest").addEventListener("click",()=>{
   const t=$("#newQuestTitle").value.trim(); if(!t) return toast("Напиши название квеста");
   const times=Math.min(10,Math.max(1,+$("#newQuestTimes").value||1));
   S.quests.push({id:"q"+Date.now(), ico:"✨", title:t, desc:"", xp:times>1?5:10, times, video:t});
-  $("#newQuestTitle").value=""; save(); renderQuestEdit(); renderToday(); toast("Квест добавлен");
+  $("#newQuestTitle").value=""; save(); renderSettings(); renderToday(); toast("Квест добавлен");
 });
 $("#summaryBtn").addEventListener("click",()=>{
   const since = todayKey(new Date(Date.now()-30*864e5));
   const keys = Object.keys(S.days).filter(k=>k>=since && S.days[k].log).sort();
-  const cnt = {}; let sleepSum=0, sleepN=0;
-  keys.forEach(k=>{const l=S.days[k].log; (l.morning||[]).forEach(m=>cnt[m]=(cnt[m]||0)+1); if(l.sleep){sleepSum+=l.sleep; sleepN++;}});
-  let out = `Дневник за 30 дней (записей: ${keys.length})\n`;
+  const cnt = {}; let sleepSum=0, sleepN=0, painSum=0, painN=0;
+  keys.forEach(k=>{const l=S.days[k].log; (l.morning||[]).forEach(m=>cnt[m]=(cnt[m]||0)+1);
+    if(l.sleep){sleepSum+=l.sleep; sleepN++;} if((l.pain??-1)>=0){painSum+=l.pain; painN++;}});
+  let out = `${S.name||""} — дневник за 30 дней (записей: ${keys.length})\nПрограмма: ${P().title}\n`;
+  if(painN) out += `Средняя боль: ${(painSum/painN).toFixed(1)} из 10\n`;
   if(sleepN) out += `Средняя оценка сна: ${(sleepSum/sleepN).toFixed(1)} из 5\n`;
-  MORNING.forEach(m=>{ if(cnt[m.id]) out+=`${m.label}: ${cnt[m.id]} раз\n`; });
-  out += `\nПо дням:\n` + keys.map(k=>{const l=S.days[k].log; return `${k.split("-").reverse().join(".")} — сон ${l.sleep||"?"}/5; ${(l.morning||[]).map(id=>MORNING.find(x=>x.id===id)?.label).join(", ")||"—"}${l.note?"; "+l.note:""}`;}).join("\n");
+  P().morning.forEach(m=>{ if(cnt[m.id]) out+=`${m.label}: ${cnt[m.id]} раз\n`; });
+  out += `Активных дней с упражнениями за 30 дней: ${Object.keys(S.days).filter(k=>k>=since && isActive(S.days[k])).length}\n`;
+  out += `\nПо дням:\n` + keys.map(k=>{const l=S.days[k].log;
+    return `${ddmm(k)} — ${(l.pain??-1)>=0?"боль "+l.pain+"/10; ":""}сон ${l.sleep||"?"}/5; ${(l.morning||[]).map(labelOf).filter(Boolean).join(", ")||"—"}${l.note?"; "+l.note:""}`;}).join("\n");
   const done = S.chapters.filter(c=>c.done);
   if(done.length) out += `\n\nПройденные приёмы:\n` + done.map(c=>`${c.title} (${c.date||"—"})${c.note?": "+c.note:""}`).join("\n");
   const ta=$("#summaryOut"); ta.style.display="block"; ta.value=out; ta.select();
-  try{ navigator.clipboard.writeText(out).then(()=>toast("Сводка скопирована 📋")); }catch(e){}
+  navigator.clipboard?.writeText(out).then(()=>toast("Сводка скопирована 📋")).catch(()=>{});
 });
 $("#exportBtn").addEventListener("click",()=>{
   const blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
@@ -509,30 +752,39 @@ $("#exportBtn").addEventListener("click",()=>{
 });
 $("#importFile").addEventListener("change",async e=>{
   const f=e.target.files[0]; if(!f) return;
-  try{ const s=JSON.parse(await f.text()); if(!s.quests) throw 0; S=migrate(s); save(); renderAll(); toast("Копия загружена ✓"); }
+  try{ const s=JSON.parse(await f.text()); if(!s.quests) throw 0; S=migrate(s); save(); start(); toast("Копия загружена ✓"); }
   catch(err){ toast("Не похоже на файл копии 😕"); }
   e.target.value="";
 });
 $("#resetBtn").addEventListener("click",()=>{
-  if(confirm("Точно сбросить весь прогресс, дневник и квесты? Сначала лучше скачать копию.")){ localStorage.removeItem(KEY); S=load(); save(); renderAll(); toast("Всё сброшено"); }
+  if(confirm("Точно сбросить весь прогресс, дневник и квесты? Сначала лучше скачать копию. Код для друзей сохранится.")){
+    const keep = {code:S.code, token:S.token, friends:S.friends, name:S.name};
+    S = Object.assign(fresh(), keep); localStorage.setItem(KEY, JSON.stringify(S)); start(); toast("Всё сброшено"); }
 });
 
-// ---------- tabs ----------
+// ================= ВКЛАДКИ =================
+const RENDER = {today:renderToday, log:renderLogHistory, quest:renderChapters, friends:renderFriends, progress:renderProgress, settings:renderSettings};
 document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>{
   document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
   document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.id==="tab-"+b.dataset.tab));
-  const tab=b.dataset.tab;
-  if(tab==="today") renderToday(); if(tab==="progress") renderProgress(); if(tab==="quest") renderChapters();
-  if(tab==="settings") renderQuestEdit(); if(tab==="log") renderLogHistory();
-  window.scrollTo({top:0});
+  RENDER[b.dataset.tab](); window.scrollTo({top:0});
 }));
 
-function renderAll(){ renderToday(); $("#logDate").value=todayKey(); loadLog(todayKey()); renderLogHistory(); renderChapters(); renderProgress(); renderQuestEdit(); }
-renderAll(); checkBadges(); save();
+function renderAll(){
+  if(!S.program) return;
+  renderToday(); $("#logDate").value=todayKey(); loadLog(todayKey()); renderLogHistory(); renderChapters(); renderProgress(); renderSettings(); renderFriendsHead();
+}
+function start(){
+  if(!S.program || !S.name){ showOnboarding(); return; }
+  comeback(); renderAll(); checkBadges(); save(); ensureCode(); checkCheers();
+}
+start();
 
-// новый день, пока вкладка открыта
 let lastDay = todayKey();
-document.addEventListener("visibilitychange",()=>{ if(!document.hidden && todayKey()!==lastDay){ lastDay=todayKey(); S.lastVisit=lastDay; save(); renderAll(); } });
+document.addEventListener("visibilitychange",()=>{ if(document.hidden) return;
+  if(todayKey()!==lastDay){ lastDay=todayKey(); S.lastVisit=lastDay; save(); renderAll(); }
+  checkCheers(); });
+window.addEventListener("online", ()=>{ ensureCode(); pushProfile(); });
 
 if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(()=>{});
 })();

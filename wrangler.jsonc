@@ -1,9 +1,17 @@
 {
   // Имя должно совпадать с именем воркера в Cloudflare — иначе сборка не пройдёт
   "name": "rovnee",
+  "main": "./src/worker.js",
   "compatibility_date": "2026-11-01",
+  "preview_urls": false,
   "assets": {
     "directory": "./public",
-    "not_found_handling": "single-page-application"
-  }
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  // Хранилище кодов и прогресса для вкладки «Друзья»
+  "kv_namespaces": [
+    { "binding": "DB", "id": "6de659f7abb44527aac5a0856402d0bf" }
+  ]
 }
