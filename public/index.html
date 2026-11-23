@@ -101,6 +101,61 @@
   .theme-grid button.on{outline:4px solid var(--mint);outline-offset:2px}
   .friend .days small{display:block;text-align:center;font-size:10px;font-weight:800;color:var(--muted);margin-top:2px}
 
+
+  /* ======== ИГРА «СПИНА» ======== */
+  .robo-card{display:flex;gap:12px;align-items:center}
+  .robo{width:110px;flex:none}
+  .robo .rb-svg{width:110px;height:auto;display:block}
+  .robo.charge .rb-svg{animation:bob 1.6s ease-in-out infinite}
+  .robo.full .rb-svg{animation:power .9s ease-in-out infinite}
+  .rb-eye{animation:blink 2.4s infinite}
+  .rb-flame{transform-origin:60px 100px;animation:flick .25s infinite alternate}
+  @keyframes bob{50%{transform:translateY(-4px)}}
+  @keyframes power{0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-12px) scale(1.04)}}
+  @keyframes blink{0%,92%,100%{opacity:1}95%{opacity:.2}}
+  @keyframes flick{from{transform:scaleY(.85)}to{transform:scaleY(1.1)}}
+  .load{position:relative;height:34px;border:var(--line);border-radius:10px;background:#1b1b1b;overflow:hidden;margin-top:10px}
+  .load-fill{height:100%;background:repeating-linear-gradient(-45deg,#ffb703 0 12px,#ff7f11 12px 24px);transition:width .6s cubic-bezier(.2,.8,.2,1);animation:stripes 1s linear infinite;background-size:34px 34px}
+  .load.full .load-fill{background:repeating-linear-gradient(-45deg,#7df9ff 0 12px,#2ec5d6 12px 24px);background-size:34px 34px}
+  .load span{position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-weight:900;letter-spacing:.12em;text-shadow:0 1px 3px #000;font-family:ui-monospace,Menlo,monospace}
+  @keyframes stripes{to{background-position:34px 0}}
+  .segs{display:flex;gap:4px;margin-top:6px}
+  .segs i{flex:1;height:6px;border-radius:3px;background:var(--soft)}
+  .segs i.on{background:var(--mint)}
+  .step{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:2px dashed var(--soft)}
+  .step:last-child{border-bottom:none}
+  .step .ico{font-size:22px;width:28px;text-align:center}
+  .step.ok b{text-decoration:line-through;opacity:.6}
+  .step.ok .tick{background:var(--mint)}
+  .garage summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
+  .garage summary::after{content:"▾";margin-left:auto;font-weight:900}
+  .garage[open] summary::after{content:"▴"}
+  .showcase{display:flex;gap:10px;align-items:center;margin-top:10px;background:linear-gradient(180deg,transparent 60%,rgba(0,0,0,.08));border-radius:12px;padding:6px}
+  .showcase .car-side{width:170px;flex:none}
+  .cargrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .carcard{border:2px solid var(--ink);border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:4px;background:var(--field)}
+  .carcard.sel{outline:3px solid var(--mint)}
+  .carcard .car-side{width:100%}
+  .tune{padding:8px 0;border-bottom:2px dashed var(--soft)}
+  .sw{width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);padding:0}
+  .sw.on{outline:3px solid var(--mint);outline-offset:2px}
+  #drift{position:fixed;inset:0;z-index:40;background:radial-gradient(circle at 50% 55%,#3a3a3a 0 30%,#262626 31% 100%);overflow:hidden;color:#fff}
+  .dr-top{position:absolute;top:18px;left:0;right:0;text-align:center;z-index:3}
+  .dr-title{font-family:Impact,"Arial Black",sans-serif;font-size:40px;color:#ffb703;text-shadow:0 0 18px #ff7f11;letter-spacing:.06em;animation:power .9s infinite}
+  .dr-score{font-family:ui-monospace,Menlo,monospace;font-size:26px;font-weight:900}
+  .dr-combo{display:inline-block;margin-top:6px;background:#ff3fa4;padding:2px 12px;border-radius:99px;font-weight:900}
+  .dr-track{position:absolute;left:50%;top:55%;width:0;height:0}
+  .dr-cone{position:absolute;transform:translate(-50%,-50%);color:#ff7f11;font-size:30px}
+  .dr-rot{position:absolute;animation:spin 2.1s linear infinite}
+  .dr-car{position:absolute;transform:translate(105px,-42px) rotate(150deg)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .dr-puff{position:fixed;width:26px;height:26px;border-radius:50%;margin:-13px 0 0 -13px;opacity:.75;pointer-events:none;animation:puff 1.1s ease-out forwards;z-index:1}
+  @keyframes puff{to{transform:scale(3.2);opacity:0}}
+  .dr-robot{position:absolute;left:8px;bottom:8px;width:90px;z-index:2}
+  .dr-robot .rb-svg{animation:power .9s infinite}
+  .dr-end{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);padding:20px;color:var(--text)}
+  .dr-end .card{width:100%;max-width:340px}
+
   /* ======== ТЕМЫ ======== */
   /* Неоновый закат */
   html[data-theme=neon]{--bg:#1b0a2e;--card:rgba(24,8,46,.86);--field:rgba(255,255,255,.08);--chip:rgba(255,255,255,.1);--done:rgba(0,229,255,.16);--soft:rgba(255,255,255,.18);
@@ -393,52 +448,38 @@ const PROGRAMS = {
   },
 
   back: {
-    version: 2,
-    title: "Спина и шея при МФС", emoji: "🐢", short: "Спина и шея (МФС)",
-    desc: "Мягкие упражнения при миофасциальном синдроме: без резких движений, медленно, с теплом и дыханием. Спина и шея.",
-    pain: true,
-    intro: "Все упражнения — под миофасциальный синдром: медленно, без рывков и скручиваний, не задерживая дыхание. Лёгкое натяжение — нормально, боль — нет (не выше 3 из 10). Если после упражнения стало хуже и не прошло к следующему дню — уменьши объём вдвое или пропусти это упражнение. Перед стартом лучше показать список неврологу или врачу ЛФК.",
+    version: 3,
+    title: "Спина и шея при МФС", emoji: "🔥", short: "Спина (МФС)",
+    desc: "Одна привычка «Спина»: 7 коротких шагов с мячом и мягким движением, ~10 минут. Каждый шаг заряжает робота.",
+    pain: true, game: true,
+    intro: "Правила: давление мяча 3–4 из 10 — как приятный массаж, не боль. Дыши спокойно, лицо и зубы расслаблены. На тугой точке — пауза 30–60 секунд на выдохе, пока не отпустит. Не катать мяч по позвоночнику и не давить на шею спереди. На полу поясницу на мяч не класть — только у стены. После мяча обязательно подвигаться (шаги 6–7). Стало хуже и не прошло к утру — пропусти этот шаг и спроси врача. Нужен мяч: теннисный или МФР-мяч.",
     quests: [
-      {id:"walk", ico:"🚶", title:"Прогулка", xp:15, times:1,
-       desc:"10–30 минут в удобном темпе. Начни с того, что комфортно, и добавляй по 2–3 минуты в неделю.",
-       how:"Обычный шаг, руки свободно, без рывков и бега. При МФС ходьба — одно из самых безопасных движений: мышцы разогреваются и спазм уходит. Если 10 минут много — начни с 5.",
-       video:"ходьба при миофасциальном синдроме спины"},
-      {id:"breath", ico:"🌬️", title:"Дыхание животом", xp:10, times:1,
-       desc:"5 минут лёжа на спине, колени согнуты.",
-       how:"Одна рука на груди, другая на животе. Медленный вдох носом — поднимается живот, грудь и плечи почти неподвижны. Медленный выдох ртом. При МФС это снимает напряжение мышц спины, шеи и плеч.",
-       video:"диафрагмальное дыхание при миофасциальном болевом синдроме"},
-      {id:"chin", ico:"🦒", title:"Шея: подбородок назад", xp:10, times:1,
-       desc:"8–10 раз медленно, сидя или лёжа. Против «висящей» вперёд головы.",
-       how:"Сядь ровно или ляг на спину. Медленно отведи подбородок назад, как будто делаешь «двойной подбородок», затылок тянется вверх. Задержись 3 секунды, расслабься. Голову не запрокидывать и не наклонять вбок. Движение маленькое.",
-       video:"упражнения для шеи при миофасциальном синдроме подбородок назад"},
-      {id:"neckrel", ico:"🫧", title:"Шея и плечи: расслабление", xp:10, times:1,
-       desc:"Мягкие круги плечами и лёгкое тепло на шею, 3–5 минут.",
-       how:"Медленно поднимай плечи к ушам на вдохе и опускай на выдохе, 8 раз. Потом плавные круги плечами назад. Голову не крутить и не наклонять резко. Тёплое полотенце или грелка на шею и верх спины 10 минут. Так как шея уходит вбок, растяжки в одну сторону — только по назначению врача.",
-       video:"расслабление шеи и трапеций при миофасциальном синдроме мягко"},
-      {id:"tilt", ico:"🛏️", title:"Наклоны таза лёжа", xp:10, times:1,
-       desc:"10 медленных повторов, лёжа на спине.",
-       how:"Лёжа на спине, колени согнуты, стопы на полу. На выдохе мягко прижми поясницу к полу (таз чуть подкручивается), на вдохе вернись. Амплитуда маленькая, без усилия.",
-       video:"наклоны таза лёжа при миофасциальном синдроме поясницы"},
-      {id:"knee", ico:"🦵", title:"Колено к груди", xp:10, times:1,
-       desc:"По очереди каждое колено, 20–30 секунд, 2–3 раза.",
-       how:"Лёжа на спине, обхвати одно колено руками и мягко подтяни к груди, вторая нога согнута на полу. Держи 20–30 секунд, дыши. Без рывков и боли.",
-       video:"колено к груди при миофасциальном синдроме поясницы"},
-      {id:"cat", ico:"🐈", title:"Кошка–корова", xp:10, times:1,
-       desc:"8–10 медленных повторов на четвереньках.",
-       how:"На четвереньках: на выдохе мягко округли спину, на вдохе плавно прогнись. Небольшая амплитуда, медленно, как будто под водой. Голова продолжает линию спины, не запрокидывать.",
-       video:"кошка корова при миофасциальном синдроме мягко"},
-      {id:"glute", ico:"🍑", title:"Растяжка ягодиц", xp:10, times:1,
-       desc:"«Четвёрка» лёжа — по 30 секунд на каждую сторону.",
-       how:"Лёжа на спине, положи щиколотку одной ноги на колено другой (цифра 4) и мягко подтяни нижнюю ногу к себе. Тянет в ягодице — это то, что нужно. Ягодичные и грушевидные мышцы часто участвуют в миофасциальной боли в пояснице.",
-       video:"растяжка грушевидной мышцы при миофасциальном синдроме"},
-      {id:"warm", ico:"♨️", title:"Тепло и мягкий самомассаж", xp:10, times:1,
-       desc:"Тёплый душ или грелка 10–15 минут, затем мягко мячиком 2–3 минуты.",
-       how:"Тепло расслабляет спазмированные мышцы. Мячик (теннисный) — между спиной и стеной, лёгкое давление на напряжённые точки по 20–30 секунд. Мягко: если больно сильнее 3 из 10 — давление слишком сильное. Не давить на позвоночник и на шею спереди.",
-       video:"самомассаж мячом триггерные точки при миофасциальном синдроме"},
-      {id:"breaks", ico:"⏰", title:"Перерывы в сидении", xp:5, times:3,
-       desc:"Встать и пройтись 1–2 минуты каждые 45–60 минут.",
-       how:"Долгое сидение в одной позе усиливает миофасциальную боль. Встань, пройдись, мягко опусти плечи. Экран — на уровне глаз, чтобы голова не уходила вперёд.",
-       video:"разминка при миофасциальном синдроме сидячая работа"},
+      {id:"breath", ico:"🌬️", title:"Дыхание животом", xp:10, times:1, mins:"1–2 мин",
+       desc:"Лёжа, колени согнуты. Сигнал мышцам: можно расслабиться.",
+       how:"1. Ляг на спину, колени согнуты, стопы на полу.\n2. Одна рука на животе, другая на груди.\n3. Медленный вдох носом — поднимается живот, грудь почти неподвижна.\n4. Выдох ртом, длиннее вдоха.\n5. 6–8 таких вдохов."},
+      {id:"wallspine", ico:"🎾", title:"Мяч у стены: вдоль позвоночника", xp:10, times:1, mins:"2 мин",
+       desc:"Мышцы спины и между лопатками, стоя — не нужно ложиться на пол.",
+       how:"1. Встань спиной к стене, мяч — сбоку от позвоночника, на мышцах. Не на позвонках!\n2. Медленно сгибай и разгибай колени — мяч катится вверх-вниз.\n3. Нашёл тугое место — остановись и подыши 30–60 сек, пока отпускает.\n4. У внутреннего края лопатки — только мягко, не вдавливать: там нервы и сосуды.\n5. Потом другая сторона.",
+       video:"Самомассаж мышц спины и шеи с помощью МФР мяча"},
+      {id:"ql", ico:"🎯", title:"Мяч у стены: поясница сбоку", xp:10, times:1, mins:"1 мин/сторона",
+       desc:"Квадратная мышца поясницы — она часто болит при поворотах и вставании.",
+       how:"1. Мяч — между нижними рёбрами и тазовой костью, под углом 45° (не на позвоночнике и не строго сбоку).\n2. Прижмись к стене, найди самую тугую точку.\n3. Держи давление 30–60 сек на спокойном выдохе.\n4. Если комфортно — очень плавно наклонись в противоположную сторону и вернись.\n5. Другая сторона.",
+       video:"Lower Back Myofascial Release"},
+      {id:"glute", ico:"🍑", title:"Ягодицы мячом", xp:10, times:1, mins:"1 мин/сторона",
+       desc:"Зажатые ягодицы тянут таз — из-за этого больно вставать со стула.",
+       how:"1. Стоя у стены (или сидя на стуле) — мяч под ягодицу.\n2. Медленно перекатывайся по ягодице.\n3. На тугой точке — пауза 30–60 сек на выдохе.\n4. Другая сторона.",
+       video:"МФР для СПИНЫ. Самомассаж МЯЧОМ"},
+      {id:"foot", ico:"🦶", title:"Стопа мячом", xp:10, times:1, mins:"1 мин/нога",
+       desc:"Сидя. Стопа связана со всей задней цепочкой до поясницы.",
+       how:"1. Сядь, поставь стопу на мяч.\n2. Медленно катай от пятки к пальцам, давление 3–4 из 10.\n3. На тугом месте задержись и пошевели пальцами.\n4. Другая нога.",
+       video:"Триггеры и миофасциальный релиз. Самомассаж спины Епифанов"},
+      {id:"knees", ico:"🔄", title:"Колени в стороны лёжа", xp:10, times:1, mins:"6–8 раз",
+       desc:"Закрепить эффект мягким движением. Маленькая амплитуда.",
+       how:"1. Лёжа на спине, колени согнуты, стопы на полу.\n2. Очень медленно опусти колени чуть в сторону — насколько комфортно, без боли.\n3. Верни в центр, потом в другую сторону.\n4. Таз и рёбра мягко следуют за движением, без рывков.",
+       video:"МФР для спины. Миофасциальный релиз. #3"},
+      {id:"chin", ico:"🦒", title:"Шея: подбородок назад", xp:10, times:1, mins:"8 раз",
+       desc:"Против «висящей» вперёд головы. Сидя или лёжа.",
+       how:"1. Сядь ровно или ляг на спину.\n2. Медленно отведи подбородок назад, как «двойной подбородок», затылок тянется вверх.\n3. Задержись 3 сек, расслабься.\n4. Голову не запрокидывать и не наклонять вбок."},
     ],
     chapters: [
       {id:"neuro", stage:"Этап 1 · Диагноз", title:"Невролог", xp:100,
@@ -582,7 +623,7 @@ function renderHeader(){
   $("#lvlText").textContent = `${S.name?S.name+" · ":""}Уровень ${level}`;
   $("#xpText").textContent = `${rest} / ${need} XP · всего ${S.xp}`;
   $("#xpBar").style.width = Math.round(rest/need*100)+"%";
-  const faces = S.program==="back" ? ["🐢","🐢","🐻","🦁","🦅","👑"] : ["🙂","😊","😄","😎","🤩","👑"];
+  const faces = S.program==="back" ? ["🔧","🔥","🏎️","🏁","🏆","👑"] : ["🙂","😊","😄","😎","🤩","👑"];
   const a=$("#avatar"); a.textContent = faces[Math.min(faces.length-1, level-1)]; a.classList.toggle("back", S.program==="back");
 }
 function renderToday(){
@@ -595,6 +636,7 @@ function renderToday(){
   for(let i=6;i>=0;i--){ const dt=new Date(Date.now()-i*864e5); const a=isActive(S.days[todayKey(dt)]);
     html+=`<span class="chip" style="background:${a?"var(--mint);color:var(--btn-text)":"var(--chip)"}">${names[dt.getDay()]} ${a?"✓":"·"}</span>`; }
   $("#weekChips").innerHTML = html + `<span class="chip" style="background:var(--yellow);color:var(--btn-text)">цель недели: ${Math.min(weekActive(S),4)}/4</span>`;
+  if(P().game){ renderSpine(); return; }
   $("#programNote").innerHTML = P().intro ? `<div class="note warn">${esc(P().intro)}</div>` : "";
   $("#questList").innerHTML = S.quests.map(q=>{
     const c = d.done[q.id]||0, full = c>=q.times;
@@ -624,14 +666,223 @@ document.addEventListener("click", e=>{
     if(c+1===q.times && q.times>1){ gain+=5; msg+=" (+5 за полный квест)"; }
     if(dayComplete(S,todayKey()) && !d.fullBonus){ d.fullBonus=true; gain+=25; msg="⭐ Все квесты дня! +25 XP бонус"; }
     if(weekActive(S)>=4 && !S["wk"+weekId()]){ S["wk"+weekId()]=true; gain+=30; msg="📅 Цель недели выполнена! +30 XP"; }
-    addXP(gain,msg); checkBadges(); save(); renderToday(); return;
+    if(P().game) gameTick(1, d);
+    addXP(gain,msg); checkBadges(); save(); renderToday();
+    if(pendingDrift){ pendingDrift=false; setTimeout(()=>openDrift(true), 600); }
+    return;
   }
   const u = e.target.closest("[data-undo]");
   if(u){
     const q = S.quests.find(x=>x.id===u.dataset.undo), d=day();
-    if((d.done[q.id]||0)>0){ d.done[q.id]--; addXP(-q.xp); if(d.fullBonus && !dayComplete(S,todayKey())){ d.fullBonus=false; addXP(-25);} save(); renderToday(); }
+    if((d.done[q.id]||0)>0){ d.done[q.id]--; addXP(-q.xp); if(P().game) gameTick(-1, d); if(d.fullBonus && !dayComplete(S,todayKey())){ d.fullBonus=false; addXP(-25);} save(); renderToday(); }
   }
 });
+
+// ================= ИГРА: «СПИНА» — загрузка, робот, гараж, дрифт =================
+const CARS = [
+  {id:"sakura",  name:"Сакура S",   cls:"дрифт-купе",       price:0,    hp:280,  acc:"5.9", shape:"coupe",  color:"#ff4d6d"},
+  {id:"cobra",   name:"Кобра 69",   cls:"маслкар",          price:400,  hp:450,  acc:"4.8", shape:"muscle", color:"#ffb703"},
+  {id:"ronin",   name:"Ронин GT-X", cls:"японский тюнинг",  price:900,  hp:620,  acc:"3.6", shape:"coupe",  color:"#3a86ff"},
+  {id:"storm",   name:"Шторм RS",   cls:"суперкар",         price:1800, hp:780,  acc:"2.9", shape:"super",  color:"#8ac926"},
+  {id:"volt",    name:"Вольт Ω",    cls:"электро-гиперкар", price:3500, hp:1900, acc:"1.9", shape:"hyper",  color:"#00c2e0"},
+  {id:"phoenix", name:"Феникс V12", cls:"легенда",          price:6000, hp:1600, acc:"2.1", shape:"hyper",  color:"#d4202f"},
+];
+const TUNING = {
+  paint:{name:"Покраска", price:60,  opts:["#ff4d6d","#ffb703","#3a86ff","#8ac926","#00c2e0","#d4202f","#151515","#f2f2f2","#9b5de5","#ff7f11"]},
+  rims: {name:"Диски",    price:80,  opts:["#c0c0c0","#2a2a2a","#d4af37","#00e5ff","#ff3fa4"]},
+  wing: {name:"Спойлер",  price:120, opts:["нет","утиный хвост","антикрыло GT"]},
+  neon: {name:"Неон под днищем", price:150, opts:["нет","#00e5ff","#ff3fa4","#7CFC00","#b388ff"]},
+  smoke:{name:"Цветной дым", price:100, opts:["#eeeeee","#ff8fab","#7cb8ff","#9ef0d8","#ffd23f"]},
+};
+const RANKS = [[0,"Новичок"],[3,"Гонщик"],[10,"Дрифтер"],[25,"Дрифт-кинг"],[50,"Легенда"]];
+const G = () => (S.g ||= {coins:0, combo:0, lastFull:"", fullDays:0, cars:["sakura"], car:"sakura", tune:{}, unlocked:{}});
+const carById = id => CARS.find(c=>c.id===id) || CARS[0];
+const tuneOf = id => { const t = (G().tune[id] ||= {}); const car = carById(id);
+  return {paint:t.paint||car.color, rims:t.rims||"#c0c0c0", wing:t.wing||"нет", neon:t.neon||"нет", smoke:t.smoke||"#eeeeee"}; };
+const rankOf = n => RANKS.filter(r=>n>=r[0]).pop()[1];
+function spinePct(d=day()){ const tot=S.quests.length||1; return Math.round(S.quests.filter(q=>(d.done[q.id]||0)>=q.times).length/tot*100); }
+
+// Свой огненный робот «Магмабот». pct 0–100 — насколько он заряжен.
+function robotSVG(pct){
+  const full = pct>=100;
+  const eye = pct===0 ? "#6b6b6b" : full ? "#7df9ff" : "#ffd23f";
+  const segs = [...Array(5).keys()].map(i=>`<rect x="53" y="${92-i*7}" width="14" height="5" rx="1.5" fill="${pct>=(i+1)*20?(full?"#7df9ff":"#ffd23f"):"#4a1010"}"/>`).join("");
+  const flames = full ? `<g class="rb-flame"><path d="M20 98 q-8 -14 2 -26 q0 10 8 12 q-2 -8 4 -14 q4 14 -2 28 z" fill="#ffb703"/><path d="M100 98 q8 -14 -2 -26 q0 10 -8 12 q2 -8 -4 -14 q-4 14 2 28 z" fill="#ffb703"/>
+      <path d="M24 96 q-3 -8 2 -14 q2 8 4 8 z" fill="#fff3b0"/><path d="M96 96 q3 -8 -2 -14 q-2 8 -4 8 z" fill="#fff3b0"/></g>` : "";
+  return `<svg viewBox="0 0 120 160" class="rb-svg" aria-label="Магмабот">
+    ${full?`<circle cx="60" cy="80" r="58" fill="#ffb703" opacity=".18"/>`:""}
+    <!-- ноги -->
+    <rect x="38" y="112" width="16" height="36" rx="5" fill="#8b1a1a"/><rect x="66" y="112" width="16" height="36" rx="5" fill="#8b1a1a"/>
+    <rect x="36" y="122" width="20" height="8" rx="3" fill="#f2b632"/><rect x="64" y="122" width="20" height="8" rx="3" fill="#f2b632"/>
+    <rect x="33" y="144" width="24" height="10" rx="4" fill="#3a0d0d"/><rect x="63" y="144" width="24" height="10" rx="4" fill="#3a0d0d"/>
+    <!-- руки -->
+    <rect x="16" y="64" width="16" height="34" rx="7" fill="#b3261e"/><rect x="88" y="64" width="16" height="34" rx="7" fill="#b3261e"/>
+    <rect x="15" y="94" width="18" height="14" rx="6" fill="#f2b632"/><rect x="87" y="94" width="18" height="14" rx="6" fill="#f2b632"/>
+    ${flames}
+    <!-- корпус -->
+    <path d="M30 60 L90 60 L84 116 L36 116 Z" fill="#c62828"/>
+    <path d="M40 64 L80 64 L76 110 L44 110 Z" fill="#e53935"/>
+    <rect x="49" y="62" width="22" height="40" rx="4" fill="#2b0a0a"/>${segs}
+    <rect x="24" y="56" width="20" height="12" rx="5" fill="#f2b632"/><rect x="76" y="56" width="20" height="12" rx="5" fill="#f2b632"/>
+    <!-- голова -->
+    <rect x="40" y="20" width="40" height="36" rx="12" fill="#c62828"/>
+    <rect x="44" y="34" width="32" height="10" rx="5" fill="#1a0505"/>
+    <rect x="47" y="37" width="26" height="4" rx="2" fill="${eye}" ${pct>0?'class="rb-eye"':''}/>
+    <path d="M46 22 L52 8 L56 22 Z" fill="#ff7f11"/><path d="M64 22 L68 8 L74 22 Z" fill="#ff7f11"/>
+    <rect x="52" y="50" width="16" height="4" rx="2" fill="#f2b632"/>
+  </svg>`;
+}
+
+// Машина сбоку (для гаража)
+const SHAPES = {
+  coupe: {body:"M10 50 Q14 37 40 34 L62 22 Q82 17 102 24 L128 36 Q146 38 150 50 L150 58 L10 58 Z", win:"M60 27 L66 24 Q82 20 99 26 L114 34 L56 34 Z"},
+  muscle:{body:"M8 52 L12 39 L44 36 L60 23 L104 23 L120 36 L148 40 L152 58 L8 58 Z", win:"M62 27 L102 27 L114 36 L52 36 Z"},
+  super: {body:"M8 54 Q20 44 50 40 L76 27 Q96 22 114 30 L146 42 Q155 46 152 58 L8 58 Z", win:"M74 31 Q94 26 110 32 L122 38 L66 38 Z"},
+  hyper: {body:"M6 55 Q24 47 54 43 L82 29 Q100 25 118 34 L150 46 Q157 50 154 58 L6 58 Z", win:"M80 33 Q100 28 114 35 L126 41 L72 41 Z"},
+};
+function carSide(id){
+  const car = carById(id), t = tuneOf(id), sh = SHAPES[car.shape];
+  const wing = t.wing==="антикрыло GT" ? `<rect x="134" y="${car.shape==="muscle"?30:32}" width="3" height="10" fill="#222"/><rect x="124" y="${car.shape==="muscle"?27:29}" width="26" height="4" rx="2" fill="#222"/>`
+             : t.wing==="утиный хвост" ? `<path d="M138 ${car.shape==="muscle"?40:42} L152 ${car.shape==="muscle"?36:38} L150 ${car.shape==="muscle"?42:45} Z" fill="#222"/>` : "";
+  const neon = t.neon!=="нет" ? `<ellipse cx="80" cy="66" rx="66" ry="5" fill="${t.neon}" opacity=".8" filter="url(#blur${id})"/>` : "";
+  const wheel = x => `<circle cx="${x}" cy="58" r="11" fill="#1b1b1b"/><circle cx="${x}" cy="58" r="6" fill="${t.rims}"/><circle cx="${x}" cy="58" r="2" fill="#1b1b1b"/>`;
+  return `<svg viewBox="0 0 160 74" class="car-side"><defs><filter id="blur${id}"><feGaussianBlur stdDeviation="3"/></filter></defs>
+    ${neon}<path d="${sh.body}" fill="${t.paint}" stroke="#111" stroke-width="1.5"/><path d="${sh.win}" fill="#1d2b3a" opacity=".9"/>
+    <rect x="12" y="46" width="8" height="4" rx="2" fill="#fff6b0"/><rect x="144" y="46" width="6" height="4" rx="2" fill="#ff3b3b"/>
+    ${wing}${wheel(38)}${wheel(124)}</svg>`;
+}
+// Машина сверху (для дрифта), нос смотрит вверх
+function carTop(id){
+  const t = tuneOf(id);
+  return `<svg viewBox="0 0 44 84" width="44" height="84">
+    ${t.neon!=="нет"?`<rect x="2" y="6" width="40" height="74" rx="14" fill="${t.neon}" opacity=".55" style="filter:blur(4px)"/>`:""}
+    <rect x="3" y="14" width="7" height="14" rx="2" fill="#111"/><rect x="34" y="14" width="7" height="14" rx="2" fill="#111"/>
+    <rect x="3" y="56" width="7" height="14" rx="2" fill="#111"/><rect x="34" y="56" width="7" height="14" rx="2" fill="#111"/>
+    <rect x="7" y="4" width="30" height="76" rx="11" fill="${t.paint}" stroke="#111" stroke-width="1.5"/>
+    <rect x="11" y="22" width="22" height="13" rx="4" fill="#1d2b3a"/><rect x="12" y="55" width="20" height="8" rx="3" fill="#1d2b3a"/>
+    <rect x="10" y="5" width="6" height="3" rx="1.5" fill="#fff6b0"/><rect x="28" y="5" width="6" height="3" rx="1.5" fill="#fff6b0"/>
+    ${t.wing==="антикрыло GT"?`<rect x="4" y="74" width="36" height="5" rx="2" fill="#222"/>`:t.wing==="утиный хвост"?`<rect x="10" y="75" width="24" height="3" rx="1.5" fill="#222"/>`:""}
+  </svg>`;
+}
+
+function loadMsg(p){
+  if(p===0) return "Нажми на любой шаг — загрузка пойдёт ▶";
+  if(p<30) return "Молодец! Двигатель прогревается 🔧";
+  if(p<60) return "Отлично! Турбина набирает обороты 💨";
+  if(p<100) return "Почти FULL POWER! Ещё чуть-чуть ⚡";
+  return "FULL POWER! 🔥 Магмабот готов к заезду";
+}
+const nl2br = s => esc(s).replace(/\n/g,"<br>");
+
+function renderSpine(){
+  const d = day(), g = G(), pct = spinePct(d), full = pct>=100;
+  const doneN = S.quests.filter(q=>(d.done[q.id]||0)>=q.times).length;
+  $("#programNote").innerHTML = `<details class="note warn" style="margin-top:10px"><summary><b>Правила (прочитать один раз)</b></summary><div style="margin-top:6px">${esc(P().intro)}</div></details>`;
+  const steps = S.quests.map(q=>{ const ok=(d.done[q.id]||0)>=q.times;
+    return `<div class="step ${ok?"ok":""}">
+      <span class="ico">${esc(q.ico||"✨")}</span>
+      <div class="grow"><b>${esc(q.title)}</b> <span class="muted" style="font-size:12px">${esc(q.mins||"")}</span>
+        <details class="how"><summary>Как делать</summary><div>${q.desc?`<i>${esc(q.desc)}</i><br>`:""}${nl2br(q.how||"")}
+        ${q.video?`<br><a class="btn small ghost" style="margin-top:8px" href="${ytUrl(q.video)}" target="_blank" rel="noopener">▶ Видео: «${esc(q.video)}»</a>`:""}</div></details>
+      </div>
+      <button class="tick" style="width:42px;height:42px" ${ok?`data-undo="${esc(q.id)}" aria-label="Отменить"`:`data-tick="${esc(q.id)}" aria-label="Готово"`}>${ok?"✓":"+"}</button>
+    </div>`; }).join("");
+  const segs = S.quests.map(q=>`<i class="${(d.done[q.id]||0)>=q.times?"on":""}"></i>`).join("");
+  $("#questList").innerHTML = `
+    <div class="card robo-card ${full?"full":""}">
+      <div class="robo ${full?"full":pct>0?"charge":""}">${robotSVG(pct)}</div>
+      <div class="grow">
+        <b style="font-size:18px">Магмабот</b> <span class="chip">${rankOf(g.fullDays)}</span>
+        <div style="margin-top:6px;font-weight:800">🔥 Комбо ×${g.combo} · 🪙 ${g.coins}</div>
+        <div class="muted" style="font-size:13px">Дней на 100%: ${g.fullDays}. Пропуск — минус 1 комбо, а не всё сразу.</div>
+        ${full?`<button class="btn mint small" data-drift style="margin-top:8px">🏁 Дрифт-заезд</button>`:`<div class="muted" style="font-size:13px;margin-top:6px">На 100% — FULL POWER и дрифт-заезд за монеты.</div>`}
+      </div>
+    </div>
+    <div class="card">
+      <div class="row"><h2 class="grow" style="margin:0">🔥 Спина</h2><span class="chip">${doneN}/${S.quests.length}</span></div>
+      <div class="load ${full?"full":""}"><div class="load-fill" style="width:${pct}%"></div><span>ЗАГРУЗКА ${pct}%</span></div>
+      <div class="segs">${segs}</div>
+      <p style="margin:8px 0 4px;font-weight:800">${loadMsg(pct)}</p>
+      <div class="steps">${steps}</div>
+    </div>
+    ${garageHTML()}`;
+}
+
+let garageOpen = false;
+function garageHTML(){
+  const g = G(), cur = carById(g.car), t = tuneOf(g.car);
+  const cars = CARS.map(c=>{ const own = g.cars.includes(c.id);
+    return `<div class="carcard ${g.car===c.id?"sel":""}">${carSide(c.id)}<b>${c.name}</b><small class="muted">${c.cls} · ${c.hp} л.с.</small>
+      ${own ? (g.car===c.id?`<span class="chip">в заезде</span>`:`<button class="btn small ghost" data-selcar="${c.id}">Выбрать</button>`)
+            : `<button class="btn small" data-buycar="${c.id}" ${g.coins<c.price?"disabled":""}>🪙 ${c.price}</button>`}</div>`; }).join("");
+  const tuning = Object.entries(TUNING).map(([k,v])=>{
+    if(!g.unlocked[k]) return `<div class="row tune"><span class="grow">${v.name}</span><button class="btn small" data-unlock="${k}" ${g.coins<v.price?"disabled":""}>Открыть 🪙 ${v.price}</button></div>`;
+    const opts = v.opts.map((o,i)=> o.startsWith("#")
+      ? `<button class="sw ${t[k]===o?"on":""}" style="background:${o}" data-tune="${k}:${i}" aria-label="${v.name}"></button>`
+      : `<button class="btn small ${t[k]===o?"":"ghost"}" data-tune="${k}:${i}">${o}</button>`).join("");
+    return `<div class="tune"><div style="font-weight:800;margin-bottom:4px">${v.name}</div><div class="row" style="flex-wrap:wrap;gap:6px">${opts}</div></div>`; }).join("");
+  return `<details class="card garage" ${garageOpen?"open":""}><summary><b style="font-size:18px">🏎️ Гараж</b> <span class="chip">🪙 ${g.coins}</span></summary>
+    <div class="showcase">${carSide(g.car)}<div><b>${cur.name}</b><br><span class="muted" style="font-size:13px">${cur.cls} · ${cur.hp} л.с. · 0–100 за ${cur.acc} с</span></div></div>
+    <div class="muted" style="font-size:13px;margin:6px 0">Монеты: +10 за каждый шаг, бонус за 100% и за дрифт (больше с комбо).</div>
+    <div class="cargrid">${cars}</div>
+    <h3 style="margin:14px 0 6px">🔧 Тюнинг · ${cur.name}</h3>${tuning}
+  </details>`;
+}
+
+// Монеты и FULL POWER при отметке шагов
+let pendingDrift = false;
+function gameTick(sign, d){
+  const g = G();
+  g.coins = Math.max(0, g.coins + 10*sign);
+  if(sign>0 && spinePct(d)>=100 && !d.gFull){
+    d.gFull = true;
+    const today = todayKey(), y = todayKey(new Date(Date.now()-864e5));
+    if(g.lastFull===y) g.combo += 1;
+    else if(!g.lastFull) g.combo = 1;
+    else { const gap = Math.round((new Date(today)-new Date(g.lastFull))/864e5) - 1; g.combo = Math.max(0, g.combo - gap) + 1; }
+    g.lastFull = today; g.fullDays += 1; g.coins += 30;
+    pendingDrift = true;
+  }
+}
+
+// Дрифт-заезд
+function openDrift(reward){
+  const g = G(), car = carById(g.car), t = tuneOf(g.car);
+  const target = 1000*Math.max(1,g.combo) + Math.floor(Math.random()*600);
+  const coins = reward ? 20*Math.max(1,g.combo) : 0;
+  const ov = document.createElement("div"); ov.id="drift";
+  ov.innerHTML = `<div class="dr-top"><div class="dr-title">FULL POWER!</div><div class="dr-score">DRIFT <b id="drScore">0</b></div><div class="dr-combo">КОМБО ×${Math.max(1,g.combo)}</div></div>
+    <div class="dr-track"><div class="dr-cone">▲</div><div class="dr-rot"><div class="dr-car" id="drCar">${carTop(g.car)}</div></div></div>
+    <div class="dr-robot">${robotSVG(100)}</div>
+    <div class="dr-end" id="drEnd" style="display:none"><div class="card" style="text-align:center">
+      <h2 style="margin:0 0 6px">${car.name}</h2><div style="font-size:22px;font-weight:900">${target.toLocaleString("ru")} очков</div>
+      ${coins?`<div style="font-size:20px;margin-top:6px">+${coins} 🪙</div>`:`<div class="muted">Повторный заезд — без монет</div>`}
+      <button class="btn mint" id="drClose" style="margin-top:12px;width:100%">Круто!</button></div></div>`;
+  document.body.appendChild(ov);
+  if(reward){ g.coins += coins; save(); }
+  const carEl = ov.querySelector("#drCar"), sc = ov.querySelector("#drScore"), t0 = performance.now();
+  const puff = setInterval(()=>{ const r = carEl.getBoundingClientRect(); const p = document.createElement("i"); p.className="dr-puff";
+    p.style.left=(r.left+r.width/2)+"px"; p.style.top=(r.top+r.height/2)+"px"; p.style.background=t.smoke; ov.appendChild(p); setTimeout(()=>p.remove(),1100); }, 55);
+  const tick = setInterval(()=>{ const k=Math.min(1,(performance.now()-t0)/4500); sc.textContent=Math.round(target*k).toLocaleString("ru"); }, 50);
+  setTimeout(()=>{ clearInterval(puff); clearInterval(tick); sc.textContent=target.toLocaleString("ru"); ov.querySelector("#drEnd").style.display="flex"; }, 4800);
+  ov.addEventListener("click", e=>{ if(e.target.id==="drClose"){ ov.remove(); renderToday(); } });
+}
+
+document.addEventListener("click", e=>{
+  if(!P().game) return;
+  const g = G();
+  const dr = e.target.closest("[data-drift]"); if(dr){ openDrift(false); return; }
+  const buy = e.target.closest("[data-buycar]");
+  if(buy){ const c = carById(buy.dataset.buycar); if(g.coins<c.price) return toast("Не хватает монет 🪙");
+    g.coins -= c.price; g.cars.push(c.id); g.car = c.id; garageOpen=true; save(); renderToday(); toast(`🏎️ ${c.name} в гараже!`); return; }
+  const sel = e.target.closest("[data-selcar]"); if(sel){ g.car = sel.dataset.selcar; garageOpen=true; save(); renderToday(); return; }
+  const un = e.target.closest("[data-unlock]");
+  if(un){ const k=un.dataset.unlock, v=TUNING[k]; if(g.coins<v.price) return toast("Не хватает монет 🪙");
+    g.coins -= v.price; g.unlocked[k]=true; garageOpen=true; save(); renderToday(); toast(`🔧 ${v.name} открыт!`); return; }
+  const tu = e.target.closest("[data-tune]");
+  if(tu){ const [k,i]=tu.dataset.tune.split(":"); (g.tune[g.car] ||= {})[k] = TUNING[k].opts[+i]; garageOpen=true; save(); renderToday(); return; }
+});
+document.addEventListener("toggle", e=>{ if(e.target.classList?.contains("garage")) garageOpen = e.target.open; }, true);
 
 // ================= ДНЕВНИК =================
 let logState = {sleep:0, pain:-1, morning:[]};
