@@ -1,6 +1,6 @@
-// Простой офлайн-кэш: приложение открывается и без интернета.
-const CACHE = "rovnee-v2";
-const FILES = ["/", "/index.html", "/manifest.webmanifest", "/icon.svg"];
+// Офлайн-кэш + ежедневные напоминания.
+const CACHE = "rovnee-v3";
+const FILES = ["/", "/index.html", "/manifest.webmanifest", "/icon.svg", "/icon-192.png"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
@@ -27,5 +27,29 @@ self.addEventListener("fetch", e => {
         return res;
       })
       .catch(() => caches.match(e.request).then(r => r || caches.match("/")))
+  );
+});
+
+// Напоминание приходит без текста — текст выбираем здесь.
+const MESSAGES = [
+  "Пара минут для себя: отметь квесты и дневник 🌿",
+  "Ты сегодня ещё не заходил(а). Хотя бы один квест? ✨",
+  "Маленький шаг сегодня — уже засчитанный день 💛",
+  "Загляни в «Ровнее»: дневник и квесты ждут 🙂",
+];
+self.addEventListener("push", e => {
+  const body = MESSAGES[new Date().getDate() % MESSAGES.length];
+  e.waitUntil(self.registration.showNotification("Ровнее", {
+    body, icon: "/icon-192.png", badge: "/icon-192.png", tag: "daily", renotify: true,
+  }));
+});
+
+self.addEventListener("notificationclick", e => {
+  e.notification.close();
+  e.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then(list => {
+      for (const c of list) if ("focus" in c) return c.focus();
+      return clients.openWindow("/");
+    })
   );
 });

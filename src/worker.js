@@ -6,6 +6,12 @@
 //   PUT  /api/profile/:code         → сохранить свой прогресс (нужен токен)
 //   GET  /api/profile/:code         → посмотреть прогресс по коду
 //   POST /api/cheer/:code           → подбодрить друга
+//   PUT  /api/push/:code            → включить ежедневное напоминание (нужен токен)
+//   DELETE /api/push/:code          → выключить напоминание
+//   POST /api/push/:code/test       → прислать пробное напоминание сейчас
+//
+// Раз в час (cron) воркер присылает напоминание тем, у кого сейчас выбранный час
+// и кто сегодня ещё ничего не отметил.
 
 const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 const MAX_BODY = 12_000;
@@ -50,6 +56,62 @@ function sanitizePublic(p) {
     chaptersTotal: Math.max(0, Math.min(50, +p?.chaptersTotal || 0)),
     days,
   };
+}
+
+// ---------- Web Push (без содержимого: текст показывает sw.js) ----------
+const VAPID_PUBLIC = "BPVdLvnBBBopp_dxljU3vwpxo2EutkvYbpueBuB304iyJ2D7wkH5LCcod_upZtH05RI_iwVTHrIdKUWXzsnbihA";
+const VAPID_SUBJECT = "https://rovnee.arpi-apps.workers.dev";
+const b64url = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+const b64urlStr = (str) => b64url(new TextEncoder().encode(str));
+let vapidKey;
+async function vapidJWT(env, endpoint) {
+  vapidKey ||= await crypto.subtle.importKey("jwk", JSON.parse(env.VAPID_PRIVATE_JWK), { name: "ECDSA", namedCurve: "P-256" }, false, ["sign"]);
+  const head = b64urlStr(JSON.stringify({ typ: "JWT", alg: "ES256" }));
+  const body = b64urlStr(JSON.stringify({ aud: new URL(endpoint).origin, exp: Math.floor(Date.now() / 1000) + 12 * 3600, sub: VAPID_SUBJECT }));
+  const sig = await crypto.subtle.sign({ name: "ECDSA", hash: "SHA-256" }, vapidKey, new TextEncoder().encode(head + "." + body));
+  return head + "." + body + "." + b64url(sig);
+}
+async function sendPush(env, endpoint) {
+  const jwt = await vapidJWT(env, endpoint);
+  const r = await fetch(endpoint, {
+    method: "POST",
+    headers: { TTL: "43200", Urgency: "normal", Authorization: `vapid t=${jwt}, k=${VAPID_PUBLIC}`, "Content-Length": "0" },
+  });
+  return r.status;
+}
+function localNow(tz) {
+  const parts = Object.fromEntries(new Intl.DateTimeFormat("en-CA", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hourCycle: "h23" })
+    .formatToParts(new Date()).map((p) => [p.type, p.value]));
+  return { date: `${parts.year}-${parts.month}-${parts.day}`, hour: +parts.hour };
+}
+async function authed(request, env, code) {
+  const raw = await env.DB.get("p:" + code);
+  if (!raw) return null;
+  const rec = JSON.parse(raw);
+  const token = (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
+  return token && (await sha256(token)) === rec.tokenHash ? rec : null;
+}
+async function dailyReminders(env) {
+  let cursor;
+  do {
+    const page = await env.DB.list({ prefix: "s:", cursor });
+    for (const k of page.keys) {
+      const sub = JSON.parse((await env.DB.get(k.name)) || "null");
+      if (!sub) continue;
+      let now;
+      try { now = localNow(sub.tz || "Europe/Moscow"); } catch { now = localNow("Europe/Moscow"); }
+      if (now.hour !== sub.hour || sub.lastSent === now.date) continue;
+      sub.lastSent = now.date;
+      const prof = JSON.parse((await env.DB.get("p:" + k.name.slice(2))) || "null");
+      const today = prof?.pub?.days?.[now.date];
+      if (!(today && today[0] > 0)) {
+        const status = await sendPush(env, sub.endpoint).catch(() => 0);
+        if (status === 404 || status === 410) { await env.DB.delete(k.name); continue; }
+      }
+      await env.DB.put(k.name, JSON.stringify(sub));
+    }
+    cursor = page.list_complete ? null : page.cursor;
+  } while (cursor);
 }
 
 async function readBody(request) {
@@ -109,10 +171,37 @@ async function handleApi(request, env, url) {
     return json({ ok: true, count: c.count });
   }
 
+  if (route === "push" && code) {
+    const rec = await authed(request, env, code);
+    if (!rec) return json({ error: "forbidden" }, 403);
+    if (request.method === "PUT") {
+      let b; try { b = await readBody(request); } catch { return json({ error: "bad_request" }, 400); }
+      const endpoint = String(b?.endpoint || "");
+      if (!/^https:\/\//.test(endpoint) || endpoint.length > 1000) return json({ error: "bad_request" }, 400);
+      const hour = Number.isFinite(+b.hour) && b.hour !== "" && b.hour !== null ? Math.max(0, Math.min(23, Math.floor(+b.hour))) : 21;
+      let tz = clip(b.tz, 60) || "Europe/Moscow";
+      try { localNow(tz); } catch { tz = "Europe/Moscow"; }
+      const prev = JSON.parse((await env.DB.get("s:" + code)) || "{}");
+      await env.DB.put("s:" + code, JSON.stringify({ endpoint, hour, tz, lastSent: prev.endpoint === endpoint ? prev.lastSent || "" : "" }));
+      return json({ ok: true });
+    }
+    if (request.method === "DELETE") { await env.DB.delete("s:" + code); return json({ ok: true }); }
+    if (request.method === "POST" && parts[3] === "test") {
+      const sub = JSON.parse((await env.DB.get("s:" + code)) || "null");
+      if (!sub) return json({ error: "no_subscription" }, 404);
+      const status = await sendPush(env, sub.endpoint).catch(() => 0);
+      return json({ ok: status >= 200 && status < 300, status });
+    }
+  }
+
   return json({ error: "not_found" }, 404);
 }
 
 export default {
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(dailyReminders(env));
+  },
+
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname.startsWith("/api/")) {

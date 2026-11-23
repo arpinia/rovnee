@@ -10,6 +10,8 @@
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api/*"]
   },
+  // Раз в час проверяем, кому пора прислать напоминание
+  "triggers": { "crons": ["0 * * * *"] },
   // Хранилище кодов и прогресса для вкладки «Друзья»
   "kv_namespaces": [
     { "binding": "DB", "id": "6de659f7abb44527aac5a0856402d0bf" }

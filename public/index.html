@@ -13,54 +13,56 @@
     --bg:#FFF4DC; --card:#FFFDF6; --ink:#1E1A16; --muted:#6B6257;
     --pink:#FF8FAB; --yellow:#FFD23F; --mint:#7BDFB4; --blue:#7CB8FF; --orange:#FF9F5A; --lilac:#C3A6FF;
     --line:3px solid var(--ink); --shadow:4px 4px 0 var(--ink); --r:16px;
+    --text:#1E1A16; --btn-text:#1E1A16; --field:#fff; --chip:#fff; --done:#E6FAF0; --soft:#e5dccb;
+    --hfont:"Rubik","Trebuchet MS",system-ui,sans-serif; --btn-bg:var(--yellow); --shadow-s:2px 2px 0 var(--ink); --shadow-m:3px 3px 0 var(--ink);
   }
   *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Nunito","Trebuchet MS",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:"Nunito","Trebuchet MS",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
   body{padding:16px 14px calc(96px + env(safe-area-inset-bottom));max-width:560px;margin:0 auto}
-  h1,h2,h3{font-family:"Rubik","Trebuchet MS",system-ui,sans-serif;margin:0}
+  h1,h2,h3{font-family:var(--hfont);margin:0}
   h2{font-size:22px;margin:6px 0 12px}
   button{font:inherit;color:inherit;cursor:pointer}
   .card{background:var(--card);border:var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;margin-bottom:14px}
-  .btn{border:var(--line);border-radius:12px;background:var(--yellow);box-shadow:3px 3px 0 var(--ink);padding:9px 14px;font-weight:800;transition:transform .08s,box-shadow .08s}
-  a.btn{color:var(--ink);text-decoration:none;display:inline-block}
+  .btn{border:var(--line);border-radius:12px;background:var(--btn-bg);color:var(--btn-text);box-shadow:var(--shadow-m);padding:9px 14px;font-weight:800;transition:transform .08s,box-shadow .08s}
+  a.btn{color:var(--btn-text);text-decoration:none;display:inline-block}
   .btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
   .btn:disabled{opacity:.4}
-  .btn.ghost{background:var(--card)} .btn.mint{background:var(--mint)} .btn.pink{background:var(--pink)} .btn.blue{background:var(--blue)}
-  .btn.small{padding:5px 10px;font-size:14px;border-width:2px;box-shadow:2px 2px 0 var(--ink)}
+  .btn.ghost{background:var(--card);color:var(--text)} .btn.mint{background:var(--mint)} .btn.pink{background:var(--pink)} .btn.blue{background:var(--blue)}
+  .btn.small{padding:5px 10px;font-size:14px;border-width:2px;box-shadow:var(--shadow-s)}
   .muted{color:var(--muted)} .row{display:flex;gap:10px;align-items:center} .grow{flex:1}
   .hero{display:flex;gap:12px;align-items:center}
   .avatar{width:64px;height:64px;border:var(--line);border-radius:50%;background:var(--pink);display:grid;place-items:center;font-size:34px;box-shadow:var(--shadow);flex:none}
   .avatar.back{background:var(--blue)}
   .lvl{font-weight:900;font-size:20px}
-  .bar{height:16px;border:var(--line);border-radius:99px;background:#fff;overflow:hidden;margin-top:6px}
+  .bar{height:16px;border:var(--line);border-radius:99px;background:var(--field);overflow:hidden;margin-top:6px}
   .bar>i{display:block;height:100%;background:repeating-linear-gradient(45deg,var(--mint) 0 10px,#5fd09f 10px 20px);transition:width .4s}
   .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-  .chip{border:2px solid var(--ink);border-radius:99px;padding:3px 10px;font-size:13px;font-weight:800;background:#fff}
-  .quest{display:flex;gap:12px;align-items:flex-start;padding:12px;border:var(--line);border-radius:14px;margin-bottom:10px;background:#fff;box-shadow:3px 3px 0 var(--ink)}
-  .quest.done{background:#E6FAF0}
+  .chip{border:2px solid var(--ink);border-radius:99px;padding:3px 10px;font-size:13px;font-weight:800;background:var(--chip);color:var(--text)}
+  .quest{display:flex;gap:12px;align-items:flex-start;padding:12px;border:var(--line);border-radius:14px;margin-bottom:10px;background:var(--field);box-shadow:var(--shadow-m)}
+  .quest.done{background:var(--done)}
   .quest .ico{font-size:26px;line-height:1;flex:none;width:34px;text-align:center}
   .quest h3{font-size:16px}
   .quest p{margin:3px 0 8px;font-size:14px;color:var(--muted)}
-  .tick{flex:none;width:46px;height:46px;border:var(--line);border-radius:12px;background:#fff;font-size:22px;font-weight:900;box-shadow:2px 2px 0 var(--ink)}
+  .tick{flex:none;width:46px;height:46px;border:var(--line);border-radius:12px;background:var(--field);font-size:22px;font-weight:900;box-shadow:var(--shadow-s)}
   .quest.done .tick{background:var(--mint)}
   .counter{font-size:13px;font-weight:800;margin-top:2px;text-align:center}
   details.how{font-size:14px;margin-top:2px} details.how summary{cursor:pointer;font-weight:800}
-  details.how div{padding:6px 0 2px;color:var(--ink)}
+  details.how div{padding:6px 0 2px;color:var(--text)}
   nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:var(--line);display:flex;justify-content:center;padding:8px 4px calc(8px + env(safe-area-inset-bottom));z-index:5}
   nav .inner{display:flex;gap:2px;max-width:560px;width:100%}
   nav button{flex:1;min-width:0;border:2px solid transparent;background:none;border-radius:12px;padding:6px 0;font-size:11px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:2px}
   nav button span{font-size:21px}
-  nav button.on{border-color:var(--ink);background:var(--yellow);box-shadow:2px 2px 0 var(--ink)}
+  nav button.on{border-color:var(--ink);background:var(--yellow);color:var(--btn-text);box-shadow:var(--shadow-s)}
   .tab{display:none} .tab.on{display:block}
   label.f{display:block;font-weight:800;margin:10px 0 6px}
   .scale{display:flex;gap:6px}
-  .scale button{flex:1;border:2px solid var(--ink);border-radius:10px;background:#fff;padding:8px 0;font-size:20px}
+  .scale button{flex:1;border:2px solid var(--ink);border-radius:10px;background:var(--field);padding:8px 0;font-size:20px}
   .scale.nums button{font-size:15px;font-weight:900;padding:8px 0}
-  .scale button.on{background:var(--yellow);box-shadow:2px 2px 0 var(--ink)}
+  .scale button.on{background:var(--yellow);color:var(--btn-text);box-shadow:var(--shadow-s)}
   .toggle{display:flex;gap:8px;flex-wrap:wrap}
-  .toggle button{border:2px solid var(--ink);border-radius:99px;background:#fff;padding:6px 12px;font-weight:700;font-size:14px}
-  .toggle button.on{background:var(--pink)}
-  textarea,input[type=text],input[type=date],input[type=number]{width:100%;border:var(--line);border-radius:12px;padding:10px;font:inherit;background:#fff}
+  .toggle button{border:2px solid var(--ink);border-radius:99px;background:var(--field);padding:6px 12px;font-weight:700;font-size:14px}
+  .toggle button.on{background:var(--pink);color:var(--btn-text)}
+  textarea,input[type=text],input[type=date],input[type=number]{width:100%;border:var(--line);border-radius:12px;padding:10px;font:inherit;background:var(--field)}
   textarea{min-height:70px;resize:vertical}
   .chapter{display:flex;gap:12px;align-items:flex-start}
   .num{flex:none;width:40px;height:40px;border:var(--line);border-radius:50%;display:grid;place-items:center;font-weight:900;background:var(--blue)}
@@ -72,28 +74,88 @@
   .chart .b.today{background:var(--pink)}
   .chart small{font-size:10px;font-weight:800;color:var(--muted)}
   .badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
-  .badge{border:var(--line);border-radius:14px;padding:10px 6px;text-align:center;background:#fff;font-size:12px;font-weight:800}
+  .badge{border:var(--line);border-radius:14px;padding:10px 6px;text-align:center;background:var(--field);font-size:12px;font-weight:800}
   .badge .e{font-size:30px;display:block}
   .badge.locked{opacity:.35;filter:grayscale(1)}
-  #toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-160%);background:var(--yellow);border:var(--line);border-radius:14px;box-shadow:var(--shadow);padding:10px 16px;font-weight:900;z-index:30;transition:transform .3s;max-width:90vw;text-align:center}
+  #toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-160%);background:var(--yellow);color:var(--btn-text);border:var(--line);border-radius:14px;box-shadow:var(--shadow);padding:10px 16px;font-weight:900;z-index:30;transition:transform .3s;max-width:90vw;text-align:center}
   #toast.show{transform:translate(-50%,0)}
   .pop{animation:pop .35s}
   @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.15)}100%{transform:scale(1)}}
-  .note{font-size:13px;background:#FFF0F3;border:2px dashed var(--ink);border-radius:12px;padding:10px;margin-top:10px}
-  .note.warn{background:#FFE9D6}
-  .listedit .row{border-bottom:2px dashed #d8cdb8;padding:8px 0}
+  .note{font-size:13px;background:var(--note,#FFF0F3);color:var(--text);border:2px dashed var(--ink);border-radius:12px;padding:10px;margin-top:10px}
+  .note.warn{background:var(--note-warn,#FFE9D6)}
+  .listedit .row{border-bottom:2px dashed var(--soft);padding:8px 0}
   /* onboarding */
   #onboard{position:fixed;inset:0;background:var(--bg);z-index:20;overflow:auto;padding:24px 16px;display:none}
   #onboard.show{display:block}
   #onboard .wrap{max-width:520px;margin:0 auto}
-  .pcard{display:flex;gap:12px;align-items:center;text-align:left;width:100%;border:var(--line);border-radius:16px;background:#fff;padding:14px;margin-bottom:12px;box-shadow:3px 3px 0 var(--ink)}
+  .pcard{display:flex;gap:12px;align-items:center;text-align:left;width:100%;border:var(--line);border-radius:16px;background:var(--field);padding:14px;margin-bottom:12px;box-shadow:var(--shadow-m)}
   .pcard .e{font-size:34px}
-  .pcard.on{background:var(--yellow)}
+  .pcard.on{background:var(--yellow);color:var(--btn-text)}
+  .pcard{color:var(--text)}
   /* friends */
-  .codebox{font-family:ui-monospace,Menlo,monospace;font-size:28px;font-weight:900;letter-spacing:.18em;background:#fff;border:var(--line);border-radius:12px;padding:8px 14px;text-align:center}
+  .codebox{font-family:ui-monospace,Menlo,monospace;font-size:28px;font-weight:900;letter-spacing:.18em;background:var(--field);border:var(--line);border-radius:12px;padding:8px 14px;text-align:center}
   .friend .days{display:flex;gap:4px;margin-top:8px}
-  .friend .days i{flex:1;height:26px;border:2px solid var(--ink);border-radius:6px;background:#fff;display:block}
+  .friend .days i{flex:1;height:26px;border:2px solid var(--ink);border-radius:6px;background:var(--field);display:block}
+  .theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .theme-grid button{border:var(--line);border-radius:14px;padding:12px 8px;font-weight:900;box-shadow:var(--shadow-s);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+  .theme-grid button.on{outline:4px solid var(--mint);outline-offset:2px}
   .friend .days small{display:block;text-align:center;font-size:10px;font-weight:800;color:var(--muted);margin-top:2px}
+
+  /* ======== ТЕМЫ ======== */
+  /* Неоновый закат */
+  html[data-theme=neon]{--bg:#1b0a2e;--card:rgba(24,8,46,.86);--field:rgba(255,255,255,.08);--chip:rgba(255,255,255,.1);--done:rgba(0,229,255,.16);--soft:rgba(255,255,255,.18);
+    --ink:#ff3fa4;--text:#fff;--muted:#f6c6e7;--pink:#ff3fa4;--yellow:#ffcf5a;--mint:#00e5ff;--blue:#9b6bff;--orange:#ff8a5b;--btn-text:#1b0a2e;
+    --shadow:0 0 16px rgba(255,63,164,.55);--shadow-m:0 0 10px rgba(255,63,164,.6);--shadow-s:0 0 6px rgba(255,63,164,.6);--line:2px solid var(--ink);
+    --btn-bg:linear-gradient(90deg,#ff3fa4,#ffb36b);--hfont:Impact,"Arial Narrow Bold","Franklin Gothic Heavy",sans-serif;--note:rgba(255,63,164,.15);--note-warn:rgba(255,179,107,.18)}
+  html[data-theme=neon] body{background:linear-gradient(180deg,#24093f 0%,#5b1670 40%,#c2367f 75%,#ff9a62 100%) fixed}
+  html[data-theme=neon] h1,html[data-theme=neon] h2,html[data-theme=neon] h3,html[data-theme=neon] .lvl{font-style:italic;text-transform:uppercase;letter-spacing:.04em;text-shadow:0 0 10px #ff3fa4}
+  html[data-theme=neon] .tick{background:transparent;color:#fff}
+  html[data-theme=neon] .quest.done .tick{background:#00e5ff;color:#1b0a2e}
+  html[data-theme=neon] .bar>i{background:linear-gradient(90deg,#00e5ff,#ff3fa4)}
+  html[data-theme=neon] nav{background:#1a0730}
+  html[data-theme=neon] .chart .b{background:#00e5ff}
+
+  /* Феи */
+  html[data-theme=fairy]{--bg:#ffe3f6;--card:rgba(255,255,255,.88);--field:#fff;--chip:#fff7fd;--done:#f3e6ff;--soft:#f0c8f5;
+    --ink:#c86bfa;--text:#5a2a7a;--muted:#9a6fb5;--pink:#ff7ad9;--yellow:#ffe27a;--mint:#a6f0dc;--blue:#b7cbff;--orange:#ffb3c7;--btn-text:#5a2a7a;
+    --shadow:0 6px 18px rgba(200,107,250,.35);--shadow-m:0 4px 12px rgba(200,107,250,.35);--shadow-s:0 2px 8px rgba(200,107,250,.35);--line:2px solid var(--ink);--r:26px;
+    --btn-bg:linear-gradient(90deg,#ffb3ec,#d7b3ff);--hfont:"Segoe Print","Bradley Hand","Comic Sans MS",cursive;--note:#fff0fb;--note-warn:#fff3e0}
+  html[data-theme=fairy] body{background:
+    radial-gradient(circle at 12% 18%,rgba(255,255,255,.9) 0 2px,transparent 3px),radial-gradient(circle at 78% 8%,rgba(255,255,255,.9) 0 1.5px,transparent 2.5px),
+    radial-gradient(circle at 88% 62%,rgba(255,255,255,.9) 0 2px,transparent 3px),radial-gradient(circle at 30% 80%,rgba(255,255,255,.9) 0 1.5px,transparent 2.5px),
+    linear-gradient(160deg,#ffd1f1 0%,#e9d4ff 50%,#cdeeff 100%) fixed}
+  html[data-theme=fairy] h2::after{content:" ✨"}
+  html[data-theme=fairy] nav{background:#fff6fc}
+  html[data-theme=fairy] .avatar{background:linear-gradient(135deg,#ff9be6,#c3a6ff)}
+  html[data-theme=fairy] .bar>i{background:linear-gradient(90deg,#ff9be6,#b388ff,#7fe3ff)}
+
+  /* Комикс-герои */
+  html[data-theme=comic]{--bg:#ffd400;--card:#fff;--field:#fff;--chip:#fff;--done:#d9f7e4;--soft:#bbb;
+    --ink:#111;--text:#111;--muted:#444;--pink:#e62429;--yellow:#ffd400;--mint:#36d17a;--blue:#1f5fd1;--orange:#ff7a00;--btn-text:#111;
+    --line:4px solid #111;--shadow:6px 6px 0 #111;--shadow-m:4px 4px 0 #111;--shadow-s:3px 3px 0 #111;--r:6px;
+    --hfont:Impact,"Arial Black","Franklin Gothic Heavy",sans-serif;--note:#e6f0ff;--note-warn:#ffe3e3}
+  html[data-theme=comic] body{background:radial-gradient(#e8a800 1.6px,transparent 1.8px) 0 0/14px 14px,#ffd400}
+  html[data-theme=comic] h1,html[data-theme=comic] h2,html[data-theme=comic] h3,html[data-theme=comic] .lvl{text-transform:uppercase;letter-spacing:.03em}
+  html[data-theme=comic] .tab>h2{display:inline-block;background:#e62429;color:#fff;padding:2px 12px;border:3px solid #111;transform:rotate(-1.5deg);box-shadow:3px 3px 0 #111}
+  html[data-theme=comic] .card:nth-of-type(even){transform:rotate(-.4deg)}
+  html[data-theme=comic] #toast{background:#fff;font-family:Impact,"Arial Black",sans-serif;text-transform:uppercase;border-radius:24px}
+  html[data-theme=comic] .avatar{background:#1f5fd1}
+  html[data-theme=comic] nav{border-top:4px solid #111}
+  html[data-theme=comic] .bar>i{background:repeating-linear-gradient(45deg,#e62429 0 10px,#c81d22 10px 20px)}
+
+  /* Красно-золотая броня */
+  html[data-theme=armor]{--bg:#0b0b0f;--card:rgba(48,8,10,.92);--field:rgba(255,255,255,.06);--chip:rgba(244,196,48,.08);--done:rgba(125,249,255,.12);--soft:rgba(244,196,48,.25);
+    --ink:#f4c430;--text:#fdf3d6;--muted:#d9b97a;--pink:#d4202f;--yellow:#f4c430;--mint:#7df9ff;--blue:#7df9ff;--orange:#ff9f3a;--btn-text:#1a0505;
+    --line:2px solid var(--ink);--shadow:0 0 14px rgba(125,249,255,.25),inset 0 0 0 1px rgba(244,196,48,.2);--shadow-m:0 0 8px rgba(244,196,48,.45);--shadow-s:0 0 6px rgba(244,196,48,.45);--r:10px;
+    --btn-bg:linear-gradient(180deg,#ffe082,#d4a017);--hfont:"Arial Black","Eurostile","Bank Gothic",sans-serif;--note:rgba(125,249,255,.08);--note-warn:rgba(212,32,47,.22)}
+  html[data-theme=armor] body{background:radial-gradient(circle at 50% -10%,#5a0008 0%,#1a0306 45%,#0b0b0f 75%) fixed}
+  html[data-theme=armor] h1,html[data-theme=armor] h2,html[data-theme=armor] h3,html[data-theme=armor] .lvl{text-transform:uppercase;letter-spacing:.08em}
+  html[data-theme=armor] .avatar{background:radial-gradient(circle,#dffcff 0%,#7df9ff 35%,#1b4d5c 70%);box-shadow:0 0 0 3px #f4c430,0 0 22px #7df9ff}
+  html[data-theme=armor] .tick{background:transparent;color:#f4c430}
+  html[data-theme=armor] .quest.done .tick{background:#7df9ff;color:#0b0b0f}
+  html[data-theme=armor] .bar>i{background:linear-gradient(90deg,#7df9ff,#dffcff)}
+  html[data-theme=armor] nav{background:#140306}
+  html[data-theme=armor] .chart .b{background:#7df9ff}
 </style>
 </head>
 <body>
@@ -210,6 +272,21 @@
     <button class="btn small ghost" id="switchProg">Сменить программу</button>
     <label class="row" style="margin-top:12px;font-weight:700"><input type="checkbox" id="diaryToggle" style="width:20px;height:20px"> Показывать дневник</label>
   </div>
+  <div class="card">
+    <h3>🔔 Напоминание раз в день</h3>
+    <p class="muted" style="font-size:14px;margin:4px 0 10px">Придёт уведомление в выбранное время — только если сегодня ещё ничего не отмечено.</p>
+    <div class="row" style="flex-wrap:wrap">
+      <select id="remHour" style="border:var(--line);border-radius:12px;padding:9px;font:inherit;background:var(--field);color:var(--text)"></select>
+      <button class="btn mint" id="remOn">Включить</button>
+      <button class="btn small ghost" id="remTest" style="display:none">Проверить</button>
+      <button class="btn small ghost" id="remOff" style="display:none">Выключить</button>
+    </div>
+    <div class="muted" id="remState" style="font-size:13px;margin-top:8px"></div>
+  </div>
+  <div class="card">
+    <h3>🎨 Тема</h3>
+    <div class="theme-grid" id="themeGrid"></div>
+  </div>
   <div class="card listedit">
     <h3>Мои квесты</h3>
     <div id="questEdit"></div>
@@ -319,7 +396,7 @@ const PROGRAMS = {
     version: 2,
     title: "Спина и шея при МФС", emoji: "🐢", short: "Спина и шея (МФС)",
     desc: "Мягкие упражнения при миофасциальном синдроме: без резких движений, медленно, с теплом и дыханием. Спина и шея.",
-    pain: true, diary: false,
+    pain: true,
     intro: "Все упражнения — под миофасциальный синдром: медленно, без рывков и скручиваний, не задерживая дыхание. Лёгкое натяжение — нормально, боль — нет (не выше 3 из 10). Если после упражнения стало хуже и не прошло к следующему дню — уменьши объём вдвое или пропусти это упражнение. Перед стартом лучше показать список неврологу или врачу ЛФК.",
     quests: [
       {id:"walk", ico:"🚶", title:"Прогулка", xp:15, times:1,
@@ -516,8 +593,8 @@ function renderToday(){
   const m = P().mottos; $("#motto").textContent = m[new Date().getDate()%m.length];
   const names=["вс","пн","вт","ср","чт","пт","сб"]; let html="";
   for(let i=6;i>=0;i--){ const dt=new Date(Date.now()-i*864e5); const a=isActive(S.days[todayKey(dt)]);
-    html+=`<span class="chip" style="background:${a?"var(--mint)":"#fff"}">${names[dt.getDay()]} ${a?"✓":"·"}</span>`; }
-  $("#weekChips").innerHTML = html + `<span class="chip" style="background:var(--yellow)">цель недели: ${Math.min(weekActive(S),4)}/4</span>`;
+    html+=`<span class="chip" style="background:${a?"var(--mint);color:var(--btn-text)":"var(--chip)"}">${names[dt.getDay()]} ${a?"✓":"·"}</span>`; }
+  $("#weekChips").innerHTML = html + `<span class="chip" style="background:var(--yellow);color:var(--btn-text)">цель недели: ${Math.min(weekActive(S),4)}/4</span>`;
   $("#programNote").innerHTML = P().intro ? `<div class="note warn">${esc(P().intro)}</div>` : "";
   $("#questList").innerHTML = S.quests.map(q=>{
     const c = d.done[q.id]||0, full = c>=q.times;
@@ -592,7 +669,7 @@ function renderLogHistory(){
   $("#logHistory").innerHTML = keys.map(k=>{const l=S.days[k].log;
     const m=(l.morning||[]).map(labelOf).filter(Boolean).join(", ");
     const pain = (l.pain??-1)>=0 ? ` · боль ${l.pain}/10` : "";
-    return `<div style="padding:6px 0;border-bottom:2px dashed #e5dccb"><b style="color:var(--ink)">${ddmm(k)}</b>${pain} · сон ${l.sleep?["😫","😕","😐","🙂","😴"][l.sleep-1]:"—"}${m?" · "+esc(m):""}${l.note?`<br>${esc(l.note)}`:""}</div>`;}).join("");
+    return `<div style="padding:6px 0;border-bottom:2px dashed var(--soft)"><b style="color:var(--text)">${ddmm(k)}</b>${pain} · сон ${l.sleep?["😫","😕","😐","🙂","😴"][l.sleep-1]:"—"}${m?" · "+esc(m):""}${l.note?`<br>${esc(l.note)}`:""}</div>`;}).join("");
 }
 
 // ================= ГЛАВЫ =================
@@ -617,7 +694,7 @@ function renderChapters(){
   $("#chapterList").innerHTML = html;
 }
 function listHtml(c){
-  const items = (c.items||[]).map((it,i)=>`<div class="row" style="border-bottom:2px dashed #e5dccb;padding:6px 0">
+  const items = (c.items||[]).map((it,i)=>`<div class="row" style="border-bottom:2px dashed var(--soft);padding:6px 0">
       <button class="tick" style="width:36px;height:36px;font-size:18px;${it.done?"background:var(--mint)":""}" data-item="${esc(c.id)}:${i}">${it.done?"✓":""}</button>
       <span class="grow" style="${it.done?"text-decoration:line-through;color:var(--muted)":""}">${esc(it.text)}${it.date?` <span class="muted" style="font-size:12px">· ${ddmm(it.date)}</span>`:""}</span>
       <button class="btn small ghost" data-itemdel="${esc(c.id)}:${i}" aria-label="Удалить">✕</button></div>`).join("");
@@ -716,11 +793,11 @@ async function renderFriends(){
       const names=["вс","пн","вт","ср","чт","пт","сб"]; let days="";
       for(let i=6;i>=0;i--){ const dt=new Date(Date.now()-i*864e5), k=todayKey(dt), v=(f.days||{})[k]||[0,0];
         const frac = v[1] ? v[0]/v[1] : 0;
-        const bg = v[0]===0 ? "#fff" : frac>=1 ? "var(--mint)" : frac>=.5 ? "#B5EDD2" : "#E2F7EC";
+        const bg = v[0]===0 ? "var(--chip)" : frac>=1 ? "var(--mint)" : frac>=.5 ? "#B5EDD2" : "#E2F7EC";
         days+=`<div style="flex:1"><i style="background:${bg}" title="${ddmm(k)}: ${v[0]}/${v[1]}"></i><small>${names[dt.getDay()]}</small></div>`; }
       const ago = f.updatedAt ? Math.round((Date.now()-f.updatedAt)/864e5) : null;
       el.innerHTML = `<div class="row">
-          <div class="avatar ${f.program==="back"?"back":""}" style="width:48px;height:48px;font-size:24px;box-shadow:2px 2px 0 var(--ink)">${prog.emoji}</div>
+          <div class="avatar ${f.program==="back"?"back":""}" style="width:48px;height:48px;font-size:24px;box-shadow:var(--shadow-s)">${prog.emoji}</div>
           <div class="grow"><b style="font-size:18px">${esc(f.name)}</b><br><span class="muted" style="font-size:13px">${esc(prog.short)} · ур. ${f.level} · ${f.xp} XP</span></div>
           <button class="btn small pink" data-cheer="${code}">💛</button>
         </div>
@@ -763,7 +840,7 @@ function renderProgress(){
 
 // ================= НАСТРОЙКИ =================
 function renderSettings(){
-  $("#setName").value = S.name||""; $("#progName").textContent = P().title; $("#diaryToggle").checked = diaryOn();
+  renderThemes(); renderReminder(); $("#setName").value = S.name||""; $("#progName").textContent = P().title; $("#diaryToggle").checked = diaryOn();
   $("#questEdit").innerHTML = S.quests.map((q,i)=>`<div class="row">
     <span style="font-size:22px">${esc(q.ico||"✨")}</span>
     <span class="grow"><b>${esc(q.title)}</b><br><span class="muted" style="font-size:13px">${q.times}× в день · ${q.xp} XP</span></span>
@@ -819,6 +896,69 @@ $("#resetBtn").addEventListener("click",()=>{
     S = Object.assign(fresh(), keep); localStorage.setItem(KEY, JSON.stringify(S)); start(); toast("Всё сброшено"); }
 });
 
+
+// ================= ТЕМЫ =================
+const THEMES = [
+  {id:"default", name:"Обычная 🌼", bg:"linear-gradient(135deg,#FFF4DC,#FFD23F)", meta:"#FFF4DC", dark:true},
+  {id:"neon", name:"Неоновый закат 🌴", bg:"linear-gradient(180deg,#24093f,#c2367f,#ff9a62)", meta:"#24093f"},
+  {id:"fairy", name:"Феи ✨", bg:"linear-gradient(160deg,#ffb3ec,#c9a8ff,#9fdcff)", meta:"#ffd1f1"},
+  {id:"comic", name:"Комикс-герои 💥", bg:"radial-gradient(#e8a800 1.5px,transparent 1.8px) 0 0/10px 10px,#e62429", meta:"#ffd400"},
+  {id:"armor", name:"Броня ⚙️", bg:"radial-gradient(circle at 50% 120%,#7df9ff 0 12%,#8b0000 13%,#3a0005 70%)", meta:"#1a0306"},
+];
+function applyTheme(){
+  const t = THEMES.find(x=>x.id===S.theme) || THEMES[0];
+  if(t.id==="default") document.documentElement.removeAttribute("data-theme"); else document.documentElement.dataset.theme = t.id;
+  document.querySelector('meta[name=theme-color]').content = t.meta;
+}
+function renderThemes(){
+  $("#themeGrid").innerHTML = THEMES.map(t=>`<button data-theme-id="${t.id}" class="${(S.theme||"default")===t.id?"on":""}" style="background:${t.bg};${t.dark?"color:#1E1A16;text-shadow:none":""}">${t.name}</button>`).join("");
+}
+$("#themeGrid").addEventListener("click",e=>{ const b=e.target.closest("[data-theme-id]"); if(!b) return;
+  S.theme=b.dataset.themeId; applyTheme(); renderThemes(); save(); toast("Тема включена"); });
+
+// ================= НАПОМИНАНИЯ =================
+const VAPID_PUBLIC = "BPVdLvnBBBopp_dxljU3vwpxo2EutkvYbpueBuB304iyJ2D7wkH5LCcod_upZtH05RI_iwVTHrIdKUWXzsnbihA";
+const pushSupported = () => "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+function keyBytes(b64){ const p="=".repeat((4-b64.length%4)%4); const raw=atob((b64+p).replace(/-/g,"+").replace(/_/g,"/")); return Uint8Array.from(raw,c=>c.charCodeAt(0)); }
+function renderReminder(){
+  const sel=$("#remHour"); const r=S.reminder||{};
+  if(!sel.options.length) sel.innerHTML=[...Array(24).keys()].map(h=>`<option value="${h}">${String(h).padStart(2,"0")}:00</option>`).join("");
+  sel.value = r.hour ?? 21;
+  $("#remOn").textContent = r.on ? "Сохранить время" : "Включить";
+  $("#remOff").style.display = r.on ? "" : "none"; $("#remTest").style.display = r.on ? "" : "none";
+  if(!pushSupported()) $("#remState").textContent = /iPhone|iPad/.test(navigator.userAgent)
+    ? "На iPhone уведомления работают, только если добавить приложение на экран «Домой» и открыть его оттуда."
+    : "Этот браузер не умеет присылать уведомления. Попробуй Chrome.";
+  else if(Notification.permission==="denied") $("#remState").textContent = "Уведомления запрещены в настройках браузера для этого сайта — разреши их там.";
+  else $("#remState").textContent = r.on ? `Включено: каждый день в ${String(r.hour).padStart(2,"0")}:00 (если день ещё не отмечен).` : "";
+}
+async function enableReminder(){
+  if(!pushSupported()) return renderReminder();
+  if(!S.code){ await ensureCode(); if(!S.code) return toast("Нужен интернет, попробуй ещё раз"); }
+  const perm = await Notification.requestPermission();
+  if(perm!=="granted"){ renderReminder(); return toast("Без разрешения на уведомления не получится 😕"); }
+  try{
+    const reg = await navigator.serviceWorker.ready;
+    const sub = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:keyBytes(VAPID_PUBLIC)});
+    const hour = +$("#remHour").value;
+    const r = await fetch(`${API}/push/${S.code}`,{method:"PUT",headers:{"content-type":"application/json","authorization":"Bearer "+S.token},
+      body:JSON.stringify({endpoint:sub.endpoint, hour, tz:Intl.DateTimeFormat().resolvedOptions().timeZone})});
+    if(!r.ok) throw 0;
+    S.reminder={on:true,hour}; save(); renderReminder(); toast(`🔔 Напомню в ${String(hour).padStart(2,"0")}:00`);
+  }catch(e){ toast("Не получилось включить, попробуй ещё раз"); }
+}
+$("#remOn").addEventListener("click", enableReminder);
+$("#remOff").addEventListener("click", async ()=>{
+  try{ await fetch(`${API}/push/${S.code}`,{method:"DELETE",headers:{"authorization":"Bearer "+S.token}});
+    const reg = await navigator.serviceWorker.ready; const sub = await reg.pushManager.getSubscription(); if(sub) await sub.unsubscribe(); }catch(e){}
+  S.reminder={on:false,hour:+$("#remHour").value}; save(); renderReminder(); toast("Напоминание выключено");
+});
+$("#remTest").addEventListener("click", async ()=>{
+  try{ const r = await fetch(`${API}/push/${S.code}/test`,{method:"POST",headers:{"authorization":"Bearer "+S.token}});
+    const j = await r.json(); toast(j.ok ? "Отправлено — уведомление придёт через пару секунд" : "Не дошло. Выключи и включи заново."); }
+  catch(e){ toast("Нет связи"); }
+});
+
 // ================= ВКЛАДКИ =================
 const RENDER = {today:renderToday, log:renderLogHistory, quest:renderChapters, friends:renderFriends, progress:renderProgress, settings:renderSettings};
 document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>{
@@ -832,6 +972,7 @@ function renderAll(){
   applyDiaryVisibility(); renderToday(); $("#logDate").value=todayKey(); loadLog(todayKey()); renderLogHistory(); renderChapters(); renderProgress(); renderSettings(); renderFriendsHead();
 }
 function start(){
+  applyTheme();
   if(!S.program || !S.name){ showOnboarding(); return; }
   comeback(); renderAll(); checkBadges(); save(); ensureCode(); checkCheers();
 }
