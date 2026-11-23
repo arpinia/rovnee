@@ -157,6 +157,9 @@
   .carcard{border:2px solid var(--ink);border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:4px;background:var(--field)}
   .carcard.sel{outline:3px solid var(--mint)}
   .carcard .car-side{width:100%}
+  .btn.lock{background:var(--field);color:var(--text);border-style:dashed}
+  .earn{background:var(--note,#FFF0F3);border-radius:12px;padding:10px;font-size:14px;line-height:1.5;margin:8px 0;color:var(--text)}
+  .modal{position:fixed;inset:0;z-index:45;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px}
   .tune{padding:8px 0;border-bottom:2px dashed var(--soft)}
   .sw{width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);padding:0}
   .sw.on{outline:3px solid var(--mint);outline-offset:2px}
@@ -1055,9 +1058,9 @@ function garageHTML(){
   const cars = CARS.map(c=>{ const own = g.cars.includes(c.id);
     return `<div class="carcard ${g.car===c.id?"sel":""} ${own?"":"locked"}">${carSide(c.id)}<b>${c.name}</b><small class="muted">${c.cls}<br>${c.hp} л.с. · ${c.top} км/ч · ${c.worth}</small>
       ${own ? (g.car===c.id?`<span class="chip">в заезде</span>`:`<button class="btn small ghost" data-selcar="${c.id}">Выбрать</button>`)
-            : `<button class="btn small" data-buycar="${c.id}" ${g.coins<c.price?"disabled":""}>🪙 ${c.price}</button>`}</div>`; }).join("");
+            : `<button class="btn small ${g.coins<c.price?"lock":""}" data-buycar="${c.id}">${g.coins<c.price?"🔒 ":""}Купить · 🪙 ${c.price}</button>`}</div>`; }).join("");
   const tuning = Object.entries(TUNING).map(([k,v])=>{
-    if(!g.unlocked[k]) return `<div class="row tune"><span class="grow">${v.name}</span><button class="btn small" data-unlock="${k}" ${g.coins<v.price?"disabled":""}>Открыть 🪙 ${v.price}</button></div>`;
+    if(!g.unlocked[k]) return `<div class="row tune"><span class="grow">${v.name}</span><button class="btn small ${g.coins<v.price?"lock":""}" data-unlock="${k}">${g.coins<v.price?"🔒 ":""}Открыть · 🪙 ${v.price}</button></div>`;
     const opts = v.opts.map((o,i)=> o.startsWith("#")
       ? `<button class="sw ${t[k]===o?"on":""}" style="background:${o}" data-tune="${k}:${i}" aria-label="${v.name}"></button>`
       : `<button class="btn small ${t[k]===o?"":"ghost"}" data-tune="${k}:${i}">${o}</button>`).join("");
@@ -1066,10 +1069,37 @@ function garageHTML(){
     <div class="showcase"><div class="stage-floor">${carSide(g.car)}</div>
       <div class="spec"><b style="font-size:20px">${cur.name}</b><span>${cur.cls}</span>
         <div class="specs"><i><b>${cur.hp}</b>л.с.</i><i><b>${cur.acc}</b>с до 100</i><i><b>${cur.top}</b>км/ч</i><i><b>${cur.worth}</b>цена</i></div></div></div>
-    <div class="muted" style="font-size:13px;margin:6px 0">Монеты: +10 за каждый шаг, бонус за 100% и за дрифт (больше с комбо).</div>
+    <div class="earn"><b>Как получить монеты 🪙</b>
+      <div>✅ +10 — за каждый шаг «Спины»</div><div>💯 +30 — когда все 7 шагов за день (100%)</div>
+      <div>🏁 +20 × комбо — за дрифт-заезд после 100%</div>
+      <div class="muted" style="font-size:12px;margin-top:4px">Сейчас комбо ×${g.combo}: полный день принесёт 🪙 ${dayEarn(g.combo+1)}. Чем больше дней подряд — тем больше монет.</div></div>
     <div class="cargrid">${cars}</div>
     <h3 style="margin:14px 0 6px">🔧 Тюнинг · ${cur.name}</h3>${tuning}
   </details>`;
+}
+
+
+// Сколько монет приносит полный день при данном комбо: 7 шагов ×10 + 30 за 100% + дрифт 20×комбо
+const dayEarn = c => S.quests.length*10 + 30 + 20*Math.max(1,c);
+function showNeed(price, what, pic){
+  const g = G(), miss = price - g.coins;
+  let days=0, sum=0, c=g.combo; while(sum<miss){ c+=1; sum+=dayEarn(c); days++; }
+  const steps = Math.ceil(miss/10);
+  const pct = Math.round(g.coins/price*100);
+  const ov = document.createElement("div"); ov.className="modal";
+  ov.innerHTML = `<div class="card" style="max-width:360px;width:100%">
+    <div style="text-align:center;font-size:${pic.startsWith("<svg")?"0":"44px"}">${pic.startsWith("<svg")?`<div style="max-width:260px;margin:0 auto">${pic}</div>`:pic}</div>
+    <h2 style="margin:6px 0 4px;text-align:center">🔒 Пока не хватает монет</h2>
+    <p style="text-align:center;margin:0 0 10px"><b>${esc(what)}</b> стоит 🪙 ${price.toLocaleString("ru")}</p>
+    <div class="load" style="height:26px"><div class="load-fill" style="width:${pct}%"></div><span>🪙 ${g.coins.toLocaleString("ru")} / ${price.toLocaleString("ru")}</span></div>
+    <p style="font-size:18px;font-weight:900;text-align:center;margin:12px 0 6px">Не хватает: 🪙 ${miss.toLocaleString("ru")}</p>
+    <div class="earn"><b>Как накопить:</b>
+      <div>💯 ≈ <b>${days} ${days%10===1&&days%100!==11?"день":(days%10>=2&&days%10<=4&&(days%100<10||days%100>=20))?"дня":"дней"} на 100%</b> подряд — все 7 шагов + дрифт</div>
+      <div>✅ или просто ${steps} ${steps%10===1&&steps%100!==11?"шаг":(steps%10>=2&&steps%10<=4&&(steps%100<10||steps%100>=20))?"шага":"шагов"} «Спины» (по 10 🪙), без бонусов — дольше</div>
+      <div class="muted" style="font-size:12px;margin-top:4px">Подряд выгоднее: с каждым днём комбо растёт и дрифт даёт больше монет.</div></div>
+    <button class="btn mint" style="width:100%;margin-top:12px" data-modal-close>Понял, иду качать спину 💪</button></div>`;
+  ov.addEventListener("click",e=>{ if(e.target===ov || e.target.closest("[data-modal-close]")) ov.remove(); });
+  document.body.appendChild(ov);
 }
 
 // Монеты и FULL POWER при отметке шагов
@@ -1116,11 +1146,11 @@ document.addEventListener("click", e=>{
   const g = G();
   const dr = e.target.closest("[data-drift]"); if(dr){ openDrift(false); return; }
   const buy = e.target.closest("[data-buycar]");
-  if(buy){ const c = carById(buy.dataset.buycar); if(g.coins<c.price) return toast("Не хватает монет 🪙");
+  if(buy){ const c = carById(buy.dataset.buycar); if(g.coins<c.price) return showNeed(c.price, `${c.name}`, carSide(c.id));
     g.coins -= c.price; g.cars.push(c.id); g.car = c.id; garageOpen=true; save(); renderToday(); toast(`🏎️ ${c.name} в гараже!`); return; }
   const sel = e.target.closest("[data-selcar]"); if(sel){ g.car = sel.dataset.selcar; garageOpen=true; save(); renderToday(); return; }
   const un = e.target.closest("[data-unlock]");
-  if(un){ const k=un.dataset.unlock, v=TUNING[k]; if(g.coins<v.price) return toast("Не хватает монет 🪙");
+  if(un){ const k=un.dataset.unlock, v=TUNING[k]; if(g.coins<v.price) return showNeed(v.price, `Тюнинг: ${v.name}`, "🔧");
     g.coins -= v.price; g.unlocked[k]=true; garageOpen=true; save(); renderToday(); toast(`🔧 ${v.name} открыт!`); return; }
   const tu = e.target.closest("[data-tune]");
   if(tu){ const [k,i]=tu.dataset.tune.split(":"); (g.tune[g.car] ||= {})[k] = TUNING[k].opts[+i]; garageOpen=true; save(); renderToday(); return; }
