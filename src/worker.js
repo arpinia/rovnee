@@ -9,6 +9,7 @@
 //   PUT  /api/push/:code            → включить ежедневное напоминание (нужен токен)
 //   DELETE /api/push/:code          → выключить напоминание
 //   POST /api/push/:code/test       → прислать пробное напоминание сейчас
+//   GET  /api/push-msg?e=<hash>     → текст напоминания (его спрашивает sw.js при получении пуша)
 //
 // Раз в час (cron) воркер присылает напоминание тем, у кого сейчас выбранный час
 // и кто сегодня ещё ничего не отметил.
@@ -47,6 +48,7 @@ function sanitizePublic(p) {
   }
   return {
     name: clip(p?.name, 30) || "Без имени",
+    avatar: clip(p?.avatar, 16),
     program: ["jaw", "back"].includes(p?.program) ? p.program : "jaw",
     level: Math.max(1, Math.min(999, +p?.level || 1)),
     xp: Math.max(0, Math.min(1e7, +p?.xp || 0)),
@@ -100,19 +102,46 @@ async function dailyReminders(env) {
       if (!sub) continue;
       let now;
       try { now = localNow(sub.tz || "Europe/Moscow"); } catch { now = localNow("Europe/Moscow"); }
-      if (now.hour !== sub.hour || sub.lastSent === now.date) continue;
-      sub.lastSent = now.date;
+      let stage = 0;
+      if (now.hour === sub.hour && sub.lastSent !== now.date) { stage = 1; sub.lastSent = now.date; }
+      else if (sub.second > 0 && sub.hour + sub.second <= 23 && now.hour === sub.hour + sub.second && sub.lastSent2 !== now.date) { stage = 2; sub.lastSent2 = now.date; }
+      if (!stage) continue;
       const prof = JSON.parse((await env.DB.get("p:" + k.name.slice(2))) || "null");
       const today = prof?.pub?.days?.[now.date];
       if (!(today && today[0] > 0)) {
+        sub.pending = { stage, date: now.date };
+        await env.DB.put(k.name, JSON.stringify(sub));
         const status = await sendPush(env, sub.endpoint).catch(() => 0);
-        if (status === 404 || status === 410) { await env.DB.delete(k.name); continue; }
+        if (status === 404 || status === 410) { await env.DB.delete(k.name); if (sub.eh) await env.DB.delete("e:" + sub.eh); continue; }
       }
       await env.DB.put(k.name, JSON.stringify(sub));
     }
     cursor = page.list_complete ? null : page.cursor;
   } while (cursor);
 }
+
+// ---------- Тексты напоминаний ----------
+const MSG = {
+  first: {
+    jaw: ["Пара минут для себя: отметь квесты и дневник 🌿", "Ты сегодня ещё не заходила. Хотя бы один квест? ✨", "Маленький шаг сегодня — уже засчитанный день 💛", "Загляни в «Ровнее»: дневник и квесты ждут 🙂"],
+    back: ["Магмабот на 0%. 10 минут — и FULL POWER 🔥", "Гараж ждёт: 7 шагов — и монеты твои 🏎️", "Спина просит 10 минут. Загрузка ждёт ▶", "Комбо остывает! Залетай, пока не поздно 🔥", "Мяч, стена, 10 минут — и дрифт твой 🏁"],
+  },
+  second: {
+    soft: ["Ещё не поздно: один шаг — и день засчитан 🌿", "Пара минут для себя? «Ровнее» ждёт 💛", "Даже 1 квест сегодня — уже победа ✨", "День ещё не закончился. Маленький шаг? 🙂"],
+    rude: [
+      "Слышь, ишак, заходи давай, а то всю жизнь корячиться будешь 🐴",
+      "Ишак, Магмабот ржавеет. 10 минут — и спина скажет спасибо 🔧",
+      "Эй, лентяй с турбонаддувом, загрузка на нуле. Заходи 😤",
+      "Ишак, машины сами себя не купят. 7 шагов — и в гараж 🏎️",
+      "Спина сама себя не размнёт, ишачок. Заходи, пока не поздно 🐴",
+      "Ну что, ишак, опять завтра корячиться будешь? Давай сейчас 💪",
+      "Дрифт-король или ишак на диване? Решай. Ровнее ждёт 🏁",
+      "Ишак, комбо горит синим пламенем. Спасай серию 🔥",
+      "Слышь, ишак, мяч у стены скучает. Пять минут — не жалко же 🎾",
+    ],
+  },
+};
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 async function readBody(request) {
   const text = await request.text();
@@ -171,6 +200,17 @@ async function handleApi(request, env, url) {
     return json({ ok: true, count: c.count });
   }
 
+  if (route === "push-msg" && request.method === "GET") {
+    const eh = String(url.searchParams.get("e") || "").slice(0, 64);
+    const code2 = eh && (await env.DB.get("e:" + eh));
+    const sub = code2 && JSON.parse((await env.DB.get("s:" + code2)) || "null");
+    if (!sub) return json({ title: "Ровнее", body: pick(MSG.first.jaw) });
+    const body = sub.pending?.stage === 2
+      ? pick(MSG.second[sub.tone === "rude" ? "rude" : "soft"])
+      : pick(MSG.first[sub.program === "back" ? "back" : "jaw"]);
+    return json({ title: "Ровнее", body });
+  }
+
   if (route === "push" && code) {
     const rec = await authed(request, env, code);
     if (!rec) return json({ error: "forbidden" }, 403);
@@ -182,13 +222,28 @@ async function handleApi(request, env, url) {
       let tz = clip(b.tz, 60) || "Europe/Moscow";
       try { localNow(tz); } catch { tz = "Europe/Moscow"; }
       const prev = JSON.parse((await env.DB.get("s:" + code)) || "{}");
-      await env.DB.put("s:" + code, JSON.stringify({ endpoint, hour, tz, lastSent: prev.endpoint === endpoint ? prev.lastSent || "" : "" }));
+      const second = [0, 2, 3, 4].includes(+b.second) ? +b.second : 0;
+      const tone = b.tone === "rude" ? "rude" : "soft";
+      const program = b.program === "back" ? "back" : "jaw";
+      const eh = await sha256(endpoint);
+      if (prev.eh && prev.eh !== eh) await env.DB.delete("e:" + prev.eh);
+      await env.DB.put("e:" + eh, code);
+      const same = prev.endpoint === endpoint;
+      await env.DB.put("s:" + code, JSON.stringify({ endpoint, eh, hour, tz, second, tone, program,
+        lastSent: same ? prev.lastSent || "" : "", lastSent2: same ? prev.lastSent2 || "" : "" }));
       return json({ ok: true });
     }
-    if (request.method === "DELETE") { await env.DB.delete("s:" + code); return json({ ok: true }); }
+    if (request.method === "DELETE") {
+      const prev = JSON.parse((await env.DB.get("s:" + code)) || "{}");
+      if (prev.eh) await env.DB.delete("e:" + prev.eh);
+      await env.DB.delete("s:" + code); return json({ ok: true });
+    }
     if (request.method === "POST" && parts[3] === "test") {
       const sub = JSON.parse((await env.DB.get("s:" + code)) || "null");
       if (!sub) return json({ error: "no_subscription" }, 404);
+      const which = url.searchParams.get("stage") === "2" ? 2 : 1;
+      sub.pending = { stage: which, date: "test" };
+      await env.DB.put("s:" + code, JSON.stringify(sub));
       const status = await sendPush(env, sub.endpoint).catch(() => 0);
       return json({ ok: status >= 200 && status < 300, status });
     }

@@ -1,5 +1,5 @@
 // Офлайн-кэш + ежедневные напоминания.
-const CACHE = "rovnee-v3";
+const CACHE = "rovnee-v4";
 const FILES = ["/", "/index.html", "/manifest.webmanifest", "/icon.svg", "/icon-192.png"];
 
 self.addEventListener("install", e => {
@@ -30,18 +30,25 @@ self.addEventListener("fetch", e => {
   );
 });
 
-// Напоминание приходит без текста — текст выбираем здесь.
-const MESSAGES = [
-  "Пара минут для себя: отметь квесты и дневник 🌿",
-  "Ты сегодня ещё не заходил(а). Хотя бы один квест? ✨",
-  "Маленький шаг сегодня — уже засчитанный день 💛",
-  "Загляни в «Ровнее»: дневник и квесты ждут 🙂",
-];
+// Напоминание приходит без текста — текст спрашиваем у сервера (он знает, первое это или второе).
+const FALLBACK = "Загляни в «Ровнее»: квесты ждут 🙂";
+async function hashHex(text){
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+}
+async function getMessage(){
+  try{
+    const sub = await self.registration.pushManager.getSubscription();
+    if(!sub) return {title:"Ровнее", body:FALLBACK};
+    const r = await fetch("/api/push-msg?e=" + await hashHex(sub.endpoint), {cache:"no-store"});
+    if(!r.ok) throw 0;
+    return await r.json();
+  }catch(e){ return {title:"Ровнее", body:FALLBACK}; }
+}
 self.addEventListener("push", e => {
-  const body = MESSAGES[new Date().getDate() % MESSAGES.length];
-  e.waitUntil(self.registration.showNotification("Ровнее", {
-    body, icon: "/icon-192.png", badge: "/icon-192.png", tag: "daily", renotify: true,
-  }));
+  e.waitUntil(getMessage().then(m => self.registration.showNotification(m.title || "Ровнее", {
+    body: m.body || FALLBACK, icon: "/icon-192.png", badge: "/icon-192.png", tag: "daily", renotify: true,
+  })));
 });
 
 self.addEventListener("notificationclick", e => {
