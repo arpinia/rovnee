@@ -1,5 +1,5 @@
 // Офлайн-кэш + ежедневные напоминания.
-const CACHE = "rovnee-v4";
+const CACHE = "rovnee-v5";
 const FILES = ["/", "/index.html", "/manifest.webmanifest", "/icon.svg", "/icon-192.png"];
 
 self.addEventListener("install", e => {
@@ -47,7 +47,8 @@ async function getMessage(){
 }
 self.addEventListener("push", e => {
   e.waitUntil(getMessage().then(m => self.registration.showNotification(m.title || "Ровнее", {
-    body: m.body || FALLBACK, icon: "/icon-192.png", badge: "/icon-192.png", tag: "daily", renotify: true,
+    body: m.body || FALLBACK, icon: "/icon-192.png", badge: "/icon-192.png", tag: m.tag || "daily", renotify: true,
+    data: { url: m.tag === "msg" ? "/#friends" : "/" },
   })));
 });
 
@@ -55,8 +56,9 @@ self.addEventListener("notificationclick", e => {
   e.notification.close();
   e.waitUntil(
     clients.matchAll({ type: "window", includeUncontrolled: true }).then(list => {
-      for (const c of list) if ("focus" in c) return c.focus();
-      return clients.openWindow("/");
+      const url = (e.notification.data && e.notification.data.url) || "/";
+      for (const c of list) if ("focus" in c) { if (url !== "/" && "navigate" in c) c.navigate(url); return c.focus(); }
+      return clients.openWindow(url);
     })
   );
 });

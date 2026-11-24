@@ -83,7 +83,7 @@
   .badge{border:var(--line);border-radius:14px;padding:10px 6px;text-align:center;background:var(--field);font-size:12px;font-weight:800}
   .badge .e{font-size:30px;display:block}
   .badge.locked{opacity:.35;filter:grayscale(1)}
-  #toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-160%);background:var(--yellow);color:var(--btn-text);border:var(--line);border-radius:14px;box-shadow:var(--shadow);padding:10px 16px;font-weight:900;z-index:30;transition:transform .3s;max-width:90vw;text-align:center}
+  #toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-160%);background:var(--yellow);color:var(--btn-text);border:var(--line);border-radius:14px;box-shadow:var(--shadow);padding:10px 16px;font-weight:900;z-index:70;transition:transform .3s;max-width:90vw;text-align:center}
   #toast.show{transform:translate(-50%,0)}
   .pop{animation:pop .35s}
   @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.15)}100%{transform:scale(1)}}
@@ -179,6 +179,24 @@
   .dr-robot .rb-svg{animation:power .9s infinite}
   .dr-end{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);padding:20px;color:var(--text)}
   .dr-end .card{width:100%;max-width:340px}
+
+  /* ======== ОБУЧЕНИЕ ======== */
+  #tut{position:fixed;inset:0;z-index:60}
+  .tut-hole{position:fixed;border-radius:14px;box-shadow:0 0 0 9999px rgba(10,6,20,.72),0 0 0 3px #ffd23f,0 0 24px 6px rgba(255,210,63,.6);transition:all .35s cubic-bezier(.2,.8,.2,1);pointer-events:none;animation:tutPulse 1.6s infinite}
+  @keyframes tutPulse{50%{box-shadow:0 0 0 9999px rgba(10,6,20,.72),0 0 0 3px #ffd23f,0 0 36px 12px rgba(255,210,63,.75)}}
+  .tut-card{position:fixed;left:50%;width:min(92vw,380px);margin:0;z-index:61;transition:top .35s}
+  /* ======== СООБЩЕНИЯ ======== */
+  nav button{position:relative}
+  .dot{position:absolute;top:2px;right:18%;min-width:18px;height:18px;border-radius:9px;background:#e62429;color:#fff;font-size:11px;line-height:18px;padding:0 4px;font-style:normal;font-weight:800}
+  .dot.inl{position:static;display:inline-block;margin-left:4px}
+  .chat{width:100%;max-width:440px;height:min(86vh,640px);display:flex;flex-direction:column;margin:0}
+  .chat-list{flex:1;overflow:auto;margin:10px 0;padding:4px;display:flex;flex-direction:column;gap:6px}
+  .bubble{max-width:80%;align-self:flex-start;background:var(--chip);border-radius:14px 14px 14px 4px;padding:7px 10px;font-size:15px;overflow-wrap:anywhere}
+  .bubble.me{align-self:flex-end;background:var(--mint);color:#16241d;border-radius:14px 14px 4px 14px}
+  .bubble small{display:block;font-size:10px;opacity:.6;text-align:right;margin-top:2px}
+  .chat-day{align-self:center;font-size:11px;font-weight:800;opacity:.6;margin:6px 0}
+  .quick{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+  .quick .btn{white-space:nowrap;flex:none}
 
   /* ======== ТЕМЫ ======== */
   /* Неоновый закат */
@@ -313,6 +331,10 @@
     <div class="muted" id="syncState" style="font-size:12px;margin-top:8px"></div>
   </div>
   <div class="card">
+    <div class="row"><div class="grow"><b>🔔 Уведомления о сообщениях и 💛</b><div class="muted" style="font-size:13px" id="msgNotifState"></div></div>
+      <button class="btn small" id="msgNotifBtn">Включить</button></div>
+  </div>
+  <div class="card">
     <h3>Добавить друга</h3>
     <div class="row" style="margin-top:10px">
       <input type="text" id="friendCode" maxlength="8" placeholder="Код, например K7M2QX" style="text-transform:uppercase" class="grow">
@@ -349,6 +371,7 @@
     <div class="row"><input type="text" id="setName" maxlength="30" class="grow"><button class="btn small" id="saveName">OK</button></div>
     <p class="muted" style="font-size:14px;margin:10px 0 6px">Программа: <b id="progName"></b></p>
     <button class="btn small ghost" id="switchProg">Сменить программу</button>
+    <button class="btn small ghost" id="tutAgain">🎓 Показать обучение</button>
     <label class="row" style="margin-top:12px;font-weight:700"><input type="checkbox" id="diaryToggle" style="width:20px;height:20px"> Показывать дневник</label>
   </div>
   <div class="card">
@@ -649,6 +672,7 @@ $("#obGo").addEventListener("click",()=>{
   $("#onboard").classList.remove("show");
   save(); renderAll(); ensureCode();
   toast(`Поехали, ${name}! ✨`);
+  if(!S.tutorialDone) setTimeout(runTutorial, 500);
 });
 
 // ================= ВОЗВРАЩЕНИЕ (без наказаний) =================
@@ -1285,6 +1309,7 @@ async function checkCheers(){
   }catch(e){}
 }
 function renderFriendsHead(){
+  if(typeof renderMsgNotif==="function") renderMsgNotif();
   $("#myCode").textContent = S.code || "······";
   if(!S.code) $("#syncState").textContent = navigator.onLine ? "Получаю код…" : "Нужен интернет, чтобы получить код.";
 }
@@ -1308,6 +1333,7 @@ async function renderFriends(){
   const box = $("#friendList");
   if(!S.friends.length){ box.innerHTML = `<p class="muted" style="text-align:center">Пока никого. Обменяйтесь кодами — и будете видеть прогресс друг друга.</p>`; return; }
   box.innerHTML = S.friends.map(c=>`<div class="card friend" id="fr-${c}"><span class="muted">Загружаю ${c}…</span></div>`).join("");
+  checkUnread();
   for(const code of S.friends){
     const el = document.getElementById("fr-"+code);
     try{
@@ -1320,6 +1346,7 @@ async function renderFriends(){
         const bg = v[0]===0 ? "var(--chip)" : frac>=1 ? "var(--mint)" : frac>=.5 ? "#B5EDD2" : "#E2F7EC";
         days+=`<div style="flex:1"><i style="background:${bg}" title="${ddmm(k)}: ${v[0]}/${v[1]}"></i><small>${names[dt.getDay()]}</small></div>`; }
       const ago = f.updatedAt ? Math.round((Date.now()-f.updatedAt)/864e5) : null;
+      friendNames[code] = {name:f.name, avatar:f.avatar||prog.emoji};
       el.innerHTML = `<div class="row">
           <div class="avatar ${f.program==="back"?"back":""}" style="width:48px;height:48px;font-size:24px;box-shadow:var(--shadow-s)">${esc(f.avatar||prog.emoji)}</div>
           <div class="grow"><b style="font-size:18px">${esc(f.name)}</b><br><span class="muted" style="font-size:13px">${esc(prog.short)} · ур. ${f.level} · ${f.xp} XP</span></div>
@@ -1332,11 +1359,12 @@ async function renderFriends(){
           <span class="chip">🏅 значков: ${(f.badges||[]).length}</span>
           ${ago!==null?`<span class="chip">${ago===0?"заходил(а) сегодня":ago===1?"вчера":ago+" дн. назад"}</span>`:""}
         </div>
-        <div style="text-align:right;margin-top:8px"><button class="btn small ghost" data-unfriend="${code}">Убрать</button></div>`;
+        <div class="row" style="margin-top:10px"><button class="btn small blue grow" data-chat="${code}">💬 Написать${unread[code]?` <span class="dot inl">${unread[code]}</span>`:""}</button><button class="btn small ghost" data-unfriend="${code}">Убрать</button></div>`;
     }catch(e){ el.innerHTML = `<span class="muted">${code}: не удалось загрузить.</span> <button class="btn small ghost" data-unfriend="${code}">Убрать</button>`; }
   }
 }
 $("#friendList").addEventListener("click", async e=>{
+  const chat = e.target.closest("[data-chat]"); if(chat) return openChat(chat.dataset.chat);
   const ch = e.target.closest("[data-cheer]"), un = e.target.closest("[data-unfriend]");
   if(ch){ ch.disabled=true;
     try{ const r = await fetch(`${API}/cheer/${ch.dataset.cheer}`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({from:S.name})});
@@ -1344,6 +1372,78 @@ $("#friendList").addEventListener("click", async e=>{
     setTimeout(()=>ch.disabled=false, 4000); }
   if(un && confirm("Убрать друга из списка?")){ S.friends = S.friends.filter(c=>c!==un.dataset.unfriend); save(); renderFriends(); }
 });
+
+// ================= СООБЩЕНИЯ ДРУЗЬЯМ =================
+const QUICK = ["💪 Давай, у тебя получится!","🔥 Горжусь тобой","🐴 Ишак, заходи делать спину","✅ Сделал(а)!","😴 Иду, иду","❤️"];
+const unread = {};            // код друга → сколько новых
+const friendNames = {};       // код друга → {name, avatar}
+let chatWith = null, chatTimer = null;
+const timeHM = t => new Date(t).toLocaleTimeString("ru",{hour:"2-digit",minute:"2-digit"});
+const dayLabel = t => { const k=todayKey(new Date(t)); return k===todayKey() ? "сегодня" : k===todayKey(new Date(Date.now()-864e5)) ? "вчера" : ddmm(k); };
+
+async function fetchThread(code){
+  if(!S.code || !S.token) return null;
+  const r = await fetch(`${API}/msg/${code}?me=${S.code}`,{headers:{authorization:"Bearer "+S.token}});
+  if(!r.ok) return null; return (await r.json()).messages || [];
+}
+async function checkUnread(){
+  if(!S.code || !S.friends?.length || !navigator.onLine) return;
+  S.readAt ||= {};
+  let total = 0, newest = null;
+  for(const c of S.friends){
+    try{ const list = await fetchThread(c); if(!list) continue;
+      const n = list.filter(m=>m.f===c && m.at>(S.readAt[c]||0)).length;
+      unread[c] = n; total += n;
+      if(n) newest = c;
+    }catch(e){}
+  }
+  const btn = document.querySelector('nav button[data-tab=friends]');
+  let dot = btn.querySelector(".dot"); if(!dot){ dot=document.createElement("b"); dot.className="dot"; btn.appendChild(dot); }
+  dot.textContent = total; dot.style.display = total ? "" : "none";
+  document.querySelectorAll("[data-chat]").forEach(b=>{ const n=unread[b.dataset.chat]||0; b.innerHTML = `💬 Написать${n?` <span class="dot inl">${n}</span>`:""}`; });
+  return newest;
+}
+
+function renderChatList(list){
+  const box = document.getElementById("chatList"); if(!box) return;
+  if(!list.length){ box.innerHTML = `<p class="muted" style="text-align:center;margin:30px 0">Пока пусто. Напиши первым — или нажми быстрый ответ ниже 👇</p>`; return; }
+  let lastDay = "";
+  box.innerHTML = list.map(m=>{ const d=dayLabel(m.at); const sep = d!==lastDay ? `<div class="chat-day">${d}</div>` : ""; lastDay=d;
+    return `${sep}<div class="bubble ${m.f===S.code?"me":""}">${esc(m.x)}<small>${timeHM(m.at)}</small></div>`; }).join("");
+  box.scrollTop = box.scrollHeight;
+}
+async function openChat(code){
+  chatWith = code;
+  const f = friendNames[code] || {name:code, avatar:"🙂"};
+  const ov = document.createElement("div"); ov.className="modal chat-modal"; ov.id="chatModal";
+  ov.innerHTML = `<div class="card chat">
+    <div class="row"><div class="avatar" style="width:40px;height:40px;font-size:20px;box-shadow:none">${esc(f.avatar||"🙂")}</div>
+      <b class="grow" style="font-size:18px">${esc(f.name)}</b><button class="btn small ghost" data-chat-close>✕</button></div>
+    <div id="chatList" class="chat-list"><p class="muted" style="text-align:center">Загружаю…</p></div>
+    <div class="quick">${QUICK.map(q=>`<button class="btn small ghost" data-quick="${esc(q)}">${esc(q)}</button>`).join("")}</div>
+    <div class="row" style="margin-top:8px"><input type="text" id="chatInput" maxlength="300" placeholder="Сообщение…" class="grow"><button class="btn mint" id="chatSend">➤</button></div>
+    ${msgOn()?"":`<p class="muted" style="font-size:12px;margin:8px 0 0">Чтобы получать ответы уведомлением — включи «Уведомления о сообщениях» во вкладке «Друзья».</p>`}
+  </div>`;
+  document.body.appendChild(ov);
+  const refresh = async ()=>{ try{ const list = await fetchThread(code); if(list){ renderChatList(list);
+      const last = list.filter(m=>m.f===code).pop(); if(last){ (S.readAt ||= {})[code] = Math.max(S.readAt[code]||0, last.at); localStorage.setItem(KEY, JSON.stringify(S)); } } }catch(e){} };
+  await refresh(); checkUnread();
+  clearInterval(chatTimer); chatTimer = setInterval(refresh, 12000);
+  const send = async text=>{
+    text = (text||"").trim(); if(!text) return;
+    const inp = document.getElementById("chatInput"); inp.value="";
+    try{ const r = await fetch(`${API}/msg/${code}`,{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+S.token},body:JSON.stringify({from:S.code,text})});
+      if(r.status===429) return toast("Слишком часто 🙂 Подожди минутку");
+      if(!r.ok) throw 0; const j = await r.json(); await refresh(); if(!j.pushed) toast("Отправлено ✓ Увидит, когда зайдёт");
+    }catch(e){ toast("Не отправилось — нет связи"); inp.value=text; }
+  };
+  ov.addEventListener("click", e=>{
+    if(e.target===ov || e.target.closest("[data-chat-close]")){ clearInterval(chatTimer); chatWith=null; ov.remove(); checkUnread(); return; }
+    const q = e.target.closest("[data-quick]"); if(q) send(q.dataset.quick);
+    if(e.target.closest("#chatSend")) send(document.getElementById("chatInput").value);
+  });
+  ov.querySelector("#chatInput").addEventListener("keydown", e=>{ if(e.key==="Enter") send(e.target.value); });
+}
 
 // ================= ПРОГРЕСС =================
 function renderProgress(){
@@ -1372,6 +1472,7 @@ function renderSettings(){
     <button class="btn small pink" data-del="${i}">✕</button></div>`).join("");
 }
 $("#diaryToggle").addEventListener("change",e=>{ S.showDiary = e.target.checked; save(); applyDiaryVisibility(); toast(e.target.checked?"Дневник включён":"Дневник скрыт"); });
+$("#tutAgain").addEventListener("click",()=>{ document.querySelector('nav button[data-tab=today]').click(); setTimeout(runTutorial, 200); });
 $("#saveName").addEventListener("click",()=>{ const n=$("#setName").value.trim(); if(!n) return; S.name=n; save(); renderHeader(); toast("Имя сохранено"); });
 $("#switchProg").addEventListener("click",()=>{ if(confirm("Сменить программу? Квесты и главы заменятся на другие. XP, значки и дневник останутся.")) showOnboarding(); });
 $("#questEdit").addEventListener("click",e=>{
@@ -1459,26 +1560,58 @@ function renderReminder(){
   else if(Notification.permission==="denied") $("#remState").textContent = "Уведомления запрещены в настройках браузера для этого сайта — разреши их там.";
   else $("#remState").textContent = r.on ? `Включено: в ${String(r.hour).padStart(2,"0")}:00${r.second?` и ещё раз в ${String(Math.min(23,r.hour+r.second)).padStart(2,"0")}:00`:""} — только если день ещё не отмечен.` : "";
 }
+const msgOn = () => S.msgNotify ?? true;
+// Одна подписка на уведомления: напоминания и/или сообщения. Не нужно ни то ни другое — отписываемся.
+async function syncPush(ask){
+  const remind = !!S.reminder?.on, msgs = msgOn();
+  if(!S.code){ await ensureCode(); if(!S.code) throw new Error("no_code"); }
+  if(!remind && !msgs){
+    await fetch(`${API}/push/${S.code}`,{method:"DELETE",headers:{"authorization":"Bearer "+S.token}}).catch(()=>{});
+    try{ const reg = await navigator.serviceWorker.ready; const sub = await reg.pushManager.getSubscription(); if(sub) await sub.unsubscribe(); }catch(e){}
+    return;
+  }
+  if(!pushSupported()) throw new Error("unsupported");
+  if(Notification.permission!=="granted"){
+    if(!ask) return;
+    if(await Notification.requestPermission()!=="granted") throw new Error("denied");
+  }
+  const reg = await navigator.serviceWorker.ready;
+  const sub = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:keyBytes(VAPID_PUBLIC)});
+  const r = S.reminder || {};
+  const res = await fetch(`${API}/push/${S.code}`,{method:"PUT",headers:{"content-type":"application/json","authorization":"Bearer "+S.token},
+    body:JSON.stringify({endpoint:sub.endpoint, hour:r.hour??21, second:r.second??0, tone:r.tone||"soft", program:S.program, remind, msgs,
+      tz:Intl.DateTimeFormat().resolvedOptions().timeZone})});
+  if(!res.ok) throw new Error("server");
+}
+function pushError(e){
+  toast(e.message==="denied" ? "Без разрешения на уведомления не получится 😕" : e.message==="unsupported" ? "Этот браузер не умеет уведомления. Попробуй Chrome" : "Не получилось, попробуй ещё раз");
+}
 async function enableReminder(){
   if(!pushSupported()) return renderReminder();
-  if(!S.code){ await ensureCode(); if(!S.code) return toast("Нужен интернет, попробуй ещё раз"); }
-  const perm = await Notification.requestPermission();
-  if(perm!=="granted"){ renderReminder(); return toast("Без разрешения на уведомления не получится 😕"); }
-  try{
-    const reg = await navigator.serviceWorker.ready;
-    const sub = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:keyBytes(VAPID_PUBLIC)});
-    const hour = +$("#remHour").value, second = +$("#remSecond").value, tone = $("#remTone").value;
-    const r = await fetch(`${API}/push/${S.code}`,{method:"PUT",headers:{"content-type":"application/json","authorization":"Bearer "+S.token},
-      body:JSON.stringify({endpoint:sub.endpoint, hour, second, tone, program:S.program, tz:Intl.DateTimeFormat().resolvedOptions().timeZone})});
-    if(!r.ok) throw 0;
-    S.reminder={on:true,hour,second,tone}; save(); renderReminder(); toast(`🔔 Напомню в ${String(hour).padStart(2,"0")}:00`);
-  }catch(e){ toast("Не получилось включить, попробуй ещё раз"); }
+  const hour = +$("#remHour").value, second = +$("#remSecond").value, tone = $("#remTone").value;
+  const prev = S.reminder;
+  S.reminder = {on:true,hour,second,tone};
+  try{ await syncPush(true); save(); renderReminder(); renderMsgNotif(); toast(`🔔 Напомню в ${String(hour).padStart(2,"0")}:00`); }
+  catch(e){ S.reminder = prev; renderReminder(); pushError(e); }
 }
 $("#remOn").addEventListener("click", enableReminder);
 $("#remOff").addEventListener("click", async ()=>{
-  try{ await fetch(`${API}/push/${S.code}`,{method:"DELETE",headers:{"authorization":"Bearer "+S.token}});
-    const reg = await navigator.serviceWorker.ready; const sub = await reg.pushManager.getSubscription(); if(sub) await sub.unsubscribe(); }catch(e){}
-  S.reminder={on:false,hour:+$("#remHour").value}; save(); renderReminder(); toast("Напоминание выключено");
+  S.reminder = {...(S.reminder||{}), on:false, hour:+$("#remHour").value};
+  try{ await syncPush(false); }catch(e){}
+  save(); renderReminder(); renderMsgNotif(); toast("Напоминание выключено");
+});
+function renderMsgNotif(){
+  const b = document.getElementById("msgNotifBtn"); if(!b) return;
+  const on = msgOn() && pushSupported() && Notification.permission==="granted";
+  b.textContent = on ? "Выключить" : "Включить"; b.classList.toggle("ghost", on);
+  $("#msgNotifState").textContent = on ? "Включено: придёт уведомление, когда тебе напишут или подбодрят" : "Выключено: сообщения увидишь, когда зайдёшь";
+}
+document.getElementById("msgNotifBtn").addEventListener("click", async ()=>{
+  const prev = S.msgNotify;
+  const on = msgOn() && pushSupported() && Notification.permission==="granted";
+  S.msgNotify = !on;
+  try{ await syncPush(true); save(); renderMsgNotif(); toast(S.msgNotify ? "🔔 Уведомления о сообщениях включены" : "Уведомления о сообщениях выключены"); }
+  catch(e){ S.msgNotify = prev; renderMsgNotif(); pushError(e); }
 });
 ["remSecond","remTone"].forEach(id=>$("#"+id).addEventListener("change",()=>{ const r=S.reminder||{}; r.second=+$("#remSecond").value; r.tone=$("#remTone").value; S.reminder=r; save(); if(r.on) enableReminder(); else renderReminder(); }));
 $("#remTest2").addEventListener("click", ()=>testReminder(2));
@@ -1506,6 +1639,74 @@ function applyAppIcon(){
 $("#avatarGrid").addEventListener("click",e=>{ const b=e.target.closest("[data-avatar]"); if(!b) return; S.avatar=b.dataset.avatar; save(); renderPickers(); renderHeader(); toast("Аватар обновлён"); });
 $("#iconGrid").addEventListener("click",e=>{ const b=e.target.closest("[data-appicon]"); if(!b) return; S.appIcon=b.dataset.appicon; save(); applyAppIcon(); renderPickers(); toast("Иконка выбрана. Добавь приложение на экран заново 📱"); });
 
+// ================= ОБУЧЕНИЕ (как в играх) =================
+const TUTORIAL = {
+  back: [
+    {title:"Привет, {name}! 🔥", text:"Я Магмабот. За минуту покажу, как тут всё устроено. Жми «Дальше»."},
+    {tab:"today", sel:".robo-card", title:"Это я — Магмабот", text:"Я заряжаюсь, когда ты делаешь шаги «Спины». На 100% — FULL POWER и дрифт-заезд за монеты 🏁"},
+    {tab:"today", sel:".load", title:"Полоса загрузки", text:"Каждый шаг добавляет проценты. Любой процент — уже молодец, даже один шаг засчитывает день."},
+    {tab:"today", sel:".step [data-tick]", title:"Сделал шаг — жми «+»", text:"Отметка поставится, загрузка подрастёт, монеты капнут. Нажал случайно — нажми ещё раз, отметка снимется."},
+    {tab:"today", sel:".step [data-how]", title:"Не помнишь, как делать?", text:"«Как делать» — анимированная картинка и инструкция. «Послушать» — прочитаю вслух, можно не читать."},
+    {tab:"today", sel:".garage summary", title:"Гараж 🏎️", text:"За монеты 🪙 покупай тачки и тюнинг: покраска, диски, спойлер, неон, цветной дым. Нажми на закрытую — покажу, сколько дней осталось копить."},
+    {tab:"today", sel:"nav [data-tab=friends]", title:"Друзья", text:"Тут видно прогресс друг друга. Можно подбодрить 💛 и написать сообщение 💬 — придёт уведомлением."},
+    {tab:"today", sel:"nav [data-tab=settings]", title:"Ещё", text:"Напоминания, тема, аватар и иконка приложения. Включи напоминание — буду пинать, если пропустишь 😈"},
+    {title:"Всё, ты готов! 💪", text:"Начни с одного шага — этого уже достаточно. Обучение можно открыть снова в «Ещё».", last:true},
+  ],
+  jaw: [
+    {title:"Привет, {name}! 🌼", text:"За минуту покажу, как тут всё устроено. Жми «Дальше»."},
+    {tab:"today", sel:".hero", title:"Твой уровень", text:"За каждый квест — опыт (XP). Уровни растут, появляются значки."},
+    {tab:"today", sel:".quest .tick", title:"Сделала — жми «+»", text:"Некоторые квесты можно отмечать несколько раз в день. Ошиблась — стрелка ↶ отменит."},
+    {tab:"today", sel:".quest details.how", title:"Как делать", text:"Тут анимированная картинка и инструкция. А «Послушать» прочитает вслух."},
+    {tab:"today", sel:"nav [data-tab=log]", title:"Дневник", text:"Сон, симптомы, заметки — пригодится врачам. «Ещё» → «Сводка для врача» соберёт всё в один текст."},
+    {tab:"today", sel:"nav [data-tab=quest]", title:"Главы", text:"Врачи по порядку. Сходила к врачу — отметь главу и запиши, что сказали."},
+    {tab:"today", sel:"nav [data-tab=friends]", title:"Друзья", text:"Прогресс друг друга, 💛 и сообщения 💬 с уведомлениями."},
+    {tab:"today", sel:"nav [data-tab=settings]", title:"Ещё", text:"Напоминания, тема, аватар, иконка приложения."},
+    {title:"Готово! ✨", text:"Начни с одного квеста. Обучение можно открыть снова в «Ещё».", last:true},
+  ],
+};
+function runTutorial(){
+  const steps = TUTORIAL[S.program==="back"?"back":"jaw"];
+  let i = 0;
+  const ov = document.createElement("div"); ov.id="tut";
+  ov.innerHTML = `<div class="tut-hole"></div><div class="tut-card card"></div>`;
+  document.body.appendChild(ov);
+  const hole = ov.querySelector(".tut-hole"), card = ov.querySelector(".tut-card");
+  const finish = ()=>{ ov.remove(); S.tutorialDone = true; save(); window.removeEventListener("resize", place); };
+  function place(){
+    const st = steps[i], el = st.sel && document.querySelector(st.sel);
+    if(el){
+      const r = el.getBoundingClientRect(), pad = 6;
+      Object.assign(hole.style,{display:"block",left:(r.left-pad)+"px",top:(r.top-pad)+"px",width:(r.width+pad*2)+"px",height:(r.height+pad*2)+"px"});
+      const below = r.bottom + 14 + card.offsetHeight < innerHeight;
+      card.style.top = below ? (r.bottom+14)+"px" : Math.max(10, r.top-14-card.offsetHeight)+"px";
+      card.style.transform = "translateX(-50%)";
+    } else {
+      Object.assign(hole.style,{display:"block",left:"50%",top:"50%",width:"0px",height:"0px"});
+      card.style.top = "50%"; card.style.transform = "translate(-50%,-50%)";
+    }
+  }
+  function show(){
+    const st = steps[i];
+    if(st.tab) document.querySelector(`nav button[data-tab=${st.tab}]`)?.click();
+    const el = st.sel && document.querySelector(st.sel);
+    if(el && !el.closest("nav")) el.scrollIntoView({block:"center"});
+    const mascot = S.program==="back" ? `<div style="width:54px;flex:none">${robotSVG(Math.round(i/(steps.length-1)*100))}</div>` : `<div style="font-size:40px">🌼</div>`;
+    card.innerHTML = `<div class="row" style="align-items:flex-start">${mascot}<div class="grow">
+        <b style="font-size:17px">${esc(st.title.replace("{name}", S.name||""))}</b><p style="margin:6px 0 0;font-size:14px;line-height:1.45">${esc(st.text)}</p></div></div>
+      <div class="row" style="margin-top:12px"><span class="muted grow" style="font-size:12px">${i+1} / ${steps.length}</span>
+        ${st.last?"":`<button class="btn small ghost" data-tut="skip">Пропустить</button>`}
+        <button class="btn small mint" data-tut="next">${st.last?"Поехали!":"Дальше ▶"}</button></div>`;
+    requestAnimationFrame(()=>requestAnimationFrame(place));
+  }
+  ov.addEventListener("click", e=>{
+    const b = e.target.closest("[data-tut]"); if(!b) return;
+    if(b.dataset.tut==="skip" || steps[i].last) return finish();
+    i++; show();
+  });
+  window.addEventListener("resize", place);
+  show();
+}
+
 // ================= ВКЛАДКИ =================
 const RENDER = {today:renderToday, log:renderLogHistory, quest:renderChapters, friends:renderFriends, progress:renderProgress, settings:renderSettings};
 document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>{
@@ -1524,11 +1725,15 @@ function start(){
   comeback(); renderAll(); checkBadges(); save(); ensureCode(); checkCheers();
 }
 start();
+setTimeout(checkUnread, 1500);
+const goFriends = ()=>{ if(location.hash==="#friends"){ history.replaceState(null,"","/"); document.querySelector('nav button[data-tab=friends]').click(); return true; } };
+if(!goFriends() && !S.tutorialDone && S.program && S.name) setTimeout(runTutorial, 600);
+window.addEventListener("hashchange", goFriends);
 
 let lastDay = todayKey();
 document.addEventListener("visibilitychange",()=>{ if(document.hidden) return;
   if(todayKey()!==lastDay){ lastDay=todayKey(); S.lastVisit=lastDay; save(); renderAll(); }
-  checkCheers(); });
+  checkCheers(); checkUnread(); goFriends(); });
 window.addEventListener("online", ()=>{ ensureCode(); pushProfile(); });
 
 if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(()=>{});

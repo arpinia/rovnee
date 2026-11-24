@@ -9,7 +9,9 @@
 //   PUT  /api/push/:code            → включить ежедневное напоминание (нужен токен)
 //   DELETE /api/push/:code          → выключить напоминание
 //   POST /api/push/:code/test       → прислать пробное напоминание сейчас
-//   GET  /api/push-msg?e=<hash>     → текст напоминания (его спрашивает sw.js при получении пуша)
+//   GET  /api/push-msg?e=<hash>     → текст уведомления (его спрашивает sw.js при получении пуша)
+//   POST /api/msg/:to               → отправить сообщение другу (тело {from, text}, токен отправителя)
+//   GET  /api/msg/:other?me=CODE    → переписка с другом (токен me)
 //
 // Раз в час (cron) воркер присылает напоминание тем, у кого сейчас выбранный час
 // и кто сегодня ещё ничего не отметил.
@@ -99,7 +101,7 @@ async function dailyReminders(env) {
     const page = await env.DB.list({ prefix: "s:", cursor });
     for (const k of page.keys) {
       const sub = JSON.parse((await env.DB.get(k.name)) || "null");
-      if (!sub) continue;
+      if (!sub || sub.remind === false) continue;
       let now;
       try { now = localNow(sub.tz || "Europe/Moscow"); } catch { now = localNow("Europe/Moscow"); }
       let stage = 0;
@@ -142,6 +144,18 @@ const MSG = {
   },
 };
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+// Уведомление о сообщении или 💛 — если у получателя включены уведомления о сообщениях
+async function notifyFriend(env, to, title, body) {
+  const sub = JSON.parse((await env.DB.get("s:" + to)) || "null");
+  if (!sub || sub.msgs === false) return false;
+  sub.pending = { type: "msg", title: clip(title, 60), body: clip(body, 300) };
+  await env.DB.put("s:" + to, JSON.stringify(sub));
+  const status = await sendPush(env, sub.endpoint).catch(() => 0);
+  if (status === 404 || status === 410) { await env.DB.delete("s:" + to); if (sub.eh) await env.DB.delete("e:" + sub.eh); }
+  return status >= 200 && status < 300;
+}
+const threadKey = (a, b) => "t:" + [a, b].sort().join(":");
 
 async function readBody(request) {
   const text = await request.text();
@@ -197,6 +211,7 @@ async function handleApi(request, env, url) {
     c.count += 1;
     c.recent = [{ from: clip(body.from, 30) || "Друг", at: Date.now() }, ...c.recent].slice(0, 10);
     await env.DB.put(key, JSON.stringify(c));
+    await notifyFriend(env, code, "💛 " + (clip(body.from, 30) || "Друг"), "Подбодрил(а) тебя! Заходи 🙂");
     return json({ ok: true, count: c.count });
   }
 
@@ -205,6 +220,7 @@ async function handleApi(request, env, url) {
     const code2 = eh && (await env.DB.get("e:" + eh));
     const sub = code2 && JSON.parse((await env.DB.get("s:" + code2)) || "null");
     if (!sub) return json({ title: "Ровнее", body: pick(MSG.first.jaw) });
+    if (sub.pending?.type === "msg") return json({ title: sub.pending.title || "Ровнее", body: sub.pending.body || "Новое сообщение", tag: "msg" });
     const body = sub.pending?.stage === 2
       ? pick(MSG.second[sub.tone === "rude" ? "rude" : "soft"])
       : pick(MSG.first[sub.program === "back" ? "back" : "jaw"]);
@@ -229,7 +245,8 @@ async function handleApi(request, env, url) {
       if (prev.eh && prev.eh !== eh) await env.DB.delete("e:" + prev.eh);
       await env.DB.put("e:" + eh, code);
       const same = prev.endpoint === endpoint;
-      await env.DB.put("s:" + code, JSON.stringify({ endpoint, eh, hour, tz, second, tone, program,
+      const remind = b.remind !== false, msgs = b.msgs !== false;
+      await env.DB.put("s:" + code, JSON.stringify({ endpoint, eh, hour, tz, second, tone, program, remind, msgs,
         lastSent: same ? prev.lastSent || "" : "", lastSent2: same ? prev.lastSent2 || "" : "" }));
       return json({ ok: true });
     }
@@ -246,6 +263,37 @@ async function handleApi(request, env, url) {
       await env.DB.put("s:" + code, JSON.stringify(sub));
       const status = await sendPush(env, sub.endpoint).catch(() => 0);
       return json({ ok: status >= 200 && status < 300, status });
+    }
+  }
+
+  if (route === "msg" && code) {
+    // отправить
+    if (request.method === "POST") {
+      let b; try { b = await readBody(request); } catch { return json({ error: "bad_request" }, 400); }
+      const from = cleanCode(b.from);
+      const rec = from && (await authed(request, env, from));
+      if (!rec) return json({ error: "forbidden" }, 403);
+      if (from === code) return json({ error: "self" }, 400);
+      if (!(await env.DB.get("p:" + code))) return json({ error: "not_found" }, 404);
+      const text = clip(String(b.text || "").trim(), 300);
+      if (!text) return json({ error: "empty" }, 400);
+      const rl = "r:" + from, n = +((await env.DB.get(rl)) || 0);
+      if (n >= 15) return json({ error: "too_fast" }, 429);
+      await env.DB.put(rl, String(n + 1), { expirationTtl: 60 });
+      const key = threadKey(from, code);
+      const list = JSON.parse((await env.DB.get(key)) || "[]");
+      const msg = { f: from, x: text, at: Date.now() };
+      list.push(msg);
+      await env.DB.put(key, JSON.stringify(list.slice(-100)));
+      const name = rec.pub?.name || "Друг";
+      const pushed = await notifyFriend(env, code, "💬 " + name, text);
+      return json({ ok: true, msg, pushed });
+    }
+    // прочитать переписку
+    if (request.method === "GET") {
+      const me = cleanCode(url.searchParams.get("me"));
+      if (!me || !(await authed(request, env, me))) return json({ error: "forbidden" }, 403);
+      return json({ messages: JSON.parse((await env.DB.get(threadKey(me, code))) || "[]") });
     }
   }
 
