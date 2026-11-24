@@ -181,10 +181,17 @@
   .dr-end .card{width:100%;max-width:340px}
 
   /* ======== ОБУЧЕНИЕ ======== */
-  #tut{position:fixed;inset:0;z-index:60}
+  #tut{position:fixed;inset:0;z-index:60;pointer-events:none}
+  .tut-b{position:fixed;pointer-events:auto;background:transparent}
   .tut-hole{position:fixed;border-radius:14px;box-shadow:0 0 0 9999px rgba(10,6,20,.72),0 0 0 3px #ffd23f,0 0 24px 6px rgba(255,210,63,.6);transition:all .35s cubic-bezier(.2,.8,.2,1);pointer-events:none;animation:tutPulse 1.6s infinite}
+  .tut-hole.tut-ok{box-shadow:0 0 0 9999px rgba(10,6,20,.72),0 0 0 4px #2ee59d,0 0 40px 14px rgba(46,229,157,.8);animation:none}
   @keyframes tutPulse{50%{box-shadow:0 0 0 9999px rgba(10,6,20,.72),0 0 0 3px #ffd23f,0 0 36px 12px rgba(255,210,63,.75)}}
-  .tut-card{position:fixed;left:50%;width:min(92vw,380px);margin:0;z-index:61;transition:top .35s}
+  .tut-card{position:fixed;left:50%;width:min(92vw,380px);margin:0;z-index:61;transition:top .35s;pointer-events:auto}
+  .tut-card.tut-task{border-color:#ffd23f}
+  .tut-finger{position:fixed;font-size:30px;z-index:62;pointer-events:none;animation:tutTap 1s infinite;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+  @keyframes tutTap{50%{transform:translateY(-10px) scale(.9)}}
+  .tut-wait{font-size:13px;color:#e0a800;animation:tutBlink 1.2s infinite}
+  @keyframes tutBlink{50%{opacity:.4}}
   /* ======== СООБЩЕНИЯ ======== */
   nav button{position:relative}
   .dot{position:absolute;top:2px;right:18%;min-width:18px;height:18px;border-radius:9px;background:#e62429;color:#fff;font-size:11px;line-height:18px;padding:0 4px;font-style:normal;font-weight:800}
@@ -1639,72 +1646,106 @@ function applyAppIcon(){
 $("#avatarGrid").addEventListener("click",e=>{ const b=e.target.closest("[data-avatar]"); if(!b) return; S.avatar=b.dataset.avatar; save(); renderPickers(); renderHeader(); toast("Аватар обновлён"); });
 $("#iconGrid").addEventListener("click",e=>{ const b=e.target.closest("[data-appicon]"); if(!b) return; S.appIcon=b.dataset.appicon; save(); applyAppIcon(); renderPickers(); toast("Иконка выбрана. Добавь приложение на экран заново 📱"); });
 
-// ================= ОБУЧЕНИЕ (как в играх) =================
+// ================= ОБУЧЕНИЕ (как в играх: сам нажимаешь) =================
+// do: true — шаг ждёт, пока человек сам нажмёт подсвеченное. opt: можно и пропустить кнопкой «Дальше». when: показывать ли шаг.
+const tutCtx = {};
+const notifOn = () => typeof msgOn==="function" && msgOn() && pushSupported() && Notification.permission==="granted";
 const TUTORIAL = {
   back: [
-    {title:"Привет, {name}! 🔥", text:"Я Магмабот. За минуту покажу, как тут всё устроено. Жми «Дальше»."},
+    {tab:"today", title:"Привет, {name}! 🔥", text:"Я Магмабот. Давай пройдём короткое обучение — ты сам всё понажимаешь. Жми «Дальше»."},
     {tab:"today", sel:".robo-card", title:"Это я — Магмабот", text:"Я заряжаюсь, когда ты делаешь шаги «Спины». На 100% — FULL POWER и дрифт-заезд за монеты 🏁"},
-    {tab:"today", sel:".load", title:"Полоса загрузки", text:"Каждый шаг добавляет проценты. Любой процент — уже молодец, даже один шаг засчитывает день."},
-    {tab:"today", sel:".step [data-tick]", title:"Сделал шаг — жми «+»", text:"Отметка поставится, загрузка подрастёт, монеты капнут. Нажал случайно — нажми ещё раз, отметка снимется."},
-    {tab:"today", sel:".step [data-how]", title:"Не помнишь, как делать?", text:"«Как делать» — анимированная картинка и инструкция. «Послушать» — прочитаю вслух, можно не читать."},
-    {tab:"today", sel:".garage summary", title:"Гараж 🏎️", text:"За монеты 🪙 покупай тачки и тюнинг: покраска, диски, спойлер, неон, цветной дым. Нажми на закрытую — покажу, сколько дней осталось копить."},
-    {tab:"today", sel:"nav [data-tab=friends]", title:"Друзья", text:"Тут видно прогресс друг друга. Можно подбодрить 💛 и написать сообщение 💬 — придёт уведомлением."},
-    {tab:"today", sel:"nav [data-tab=settings]", title:"Ещё", text:"Напоминания, тема, аватар и иконка приложения. Включи напоминание — буду пинать, если пропустишь 😈"},
-    {title:"Всё, ты готов! 💪", text:"Начни с одного шага — этого уже достаточно. Обучение можно открыть снова в «Ещё».", last:true},
+    {tab:"today", sel:".step [data-how]", do:true, title:"Задание 1: открой инструкцию", text:"Нажми «📖 Как делать» у первого шага."},
+    {sel:".step .howbox", title:"Вот как делать 👀", text:"Картинка двигается и показывает движение, ниже — шаги словами. «🔊 Послушать» прочитает вслух, а «📕 Скрыть» свернёт."},
+    {sel:".step [data-tick]", do:true, save:el=>tutCtx.id=el.dataset.tick, title:"Задание 2: отметь шаг", text:"Представь, что сделал упражнение. Жми «+»."},
+    {sel:".load", title:"Загрузка пошла! ⚡", text:"Каждый шаг добавляет проценты и монеты 🪙. Даже один шаг засчитывает день."},
+    {sel:()=>`[data-undo="${tutCtx.id}"]`, do:true, title:"Задание 3: отмени", text:"Это была тренировка — нажми «✓», и отметка снимется. Так же исправляешь, если нажал случайно."},
+    {sel:".garage summary", do:true, title:"Задание 4: открой гараж", text:"Нажми на «🏎️ Гараж»."},
+    {sel:".garage", title:"Гараж 🏎️", text:"Тут тачки и тюнинг: покраска, диски, спойлер, неон, дым. Нажмёшь на закрытую — покажу, сколько дней осталось копить."},
+    {sel:"nav [data-tab=friends]", do:true, title:"Задание 5: зайди к друзьям", text:"Нажми «Друзья» внизу."},
+    {sel:"[data-chat]", when:()=>S.friends?.length, title:"Сообщения 💬", text:"«💬 Написать» — чат с другом, «💛» — подбодрить. Всё приходит уведомлением."},
+    {sel:"#msgNotifBtn", do:true, opt:true, when:()=>!notifOn(), title:"Задание 6: включи уведомления", text:"Нажми «Включить» и разреши уведомления — тогда сообщения будут приходить на телефон."},
+    {sel:"nav [data-tab=settings]", do:true, title:"Задание 7: открой «Ещё»", text:"Нажми «Ещё» внизу."},
+    {sel:"#remOn", do:true, opt:true, when:()=>!S.reminder?.on, title:"Задание 8: напоминание", text:"Выбери время и нажми «Включить» — напомню, если забудешь. Можно выбрать грубый тон 😈"},
+    {tab:"today", title:"Обучение пройдено! 🏆", text:"Теперь сделай по-настоящему хотя бы один шаг. Обучение можно открыть снова в «Ещё».", last:true},
   ],
   jaw: [
-    {title:"Привет, {name}! 🌼", text:"За минуту покажу, как тут всё устроено. Жми «Дальше»."},
+    {tab:"today", title:"Привет, {name}! 🌼", text:"Короткое обучение — ты сама всё понажимаешь. Жми «Дальше»."},
     {tab:"today", sel:".hero", title:"Твой уровень", text:"За каждый квест — опыт (XP). Уровни растут, появляются значки."},
-    {tab:"today", sel:".quest .tick", title:"Сделала — жми «+»", text:"Некоторые квесты можно отмечать несколько раз в день. Ошиблась — стрелка ↶ отменит."},
-    {tab:"today", sel:".quest details.how", title:"Как делать", text:"Тут анимированная картинка и инструкция. А «Послушать» прочитает вслух."},
-    {tab:"today", sel:"nav [data-tab=log]", title:"Дневник", text:"Сон, симптомы, заметки — пригодится врачам. «Ещё» → «Сводка для врача» соберёт всё в один текст."},
-    {tab:"today", sel:"nav [data-tab=quest]", title:"Главы", text:"Врачи по порядку. Сходила к врачу — отметь главу и запиши, что сказали."},
-    {tab:"today", sel:"nav [data-tab=friends]", title:"Друзья", text:"Прогресс друг друга, 💛 и сообщения 💬 с уведомлениями."},
-    {tab:"today", sel:"nav [data-tab=settings]", title:"Ещё", text:"Напоминания, тема, аватар, иконка приложения."},
-    {title:"Готово! ✨", text:"Начни с одного квеста. Обучение можно открыть снова в «Ещё».", last:true},
+    {tab:"today", sel:".quest details.how summary", do:true, title:"Задание 1: открой инструкцию", text:"Нажми «Как делать» у первого квеста."},
+    {sel:".quest details.how[open]", title:"Вот как делать 👀", text:"Картинка двигается, ниже — шаги. «🔊 Послушать» прочитает вслух."},
+    {sel:".quest [data-tick]", do:true, save:el=>tutCtx.id=el.dataset.tick, title:"Задание 2: отметь квест", text:"Представь, что сделала. Жми «+»."},
+    {sel:()=>`[data-undo="${tutCtx.id}"]`, do:true, title:"Задание 3: отмени", text:"Это была тренировка — нажми «↶», и отметка снимется."},
+    {sel:"nav [data-tab=friends]", do:true, title:"Задание 4: друзья", text:"Нажми «Друзья» внизу."},
+    {sel:"[data-chat]", when:()=>S.friends?.length, title:"Сообщения 💬", text:"«💬 Написать» — чат, «💛» — подбодрить. Приходит уведомлением."},
+    {sel:"#msgNotifBtn", do:true, opt:true, when:()=>!notifOn(), title:"Задание 5: уведомления", text:"Нажми «Включить» и разреши уведомления."},
+    {sel:"nav [data-tab=settings]", do:true, title:"Задание 6: открой «Ещё»", text:"Тут напоминания, тема, аватар и иконка приложения."},
+    {tab:"today", title:"Готово! ✨", text:"Обучение можно открыть снова в «Ещё».", last:true},
   ],
 };
 function runTutorial(){
+  document.getElementById("tut")?.remove();
   const steps = TUTORIAL[S.program==="back"?"back":"jaw"];
-  let i = 0;
+  let i = -1, target = null, busy = false;
   const ov = document.createElement("div"); ov.id="tut";
-  ov.innerHTML = `<div class="tut-hole"></div><div class="tut-card card"></div>`;
+  ov.innerHTML = `<div class="tut-hole"></div><div class="tut-b"></div><div class="tut-b"></div><div class="tut-b"></div><div class="tut-b"></div><div class="tut-b tut-cover"></div><div class="tut-finger">👆</div><div class="tut-card card"></div>`;
   document.body.appendChild(ov);
-  const hole = ov.querySelector(".tut-hole"), card = ov.querySelector(".tut-card");
-  const finish = ()=>{ ov.remove(); S.tutorialDone = true; save(); window.removeEventListener("resize", place); };
+  const hole = ov.querySelector(".tut-hole"), card = ov.querySelector(".tut-card"), bl = ov.querySelectorAll(".tut-b"), cover = ov.querySelector(".tut-cover"), finger = ov.querySelector(".tut-finger");
+  const selOf = st => typeof st.sel==="function" ? st.sel() : st.sel;
+  const set = (el,l,t,w,h) => Object.assign(el.style,{left:l+"px",top:t+"px",width:Math.max(0,w)+"px",height:Math.max(0,h)+"px"});
   function place(){
-    const st = steps[i], el = st.sel && document.querySelector(st.sel);
-    if(el){
-      const r = el.getBoundingClientRect(), pad = 6;
-      Object.assign(hole.style,{display:"block",left:(r.left-pad)+"px",top:(r.top-pad)+"px",width:(r.width+pad*2)+"px",height:(r.height+pad*2)+"px"});
-      const below = r.bottom + 14 + card.offsetHeight < innerHeight;
-      card.style.top = below ? (r.bottom+14)+"px" : Math.max(10, r.top-14-card.offsetHeight)+"px";
+    const st = steps[i]; if(!st) return;
+    const W = innerWidth, H = innerHeight;
+    target = st.sel ? document.querySelector(selOf(st)) : null;
+    if(target){
+      const r = target.getBoundingClientRect(), p = 6, L=r.left-p, T=r.top-p, R=r.right+p, B=r.bottom+p;
+      set(hole,L,T,R-L,B-T); hole.style.opacity=1;
+      set(bl[0],0,0,W,T); set(bl[1],0,B,W,H-B); set(bl[2],0,T,L,B-T); set(bl[3],R,T,W-R,B-T);
+      set(cover,L,T,R-L,B-T); cover.style.display = st.do ? "none" : "block";
+      finger.style.display = st.do ? "block" : "none";
+      finger.style.left = (L+(R-L)/2-14)+"px"; finger.style.top = (B-6)+"px";
+      const ch = card.offsetHeight, below = B + 12 + ch < H - 70;
+      card.style.top = below ? (B + (st.do?34:12))+"px" : Math.max(10, T-12-ch)+"px";
+      if(!below) finger.style.top = (T-36)+"px";
       card.style.transform = "translateX(-50%)";
     } else {
-      Object.assign(hole.style,{display:"block",left:"50%",top:"50%",width:"0px",height:"0px"});
+      hole.style.opacity=0; set(bl[0],0,0,W,H); [bl[1],bl[2],bl[3],cover].forEach(b=>set(b,0,0,0,0)); finger.style.display="none";
       card.style.top = "50%"; card.style.transform = "translate(-50%,-50%)";
     }
   }
-  function show(){
-    const st = steps[i];
+  const finish = ()=>{ ov.remove(); S.tutorialDone = true; save(); window.removeEventListener("resize", place); window.removeEventListener("scroll", place, true); document.removeEventListener("click", onDo, true); };
+  async function next(){
+    busy = true;
+    do { i++; } while(steps[i] && steps[i].when && !steps[i].when());
+    const st = steps[i]; if(!st) return finish();
     if(st.tab) document.querySelector(`nav button[data-tab=${st.tab}]`)?.click();
-    const el = st.sel && document.querySelector(st.sel);
+    let el = null;
+    for(let k=0;k<20 && st.sel && !(el=document.querySelector(selOf(st)));k++) await new Promise(r=>setTimeout(r,100));
+    if(st.sel && !el && st.when){ busy=false; return next(); }   // элемента нет (например, друзья ещё не загрузились) — пропускаем
     if(el && !el.closest("nav")) el.scrollIntoView({block:"center"});
     const mascot = S.program==="back" ? `<div style="width:54px;flex:none">${robotSVG(Math.round(i/(steps.length-1)*100))}</div>` : `<div style="font-size:40px">🌼</div>`;
     card.innerHTML = `<div class="row" style="align-items:flex-start">${mascot}<div class="grow">
         <b style="font-size:17px">${esc(st.title.replace("{name}", S.name||""))}</b><p style="margin:6px 0 0;font-size:14px;line-height:1.45">${esc(st.text)}</p></div></div>
-      <div class="row" style="margin-top:12px"><span class="muted grow" style="font-size:12px">${i+1} / ${steps.length}</span>
-        ${st.last?"":`<button class="btn small ghost" data-tut="skip">Пропустить</button>`}
-        <button class="btn small mint" data-tut="next">${st.last?"Поехали!":"Дальше ▶"}</button></div>`;
-    requestAnimationFrame(()=>requestAnimationFrame(place));
+      <div class="row" style="margin-top:12px;align-items:center"><span class="muted grow" style="font-size:12px">${i+1} / ${steps.length}</span>
+        ${st.last?"":`<button class="btn small ghost" data-tut="skip">Пропустить всё</button>`}
+        ${st.do && !st.opt ? `<b class="tut-wait">👆 Нажми сам</b>` : `<button class="btn small mint" data-tut="next">${st.last?"Поехали!":st.do?"Позже ▶":"Дальше ▶"}</button>`}</div>`;
+    card.classList.toggle("tut-task", !!st.do);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{ place(); busy=false; }));
   }
-  ov.addEventListener("click", e=>{
-    const b = e.target.closest("[data-tut]"); if(!b) return;
+  function onDo(e){
+    const st = steps[i]; if(!st?.do || busy || !target) return;
+    if(!target.contains(e.target)) return;
+    st.save?.(target);
+    busy = true; hole.classList.add("tut-ok");
+    setTimeout(()=>{ hole.classList.remove("tut-ok"); next(); }, st.sel==="#msgNotifBtn"||st.sel==="#remOn" ? 1500 : 550);
+  }
+  document.addEventListener("click", onDo, true);
+  card.addEventListener("click", e=>{
+    const b = e.target.closest("[data-tut]"); if(!b || busy) return;
     if(b.dataset.tut==="skip" || steps[i].last) return finish();
-    i++; show();
+    next();
   });
-  window.addEventListener("resize", place);
-  show();
+  window.addEventListener("resize", place); window.addEventListener("scroll", place, true);
+  next();
 }
 
 // ================= ВКЛАДКИ =================
